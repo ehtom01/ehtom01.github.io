@@ -231,7 +231,12 @@ h3{font-size:16px;font-weight:700;margin:0}
 .cutq.on span{animation:brushin .55s ease-out forwards}
 @keyframes brushin{from{opacity:0;filter:blur(6px);transform:translateY(4px) scale(1.15)}to{opacity:1;filter:blur(0);transform:none}}
 .cutq.gone{transition:opacity .8s ease,filter .8s ease,letter-spacing .8s ease;opacity:0;filter:blur(10px);letter-spacing:.25em}
-.cutsub{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-family:'Noto Serif KR',serif;font-weight:900;font-size:clamp(34px,10vw,48px);letter-spacing:.3em;text-indent:.3em;color:#f3d27a;text-shadow:0 0 20px rgba(0,0,0,.9);opacity:0;transition:opacity .6s ease}
+.cutsub{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;transition:opacity .9s ease}
+.cs-main{display:flex;align-items:center;gap:16px}
+.cs-main span{font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(26px,7.4vw,34px);letter-spacing:.12em;color:#efe4cb}
+.cs-main i{display:block;width:clamp(28px,9vw,48px);height:1px;background:linear-gradient(90deg,transparent,#c9a24a)}
+.cs-main i:last-child{background:linear-gradient(90deg,#c9a24a,transparent)}
+.cs-2{font-family:'Noto Serif KR',serif;font-weight:500;font-size:13px;letter-spacing:.28em;color:#a99d84}
 .cutsub.on{opacity:1} .cutsub.gone{opacity:0}
 
 .cutnext{position:absolute;right:18px;bottom:16px;color:#c9a24a;font-size:14px;opacity:0;transition:opacity .4s}
@@ -342,7 +347,7 @@ const E1=[
  Q('백련|슬픔','방금까지 입에 있었는데. 아무리 떠올려도… 안 떠올라.'),
  Q('홍련|놀람','언니, 나야. 나는…'),
  N('대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.'),
- CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전',bgm:2}), REMEMBER('홍련'), BG('market','dusk'),
+ CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전',sub2:'도성 남문 밖 · 해 질 녘',bgm:2}), REMEMBER('홍련'), BG('market','dusk'),
  N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
  N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
  Q('분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'),
@@ -1790,7 +1795,7 @@ function playCut(s){
   const lines=s.q.split('|'); let k=0;
   const qh=lines.map(l=>`<div>${[...l].map(ch=>`<span style="animation-delay:${(k++)*0.07}s">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>`).join('');
   const q=document.createElement('div'); q.className='cutq'; q.innerHTML=qh; ov.appendChild(q);
-  const sub=document.createElement('div'); sub.className='cutsub'; sub.textContent=s.sub||''; ov.appendChild(sub);
+  const sub=document.createElement('div'); sub.className='cutsub'; sub.innerHTML=`<div class="cs-main"><i></i><span>${s.sub||''}</span><i></i></div>${s.sub2?`<div class="cs-2">${s.sub2}</div>`:''}`; ov.appendChild(sub);
   const nx=document.createElement('div'); nx.className='cutnext'; nx.textContent='▼'; ov.appendChild(nx);
   st.appendChild(ov);
   const o=AU.el; if(o&&AU.on) fadeTo(o,.06,900);
