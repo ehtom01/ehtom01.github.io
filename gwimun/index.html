@@ -1,6 +1,6 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>묵야 베타</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>묵야 墨夜 — 조선 괴담 선택지 게임 (베타)</title>
 <meta name="description" content="조선 괴담 선택지 이야기 게임 「묵야(墨夜)」 베타 테스트. 1부 1~3화 무료 공개.">
-<meta property="og:title" content="묵야 墨夜 · 베타 테스트">
+<meta property="og:title" content="묵야 墨夜 · 조선 괴담 선택지 게임 (베타)">
 <meta property="og:description" content="이름을 빼앗긴 자는, 그림자부터 사라진다. 당신의 선택으로 이야기가 갈라집니다.">
 <meta property="og:image" content="https://ehtom01.github.io/gwimun/og5.jpg">
 <meta property="og:type" content="website">
@@ -219,6 +219,9 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 .tlogo h1{margin:0;font-family:"Noto Serif KR",serif;font-weight:900;font-size:clamp(56px,min(22vw,11vh),108px);line-height:1;color:#f3ecdd;text-shadow:0 0 30px #000,0 4px 24px #000}
 .tseal{position:absolute;left:100%;top:50%;margin:-26px 0 0 12px;width:52px;height:52px;background:linear-gradient(180deg,#c3332a,#9b2019);border-radius:5px;transform:rotate(-5deg);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:900;font-size:19px;color:#f8eedd;box-shadow:inset 0 1px 0 #ffffff40,0 4px 12px #000a}
 .tsub{font-size:15px;font-weight:700;letter-spacing:.3em;color:#efe4cb;text-shadow:0 0 8px #000,0 2px 10px #000;animation:tin 1.4s .3s ease-out backwards}
+.tgenre{animation:tin 1.2s .1s ease-out backwards}.tgenre span{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.18em;color:#f6eee0;background:rgba(176,38,43,.92);border:1px solid rgba(255,220,200,.35);padding:5px 12px 5px 14px;border-radius:3px;box-shadow:0 2px 10px #0009}
+.title .ttop .tgenre span{font-size:11px;padding:3px 10px 3px 12px}
+.tfeat{font-size:12.5px;font-weight:600;color:#d9cfb8;letter-spacing:.04em;text-shadow:0 1px 6px #000;animation:tin 1.4s .7s ease-out backwards}
 .thook{font-size:17px;font-weight:700;color:#f3ecdd;line-height:1.6;animation:tin 1.4s .5s ease-out backwards;text-shadow:0 2px 10px #000}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}}
 .inkwipe{position:fixed;inset:0;z-index:90;pointer-events:all;transition:opacity 1.1s ease-out}
@@ -1615,8 +1618,8 @@ function vTitle(){
       <button class="tlink" data-a="tSwitch">다른 계정으로 시작</button></div>`;
   } else card=`<div class="ttap">화면을 눌러 시작하세요</div>`;
   return `<div class="title" data-a="${TITLE.step==='tap'?'ttap':'noop'}">${sndBtn}<div class="blur" style="background-image:url(${SPR.key})"></div><div class="art" style="background-image:url(${SPR.key})"></div><div class="shade"></div><div class="mist m3"></div><div class="mist m1"></div>${ash}<div class="mist m2"></div>
-   ${TITLE.step==='tap'?`<div class="in"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div><div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div>${card}</div>`
-   :`<div class="ttop"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div></div><div class="in">${card}</div>`}</div>`;
+   ${TITLE.step==='tap'?`<div class="in"><div class="tgenre"><span>조선 괴담 선택지 게임</span></div><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div><div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div><div class="tfeat">선택에 따라 갈라지는 이야기 · 조사와 퇴마 · 엔딩 5종</div>${card}</div>`
+   :`<div class="ttop"><div class="tgenre"><span>조선 괴담 선택지 게임</span></div><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div></div><div class="in">${card}</div>`}</div>`;
 }
 function authReady(fb){ return new Promise(ok=>{ const un=fb.auth.onAuthStateChanged(u=>{ un(); ok(u); }); }); }
 async function afterLogin(u){
