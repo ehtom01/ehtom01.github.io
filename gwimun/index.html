@@ -1830,9 +1830,9 @@ function bgm(n){
   if(AU.cur===n) return; AU.cur=n;
   const old=AU.el; if(old) fadeTo(old,0,1200,()=>{ old.pause(); });
   if(!n){ AU.el=null; return; }
-  const a=new Audio(BGM_URL(n)); a.loop=true; a.volume=0; AU.el=a; a.play().then(()=>fadeTo(a,AU.vol,1500)).catch(()=>{});
+  const a=new Audio(BGM_URL(n)); a.loop=true; a.volume=0; a.preload='auto'; AU.el=a; a.play().then(()=>fadeTo(a,AU.vol,1500)).catch(()=>{ if(AU.el===a){ AU.cur=null; AU.el=null; AU.blocked=true; } });
 }
-function unlockAudio(){ if(AU.unlocked) return; AU.unlocked=true; updateBgm(); }
+function unlockAudio(){ if(AU.unlocked&&!AU.blocked&&AU.el) return; AU.unlocked=true; AU.blocked=false; updateBgm(); }
 function setSound(on){ AU.on=on; try{ localStorage.setItem(KEY+'-snd',on?'1':'0'); }catch(e){} if(!on){ const o=AU.el; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,400,()=>o.pause()); } else updateBgm(); }
 const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
 function bgmFor(){
@@ -2196,7 +2196,7 @@ function act(a,v){
   }
   render();
 }
-document.addEventListener('pointerdown',unlockAudio,{once:false,capture:true});
+['click','touchend','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 document.addEventListener('click',e=>{ if(e.target.closest('.inv')&&!e.target.closest('button')){ e.stopPropagation(); invTap(e); return; } const t=e.target.closest('[data-a]'); if(!t) return; e.stopPropagation(); act(t.dataset.a,t.dataset.v); });
 document.addEventListener('keydown',e=>{ if(UI.tab==='read'&&(e.key===' '||e.key==='Enter')&&!e.target.closest('button')){ e.preventDefault(); advance(); } });
 render();
