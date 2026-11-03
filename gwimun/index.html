@@ -1463,7 +1463,7 @@ const freshF=()=>({dol:0,mujin:0,beom:0,grudge:0});
 let S;
 function defState(){ return {stones:0,keys:3,cleared:[],open:['1-1'],wait:{},F:freshF(),snap:{},endings:[],cgs:[],resume:null,auto:false}; }
 /* 계정: 게스트(이 기기) 또는 구글(Firebase). FB_CONFIG를 채우면 구글 로그인이 켜진다 */
-const FB_CONFIG=null;
+const FB_CONFIG={apiKey:"AIzaSyBWGu6HazOUqMmgIelf7TzMEFa6FJyhbTI",authDomain:"gwimun-toemadan.firebaseapp.com",projectId:"gwimun-toemadan",storageBucket:"gwimun-toemadan.firebasestorage.app",messagingSenderId:"1077375224886",appId:"1:1077375224886:web:d91bfa4dbb6cb791959c97"};
 const ACCKEY=KEY+'-acc';
 let ACC=(()=>{ try{ return JSON.parse(localStorage.getItem(ACCKEY))||null; }catch(e){ return null; } })();
 const curKey=()=>ACC&&ACC.mode==='google'?KEY+':'+ACC.uid:KEY;
@@ -1484,6 +1484,8 @@ function cloudSave(){ if(!ACC||ACC.mode!=='google'||!FB) return; clearTimeout(cl
 const hasProg=st=>!!(st&&(st.cleared.length||st.resume));
 load();
 let TITLE={step:'tap'};
+(async()=>{ let f=null; try{ f=localStorage.getItem(KEY+'-redir'); localStorage.removeItem(KEY+'-redir'); }catch(e){} if(!f||!FB_CONFIG) return;
+  try{ TITLE.step='busy'; render(); const fb=await fbInit(); const r=await fb.auth.getRedirectResult(); const u=r&&r.user||await authReady(fb); if(u){ await afterLogin(u); } else TITLE.step='login'; }catch(e){ TITLE.step='login'; toast('구글 로그인에 실패했어요. 다시 시도해 주세요'); } if(UI.tab==='title') render(); })();
 
 /* ===================== 공통 ===================== */
 const $=s=>document.querySelector(s);
@@ -1530,7 +1532,7 @@ function vTitle(){
   if(TITLE.step==='login'){
     const fbOn=!!FB_CONFIG;
     card=`<div class="tcard" data-a="noop"><h3>계정을 선택하세요</h3>
-      ${ACC&&ACC.mode==='google'?`<button class="btn gbtn" data-a="gLogin"><span class="g">G</span>${ACC.name||'구글 계정'}으로 계속</button>`:''}
+      ${ACC&&ACC.mode==='google'?`<button class="btn gbtn" data-a="gLogin" data-v="reuse"><span class="g">G</span>${ACC.name||'구글 계정'}으로 계속</button>`:''}
       <button class="btn gbtn" data-a="gLogin"><span class="g">G</span>Google 계정으로 시작${fbOn?'':'<span class="soon">준비 중</span>'}</button>
       <button class="btn" data-a="guest">게스트로 시작</button>
       <div class="note">Google 계정으로 시작하면 휴대폰을 바꾸거나 다른 기기에서도 이어서 읽을 수 있어요. 게스트 기록은 이 기기에만 저장돼요.</div></div>`;
@@ -1546,16 +1548,23 @@ function vTitle(){
    <div class="in"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div>
    ${TITLE.step==='tap'?'<div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div>':''}${card}</div></div>`;
 }
-async function gLogin(){
-  if(!FB_CONFIG){ toast('구글 연동은 준비 중이에요. 지금은 게스트로 시작해 주세요'); return; }
-  TITLE.step='busy'; render();
-  try{
-    const fb=await fbInit(); const r=await fb.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); const u=r.user;
+function authReady(fb){ return new Promise(ok=>{ const un=fb.auth.onAuthStateChanged(u=>{ un(); ok(u); }); }); }
+async function afterLogin(u){
     setAcc({mode:'google',uid:u.uid,name:u.displayName||u.email});
     const cloud=await cloudLoad(u.uid).catch(()=>null), local=readLocal(curKey());
     S=[cloud,local].filter(Boolean).sort((a,b)=>(b.savedAt||0)-(a.savedAt||0))[0]||defState();
     TITLE.step='menu';
-  }catch(e){ toast('구글 로그인에 실패했어요. 다시 시도해 주세요'); TITLE.step='login'; }
+}
+async function gLogin(reuse){
+  if(!FB_CONFIG){ toast('구글 연동은 준비 중이에요. 지금은 게스트로 시작해 주세요'); return; }
+  TITLE.step='busy'; render();
+  try{
+    const fb=await fbInit(); let u=reuse?await authReady(fb):null;
+    if(!u){ const pv=new firebase.auth.GoogleAuthProvider(); pv.setCustomParameters({prompt:'select_account'});
+      try{ u=(await fb.auth.signInWithPopup(pv)).user; }
+      catch(e){ if(['auth/popup-blocked','auth/operation-not-supported-in-this-environment','auth/cancelled-popup-request'].includes(e.code)){ try{ localStorage.setItem(KEY+'-redir','1'); }catch(_){} await fb.auth.signInWithRedirect(pv); return; } throw e; } }
+    await afterLogin(u);
+  }catch(e){ console.warn('login',e&&e.code,e&&e.message); toast('구글 로그인에 실패했어요. 다시 시도해 주세요'); TITLE.step='login'; }
   render();
 }
 function vHome(){
@@ -2000,7 +2009,7 @@ function drawCGThumb(el){
 function act(a,v){
   switch(a){
     case 'ttap': TITLE.step='login'; break;
-    case 'gLogin': gLogin(); return;
+    case 'gLogin': gLogin(v==='reuse'); return;
     case 'guest': setAcc({mode:'guest'}); load(); TITLE.step='menu'; break;
     case 'tSwitch': TITLE.step='login'; break;
     case 'tContinue': if(S.resume){ startEp(S.resume.ep,S.resume); return; } UI.tab='home'; break;
