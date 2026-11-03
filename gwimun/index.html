@@ -227,6 +227,8 @@ h3{font-size:16px;font-weight:700;margin:0}
 .inkwipe.out{animation:inkout 1.2s ease-out forwards}
 .inkwipe.out::after{animation:none;opacity:0}
 @keyframes inkout{from{background:#050404;opacity:1}to{background:#050404;opacity:0}}
+.tsnd{align-self:center;display:flex;align-items:center;gap:6px;background:rgba(14,12,10,.7);border:1px solid rgba(201,162,74,.45);border-radius:999px;padding:8px 14px;color:#cfc3a8;font-size:13px;min-height:40px}
+.tsnd.on{color:#f3d27a;border-color:#c9a24a}
 .sndhint{font-size:11.5px;letter-spacing:.15em;font-weight:400;color:#cfc3a8;opacity:.85}
 .ttap{margin-top:18px;font-size:15px;font-weight:700;letter-spacing:.3em;color:#f3ecdd;text-shadow:0 0 8px #000;animation:blink 1.6s ease-in-out infinite,tin 1s 1s backwards}
 .tcard{width:100%;margin-top:10px;background:linear-gradient(180deg,rgba(26,23,19,.92),rgba(14,12,10,.95));border:1px solid rgba(201,162,74,.45);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px #000c;cursor:default;animation:tin .5s ease-out backwards}
@@ -1568,6 +1570,7 @@ function progLabel(st){
 }
 function vTitle(){
   const ash=Array.from({length:22},(_,i)=>`<span class="ash" style="left:${(i*37+11)%100}%;animation-duration:${9+(i*7)%9}s;animation-delay:${-(i*13)%17}s;transform:scale(${.6+(i%4)*.25})"></span>`).join('');
+  const sndBtn=`<button class="tsnd${AU.on?' on':''}" data-a="snd" aria-label="소리 ${AU.on?'끄기':'켜기'}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/>${AU.on?'<path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>':'<path d="M17 9l5 6M22 9l-5 6"/>'}</svg><span>${AU.on?'소리 켬':'소리 끔'}</span></button>`;
   let card='';
   if(TITLE.step==='login'){
     const fbOn=!!FB_CONFIG;
@@ -1575,14 +1578,14 @@ function vTitle(){
       ${ACC&&ACC.mode==='google'?`<button class="btn gbtn" data-a="gLogin" data-v="reuse"><span class="g">G</span>${ACC.name||'Google'} 계정으로 계속</button>`:`<button class="btn gbtn" data-a="gLogin"><span class="g">G</span>Google 계정으로 시작${fbOn?'':'<span class="soon">준비 중</span>'}</button>`}
       <button class="btn" data-a="guest">게스트로 시작</button>
       ${ACC&&ACC.mode==='google'?'<button class="tlink" data-a="gLogin">다른 Google 계정으로 시작</button>':''}
-      <div class="note">Google 계정으로 시작하면 휴대폰을 바꾸거나 다른 기기에서도 이어서 읽을 수 있어요. 게스트 기록은 이 기기에만 저장돼요.</div></div>`;
+      ${sndBtn}<div class="note">Google 계정으로 시작하면 휴대폰을 바꾸거나 다른 기기에서도 이어서 읽을 수 있어요. 게스트 기록은 이 기기에만 저장돼요.</div></div>`;
   } else if(TITLE.step==='busy'){
     card=`<div class="tcard" data-a="noop"><h3>계정을 확인하고 있어요…</h3></div>`;
   } else if(TITLE.step==='menu'){
     const lab=hasProg(S)&&progLabel(S);
     card=`<div class="tcard" data-a="noop"><div class="who">${ACC&&ACC.mode==='google'?`${ACC.name||'구글 계정'} · 클라우드 저장`:'게스트 · 이 기기에 저장'}</div>
       ${lab?`<button class="btn pri cont" data-a="tContinue">이어하기<small>${lab}</small></button><button class="btn" data-a="tNew">새로하기</button>`:`<button class="btn pri" data-a="tNew">새로하기</button>`}
-      <button class="tlink" data-a="tSwitch">다른 계정으로 시작</button></div>`;
+      ${sndBtn}<button class="tlink" data-a="tSwitch">다른 계정으로 시작</button></div>`;
   } else card=`<div class="ttap">화면을 눌러 시작하세요</div>`;
   return `<div class="title" data-a="${TITLE.step==='tap'?'ttap':'noop'}"><div class="blur" style="background-image:url(${SPR.key})"></div><div class="art" style="background-image:url(${SPR.key})"></div><div class="shade"></div><div class="mist m3"></div><div class="mist m1"></div>${ash}<div class="mist m2"></div>
    ${TITLE.step==='tap'?`<div class="in"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div><div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div>${card}</div>`
@@ -2189,7 +2192,7 @@ function act(a,v){
     case 'account': openModal(`<h3>계정</h3><p class="small" style="margin:0;line-height:1.6">${ACC&&ACC.mode==='google'?`${ACC.name||'구글 계정'}으로 로그인했어요. 기록이 클라우드에 저장돼요.`:'게스트로 읽고 있어요. 기록은 이 기기에만 저장돼요. Google 계정으로 시작하면 다른 기기에서도 이어서 읽을 수 있어요.'}</p><button class="btn pri" data-a="toTitle">타이틀 화면으로</button>${ACC&&ACC.mode==='google'?'<button class="btn" data-a="logout">로그아웃</button>':''}<button class="btn" data-a="close">닫기</button>`); return;
     case 'toTitle': closeModal(); if(R){ clearInterval(typer); clearTimeout(autoT); R=null; } UI.tab='title'; TITLE.step='login'; break;
     case 'logout': closeModal(); if(FB) FB.auth.signOut(); setAcc(null); load(); UI.tab='title'; TITLE.step='login'; break;
-    case 'snd': setSound(!AU.on); document.querySelectorAll('[data-a="snd"]').forEach(b=>{ b.textContent=AU.on?'소리 켬':'소리 끔'; b.classList.toggle('on',AU.on); }); return;
+    case 'snd': setSound(!AU.on); if(UI.tab==='title'){ render(); return; } document.querySelectorAll('[data-a="snd"]').forEach(b=>{ b.textContent=AU.on?'소리 켬':'소리 끔'; b.classList.toggle('on',AU.on); }); return;
     case 'tab': if(R){ clearInterval(typer); clearTimeout(autoT); R=null; } UI.tab=v; break;
     case 'adv': advance(); return;
     case 'pick': pickChoice(+v); return;
