@@ -125,6 +125,14 @@ h3{font-size:16px;font-weight:700;margin:0}
 #ritc{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
 .ritres{position:absolute;left:0;right:0;top:44%;text-align:center;font-family:var(--f-disp);font-size:56px;color:#e0483a;text-shadow:0 2px 12px #000;opacity:0;transform:scale(.8);transition:all .3s;pointer-events:none}
 .ritres.show{opacity:1;transform:scale(1)} .ritres.fail{color:#d8cdb6;font-size:38px}
+.major{background:#3a3220;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:6px 10px;font-size:12.5px;text-align:center}
+.rmap{background:var(--raise);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.rmap summary{display:flex;justify-content:space-between;gap:8px;cursor:pointer;list-style:none;font-weight:700}
+.rmap summary::-webkit-details-marker{display:none}
+.rpt{border-top:1px solid var(--line);margin-top:8px;padding-top:8px}
+.rpt ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:13px}
+.rpt li.on{color:var(--fg)} .rpt li.unk{color:#6b675f;letter-spacing:.2em} .rpt li.sec{color:var(--gold)}
+.mj{color:var(--gold)}
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--raise);border:1px solid var(--accent);border-radius:8px;padding:8px 14px;z-index:60;font-size:13px;max-width:90%;text-align:center}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -997,7 +1005,7 @@ const E5=[
  N('홍련이 방울을 흔들자, 귀문 안쪽에서 비린 바람이 불어왔다.'),
  SH('hong','l'), SH('cheong','r'), FX('red'),
  Q('청련|슬픔','왔구나… 홍련아…'),
- IF(F=>F.grudge>=40,'bad'),
+ IF(F=>F.grudge>=30,'bad'),
  CH({t:'언니의 한을 풀어 저승으로 보내 준다. (천도)',go:'send'},
     {t:'언니를 부적에 봉인해 곁에 둔다. (봉인)',go:'seal'},
     {t:'언니의 혼을 내 몸에 받는다. (신내림)',secret:'언니와의 약속 · 어머니의 손 · 맑은 마음',show:F=>F.vow&&F.mom&&F.grudge<20,go:'possess'}),
@@ -1065,6 +1073,215 @@ const E5=[
  N('다음 이야기, 2부 「돌쇠 — 물 아래의 관아」. 사라진 사또의 아들, 관아 우물 아래의 제단, 그리고 한양에서 온 서찰.'),
  END];
 
+/* ----- 2부 1화 ----- */
+const E6=[
+ IF(F=>F.end1==='A','p_a'), IF(F=>F.end1==='B','p_b'), IF(F=>F.end1==='S','p_s'), IF(F=>F.end1==='C','p_c'),
+ /* N: 반쪽의 천도 */
+ BG('room','night'),
+ N('천도굿 이후 열흘. 홍련은 매일 밤 같은 꿈을 꾸었다.'),
+ N('검은 소용돌이 안쪽, 끝없는 복도. 그 끝에서 언니가 문을 두드리고 있었다.'),
+ Q('청련|슬픔','홍련아… 여기… 너무 추워…'),
+ SH('hong','c'),
+ Q('홍련|슬픔','(내가 서툴러서 언니를 반쪽만 보냈어. 언니는 아직 저 문 안에 있어.)'),
+ Q('홍련|결의','(그분을 찾아야 해. 그래야 언니의 한이 풀려.)'),
+ SET(F=>{F.r2='N'}), G('p_end'),
+ L('p_a'),
+ BG('room','dawn'),
+ N('천도굿 이후 열흘. 홍련의 귀에서 방울 소리가 사라졌다. 삼 년 만에 처음 맞는 고요한 아침이었다.'),
+ SH('hong','c'),
+ Q('홍련|슬픔','(언니는 갔어. 이제 정말로.)'),
+ N('그런데 그 고요가 오히려 낯설었다. 홍련은 머리맡의 방울 끈을 한참 동안 쓰다듬었다.'),
+ Q('홍련|결의','(언니가 마지막에 남긴 말. 그분은 한양에 있다고. 그리고 문 아래의 것이 눈을 떴다고.)'),
+ SET(F=>{F.r2='A';F.grudge=Math.max(0,F.grudge-5)}), G('p_end'),
+ L('p_b'),
+ BG('room','night'),
+ N('천도굿 이후 열흘. 홍련은 방울을 늘 품에 지니고 다녔다. 그 안에 언니가 있었다.'),
+ SH('hong','c'),
+ Q('청련|슬픔','…홍련아. 오늘은 바람이 차구나.'),
+ N('방울 속 목소리는 가끔씩만 들렸다. 그리고 들릴 때마다 조금씩 더 차가워져 있었다.'),
+ Q('홍련|슬픔','언니, 괜찮아? 춥지 않아?'),
+ Q('청련|분노','…괜찮아. 다만 가끔… 너를 원망하고 싶어져. 왜 나를 보내 주지 않았니.'),
+ Q('홍련|슬픔','(봉인된 원귀는 한을 품은 채 잠든다. 무진 스님 말이 맞았어.)'),
+ SET(F=>{F.r2='B'}), G('p_end'),
+ L('p_s'),
+ BG('room','night'),
+ N('천도굿 이후 열흘. 홍련의 몸 안에는 두 개의 마음이 살고 있었다.'),
+ SH('hong','c'),
+ Q('홍련','(아침에 일어나면 손이 먼저 방울을 찾는다. 내 버릇이 아니라, 언니 버릇이다.)'),
+ Q('홍련|결의','「홍련아. 오늘은 장터에 가지 말자. 남쪽에서 비린 바람이 불어.」'),
+ Q('홍련|놀람','…언니. 내 입으로 말하지 말라니까. 돌쇠 나리가 무서워한단 말이야.'),
+ Q('홍련|결의','「그 포졸은 겁이 많은 척하는 거야. 생각보다 단단해.」'),
+ SET(F=>{F.r2='S';F.grudge=Math.max(0,F.grudge-5)}), G('p_end'),
+ L('p_c'),
+ BG('temple','night'),
+ N('천도굿이 끝난 밤, 홍련은 귀문 안으로 사라졌다.'),
+ SH('dol','l'), SH('mujin','r'),
+ Q('돌쇠','열흘이오. 열흘째 이 문 앞에서 기다리고 있소.'),
+ Q('무진','안에서 시간은 다르게 흐르오. 소승도 장담할 수 없소.'),
+ N('그날 밤, 소용돌이가 한 번 크게 뒤틀렸다. 그리고 그 안에서 누군가 걸어 나왔다.'),
+ CL, SH('hong','c'), FX('red'),
+ N('홍련이었다. 그러나 눈동자가 핏빛으로 물들어 있었다.'),
+ Q('홍련|결의','…돌쇠 나리. 오래 기다렸죠. 문 안은 생각보다 따뜻했어요.'),
+ Q('돌쇠','아씨… 괜찮은 거요? 눈이…'),
+ Q('홍련|분노','괜찮아요. 아주 괜찮아요. 이제 원한이 어떻게 생겼는지 알아요. 그걸 쓰는 법도.'),
+ Q('무진','(작게) …문 안의 것이 저 아이에게 손을 댔소. 우리가 지켜봐야 하오.'),
+ SET(F=>{F.r2='C';F.tainted=1;F.grudge=Math.max(F.grudge,30)}),
+ L('p_end'),
+ CL, BG('market','day'),
+ N('2부. 돌쇠 — 물 아래의 관아.'),
+ N('사흘 뒤, 고을 관아 앞 저잣거리. 돌쇠는 오랜만에 포졸 옷을 다시 입었다.'),
+ SH('dol','l'), SH('hong','r'),
+ Q('돌쇠','관아에서 나를 부른다는 전갈이 왔소. 쫓던 포졸을 이제 와서 부른다니, 이상하지 않소?'),
+ Q('홍련','사또가 무슨 꿍꿍이인지 들어 봐야죠. 저는 근처에서 기다릴게요.'),
+ IF(F=>F.tainted,'c_note'), G('c_note2'),
+ L('c_note'),
+ Q('홍련|분노','…사또가 허튼소리를 하면, 제가 들어가서 원한이 뭔지 보여 줄게요.'),
+ Q('돌쇠','(아씨 목소리가… 예전 같지 않다.)'),
+ L('c_note2'),
+ CL, BG('room','day'),
+ N('동헌 안채. 사또는 생각보다 수척한 얼굴로 돌쇠를 맞았다.'),
+ SH('dol','l'),
+ Q('사또','강돌쇠. 자네가 소리개 마을 일을 캐고 다닌다는 건 알고 있네.'),
+ Q('사또','자네를 벌하려고 부른 게 아닐세. …부탁이 있어 불렀네.'),
+ N('사또가 떨리는 손으로 서랍에서 작은 복건 하나를 꺼냈다. 아이의 것이었다.'),
+ Q('사또','내 아들 윤재가 사라졌네. 보름 전, 관아 뒤뜰 우물가에서.'),
+ Q('사또','자네가 아이들을 찾았다지. 내 아들도 찾아 주게. 그러면 자네 죄는 없던 일로 하고, 종사관 자리도 주겠네.'),
+ Q('돌쇠','(종사관… 아버지가 마지막으로 지냈던 자리.)'),
+ Q('돌쇠','사또. 소리개 마을 촌장에게 보낸 서찰, 셋을 채우라던 그 서찰. 그건 무엇이었소?'),
+ Q('사또','……그건 내가 쓴 게 아닐세. 아니, 내가 썼지만… 내 뜻이 아니었네.'),
+ Q('사또','더는 묻지 말게. 묻는 순간 자네도 강물에 뜨게 되네. 자네 아비처럼.'),
+ FX('shake'),
+ N('돌쇠의 주먹이 하얗게 쥐어졌다.'),
+ CH({t:'사또의 제안을 받아들인다. 관아 안에서 수사한다.',major:1,f:F=>{F.route2='gov'},go:'r_gov'},
+    {t:'제안을 거절한다. 관아 밖에서 홍련 일행과 따로 움직인다.',major:1,f:F=>{F.route2='free'},go:'r_free'},
+    {t:'받아들이는 척한다. 그리고 오늘 밤 사또를 미행한다.',major:1,secret:'아버지 넋이 남긴 「윤」을 앎',show:F=>F.c_yun,f:F=>{F.route2='double'},go:'r_double'}),
+
+ /* ── 관아 루트 ── */
+ L('r_gov'),
+ Q('돌쇠','…받아들이겠소. 대신 조사에 필요한 건 모두 내 마음대로 보겠소.'),
+ Q('사또','좋네. 관아 문서고도, 내 서재도 열어 주지. 아들만 찾아 주게.'),
+ N('그날 오후, 돌쇠는 사또의 서재에 혼자 남았다.'),
+ CL,
+ INV({intro:'사또의 서재다. 아들의 행방, 혹은 사또가 숨기는 것을 찾아보자.',spots:[
+   {id:'desk',x:200,y:180,r:46,req:1,name:'창가 서안',txt:'서안 아래 칸이 이중으로 되어 있다. 안에 윤재가 쓴 습자 종이. 「아버지가 밤마다 우물에 무언가를 던진다」.'},
+   {id:'cab',x:45,y:210,r:40,name:'문갑',txt:'장부 한 권. 해마다 「공물」 명목으로 한양 윤 대감 댁에 보낸 쌀과 은. 그런데 마지막 장엔 쌀 대신 「아이 셋」이라 적혀 있다.',f:F=>{F.c_ledger=1}},
+   {id:'lamp',x:312,y:268,r:28,name:'등잔',txt:'등잔 기름에 비린내가 섞여 있다. 물고기 기름이 아니라… 우물물 냄새다.',f:F=>{F.c_oil=1}},
+   {id:'herb',x:305,y:140,r:32,name:'걸린 부적',txt:'벽에 거꾸로 붙은 부적. 잡귀를 막는 게 아니라 부르는 부적이다. 누가 이걸 붙였을까.',f:F=>{F.c_rev=1}}],
+   all:F=>{F.allclue6=1}}),
+ SH('dol','l'),
+ Q('돌쇠','(사또가 밤마다 우물에… 아들은 그걸 보고 있었던 거야.)'),
+ IF(F=>F.c_ledger,'gov_l'), G('gov_l2'),
+ L('gov_l'),
+ Q('돌쇠','(아이 셋. 윤 대감 댁으로 보내는 공물. 아버지가 강에 뜨기 전 맡았던 일도… 이것이었을지 몰라.)'),
+ SET(F=>{F.dol++}),
+ L('gov_l2'),
+ N('그때 서재 문이 열렸다. 사또의 수하, 이방이었다.'),
+ Q('이방','포졸 나리, 무엇을 그리 열심히 보시오? 사또께서 서재 물건엔 손대지 말라 하셨소만.'),
+ CH({t:'"사또 허락을 받았소." 태연하게 넘긴다.',go:'gov_bluff'},
+    {t:'이방의 멱살을 잡고 장부에 대해 캐묻는다.',f:F=>{F.grudge+=5;F.ibang=1},go:'gov_press'}),
+ L('gov_bluff'),
+ Q('이방','…그러시겠지요. 밤엔 뒤뜰에 나가지 마시오. 요즘 우물가가 영 흉흉하니.'),
+ N('이방의 웃음이 이상하게 길었다.'),
+ G('gov_end'),
+ L('gov_press'),
+ Q('돌쇠','이 장부, 아이 셋이라 적힌 거. 네가 썼지?'),
+ Q('이방','켁… 나, 나는 받아 적기만 했소! 윤 대감 댁 집사가 시키는 대로!'),
+ Q('이방','도령은… 도령은 우물 아래에 있소. 사또께서 직접… 아니, 사또께서도 몰랐소! 도령이 스스로 내려갔소!'),
+ SET(F=>{F.c_down=1}),
+ L('gov_end'),
+ G('night'),
+
+ /* ── 재야 루트 ── */
+ L('r_free'),
+ Q('돌쇠','거절하겠소. 아버지를 강에 띄운 관아의 종사관 자리, 나는 필요 없소.'),
+ Q('사또','…후회할 걸세.'),
+ N('돌쇠가 동헌을 나서자, 등 뒤에서 대문이 무겁게 닫혔다. 그리고 그날 저녁부터 돌쇠의 이름이 수배 방에 붙었다.'),
+ CL, BG('village','night'),
+ N('밤. 저잣거리 뒷골목의 작은 주막. 홍련, 무진, 그리고 소리개 마을에서 따라온 주모가 모였다.'),
+ SH('dol','l'), SH('hong','r'),
+ Q('주모','도성 주막들끼리는 소문이 빠르다우. 관아 뒤뜰 우물에서 밤마다 아이 울음소리가 난다는 소문이 돈 지 보름이우.'),
+ Q('홍련','사또의 아들 윤재가 사라진 것도 보름 전이에요.'),
+ Q('돌쇠','관아 담을 넘을 수밖에 없겠군. 포졸이 관아 담을 넘다니, 아버지가 아시면 기가 차실 거요.'),
+ IF(F=>F.dolfather,'free_f'), G('free_f2'),
+ L('free_f'),
+ Q('홍련','아버님은 아마 웃으실 거예요. 그날 넋거리에서 본 얼굴, 나리랑 똑같았거든요.'),
+ Q('돌쇠','……'),
+ SET(F=>{F.dol++}),
+ L('free_f2'),
+ CH({t:'주모의 연줄로 관아 노비를 매수해 뒷문을 연다.',f:F=>{F.bribe=1},go:'free_bribe'},
+    {t:'홍련의 부적으로 문지기를 잠재운다.',go:'free_tali'}),
+ L('free_bribe'),
+ Q('주모','관아 부엌 일 하는 덕이가 내 고향 동생이우. 엽전 한 꾸러미면 뒷문 빗장쯤은 잊어버릴 거유.'),
+ G('free_end'),
+ L('free_tali'),
+ N('홍련이 뒷문 문지기를 향해 손끝으로 부적을 그렸다.'),
+ RIT('talisman','free_tw','free_tl'),
+ L('free_tw'),
+ N('문지기가 하품을 하더니 창에 기대어 코를 골기 시작했다.'),
+ G('free_end'),
+ L('free_tl'),
+ N('부적이 엇나가 문지기가 깜짝 놀라 소리를 질렀다. 일행은 담장 그늘로 몸을 던졌다. 한참 뒤에야 겨우 담을 넘을 수 있었다.'),
+ SET(F=>{F.grudge+=5;F.alarm=1}),
+ L('free_end'),
+ G('night'),
+
+ /* ── 이중 루트 (숨은 선택지) ── */
+ L('r_double'),
+ Q('돌쇠','…받아들이겠소. 사또의 아드님이니, 목숨을 걸고 찾아 드리겠소.'),
+ Q('사또','고맙네… 정말 고맙네.'),
+ N('사또가 고개를 숙였다. 그 순간 돌쇠는 보았다. 사또의 목덜미에 찍힌 붉은 인장 모양의 멍. 아버지 서찰의 그 인장과 같은 문양이었다.'),
+ Q('돌쇠','(윤 대감의 인장… 사람 몸에 찍혀 있다고?)'),
+ CL, BG('well','night'),
+ N('그날 밤. 돌쇠는 사또의 뒤를 밟았다. 사또는 등불도 없이 관아 뒤뜰의 낡은 우물로 향했다.'),
+ SH('dol','l'),
+ N('사또가 우물가에 무릎을 꿇었다. 그리고 품에서 꺼낸 무언가를 우물 속으로 떨어뜨렸다. 피 묻은 쌀이었다.'),
+ Q('사또','윤재야… 아비가 잘못했다… 대감 말을 듣는 게 아니었다… 제발 올라오너라…'),
+ Q('???','…아버지… 배가… 고파요… 더 주세요… 사람을…'),
+ FX('red'), FX('shake'),
+ N('우물 속에서 들려온 것은 아이의 목소리였다. 그러나 그 뒤로 겹쳐 들리는 낮은 울림은, 귀문 너머에서 들었던 바로 그 목소리였다.'),
+ Q('돌쇠','(사또는 흑막이 아니다. 그도 인질이었어.)'),
+ SET(F=>{F.c_hostage=1;F.dol++}),
+ G('night2'),
+
+ /* ── 합류: 관아 뒤뜰 우물 ── */
+ L('night'),
+ CL, BG('well','night'),
+ N('자정. 관아 뒤뜰. 아무도 길어 올리지 않는 우물이 쇠사슬에 칭칭 감겨 있었다.'),
+ SH('dol','l'), SH('hong','r'),
+ IF(F=>F.route2==='gov','n_gov'), G('n_gov2'),
+ L('n_gov'),
+ Q('돌쇠','사또 몰래 홍련 아씨를 들였소. 이방 놈 눈만 피하면 되오.'),
+ L('n_gov2'),
+ IF(F=>F.end1==='B','n_b'), G('n_b2'),
+ L('n_b'),
+ N('홍련의 품속 방울이 저 혼자 떨렸다.'),
+ Q('청련|분노','…이 우물, 사람을 너무 많이 먹었어. 홍련아, 조심해. 나처럼 되지 마.'),
+ L('n_b2'),
+ IF(F=>F.end1==='S','n_s'), G('n_s2'),
+ L('n_s'),
+ Q('홍련|결의','「이 아래에 제단이 있어. 오백 년 전에 박아 둔 진의 조각이야.」'),
+ Q('돌쇠','…청련 무당이시오? 아니, 홍련 아씨요? 이제 헷갈리는구려.'),
+ L('n_s2'),
+ L('night2'),
+ N('우물 속에서 아이의 노랫소리가 올라왔다. 자장가였다. 소리개 마을 아이들이 부르던 그 노래.'),
+ N('그리고 쇠사슬이, 안쪽에서부터 하나씩 끊어지기 시작했다.'),
+ FX('shake'),
+ SH('hong','l'), SH('dol','r'),
+ Q('홍련|놀람','물러서요!'),
+ CL, FX('red'),
+ N('우물 밖으로 작은 손이 올라왔다. 고운 비단 소매. 열두 살쯤 된 도령이 우물 벽을 타고 기어 나왔다.'),
+ N('눈동자가 먹물을 부은 듯 새까맸다. 그림자는 몸보다 몇 배나 길게, 뱀처럼 바닥을 기어 다녔다.'),
+ Q('윤재','…찾았다. 바리의 피.'),
+ Q('윤재','무명왕께서 기다리셨다. 너를 데려오면, 나는 다시 아버지 품으로 돌아갈 수 있대.'),
+ IF(F=>F.tainted,'end_c'), G('end_c2'),
+ L('end_c'),
+ Q('홍련|분노','…데려가 봐. 나도 이제 원한이 뭔지 알거든.'),
+ N('홍련의 그림자도 길게 늘어났다. 두 그림자가 바닥 위에서 서로를 휘감았다. 돌쇠는 처음으로, 홍련이 무섭다고 생각했다.'),
+ L('end_c2'),
+ N('달이 구름 뒤로 숨었다. 관아 뒤뜰에 어둠이 내려앉았다.'),
+ N('2부 1화 「사또의 아들」 끝.'),
+ END];
+
 /* ===================== 시즌 구성 ===================== */
 const PARTS=[
  {no:1,n:'홍련',sub:'붉은 연꽃의 굿',who:'hong',syn:'신을 버린 무당이 원귀가 된 언니를 마주한다.',eps:[
@@ -1074,7 +1291,7 @@ const PARTS=[
   {t:'원귀 청련',syn:'안개 낀 산길에서 언니와 마주친다.',s:E4},
   {t:'천도굿',syn:'보름달 아래, 언니를 보낼 것인가 붙잡을 것인가.',s:E5}]},
  {no:2,n:'돌쇠',sub:'물 아래의 관아',who:'dol',syn:'귀신을 믿지 않던 포졸이 관아의 우물 아래를 파헤친다.',eps:[
-  {t:'사또의 아들',syn:'유일하게 돌아오지 않은 아이는 사또의 외아들이었다.'},
+  {t:'사또의 아들',syn:'유일하게 돌아오지 않은 아이는 사또의 외아들이었다. 1부 엔딩에 따라 시작이 달라진다.',s:E6},
   {t:'물귀신의 증언',syn:'우물마다 이어진 물길, 물귀신들이 기억하는 백 년 전의 밤.'},
   {t:'관아의 우물',syn:'관아 뒤뜰, 아무도 길어 올리지 않는 우물 아래의 제단.'},
   {t:'빙의된 도령',syn:'사또의 아들 몸에 든 것은 문 아래 잠든 것의 사도였다.'},
@@ -1098,7 +1315,7 @@ const PARTS=[
   {t:'무명왕의 목소리',syn:'봉인 아래 이무기가 눈을 뜬다. 오방진의 존재가 밝혀진다.'},
   {t:'연꽃과 여우',syn:'지금까지의 선택에 따라 첫 문을 닫는 방식이 갈린다.'}]},
 ];
-PARTS[0].eps[3].lockMsg=PARTS[0].eps[4].lockMsg='정식 오픈 때 공개'; PARTS[0].eps[3].s=null; PARTS[0].eps[4].s=null;
+PARTS[0].eps[3].lockMsg=PARTS[0].eps[4].lockMsg='정식 오픈 때 공개'; PARTS[0].eps[3].s=null; PARTS[0].eps[4].s=null; PARTS[1].eps[0].s=null;
 const EPS=[]; PARTS.forEach(p=>p.eps.forEach((e,i)=>{ e.id=p.no+'-'+(i+1); e.part=p; e.no=i+1; EPS.push(e); }));
 const playable=e=>!!e.s;
 EPS.forEach(e=>{ if(!e.s) return; e.lb={}; e.s.forEach((st,i)=>{ if(st.k==='lb') e.lb[st.n]=i; }); });
@@ -1162,12 +1379,20 @@ function vList(){
      return `<button class="ep${st==='lock'||st==='soon'?' lock':''}" data-a="ep" data-v="${e.id}"><span class="no">${e.no}</span><span class="tx"><div>${e.t}</div><div class="small muted">${e.syn}</div></span>${tag}</button>`; }).join('')}
   </div>`).join('')}</div>`;
 }
+function routeStats(e){ const pts=[]; e.s.forEach((st,i)=>{ if(st.k==='ch') pts.push({i,o:st.o,seen:(S.seen||{})[e.id+':'+i]||[]}); }); const tot=pts.reduce((a,p)=>a+p.o.length,0), got=pts.reduce((a,p)=>a+p.o.filter(o=>p.seen.includes(o.t)).length,0); return {pts,tot,got}; }
+function routeMap(){
+  return EPS.filter(e=>e.s).map(e=>{ const {pts,tot,got}=routeStats(e); const reached=pts.filter(p=>p.seen.length);
+    return `<details class="rmap"${got?' open':''}><summary><span>${e.part.no}부 ${e.no}화 「${e.t}」</span><span class="muted small">${got}/${tot}</span></summary>
+     ${reached.length?reached.map((p,k)=>`<div class="rpt"><div class="small muted">${p.o.some(o=>o.major)?'<b class="mj">큰 갈림길</b>':'갈림길'}</div><ul>${p.o.map(o=>p.seen.includes(o.t)?`<li class="on">${o.t}</li>`:o.secret?`<li class="sec">숨은 선택지 · ${o.secret}</li>`:'<li class="unk">? ? ?</li>').join('')}</ul></div>`).join(''):'<div class="small muted">아직 지나온 갈림길이 없어요.</div>'}
+     ${pts.length>reached.length?`<div class="small muted">아직 닿지 못한 갈림길 ${pts.length-reached.length}개</div>`:''}</details>`; }).join('');
+}
 function vBook(){
   const E=Object.entries(ENDINGS), C=Object.entries(CGS);
   return `<div class="sec"><h2>도감</h2>
   ${BETA?'':`<div class="panel"><div class="row sp"><h3>1부 엔딩</h3><span class="small muted">${S.endings.length}/${E.length}</span></div>
    ${E.map(([k,v])=>`<div class="endl"><span>${S.endings.includes(k)?v.n:'??? '+k}</span><span class="muted small">${S.endings.includes(k)?v.d:'아직 보지 못한 엔딩'}</span></div>`).join('')}
    <button class="btn sm" data-a="restart">1부를 처음부터 다시 읽기 (다른 선택 해 보기)</button></div>`}
+  <div class="panel" id="routes"><div class="row sp"><h3>갈림길 지도</h3><span class="small muted">${EPS.filter(e=>e.s).reduce((a,e)=>a+routeStats(e).got,0)}/${EPS.filter(e=>e.s).reduce((a,e)=>a+routeStats(e).tot,0)}</span></div><div class="small muted">지나온 선택은 밝게, 가 보지 않은 길은 물음표로 남아요. 금빛은 조건을 채우면 열리는 숨은 선택지예요.</div>${routeMap()}</div>
   <div class="panel"><div class="row sp"><h3>장면 수집</h3><span class="small muted">${S.cgs.length}/${C.length}</span></div>
    <div class="grid2">${C.map(([k,v])=>`<div class="cg${S.cgs.includes(k)?'':' lock'}"><canvas data-cg="${k}" width="240" height="300"></canvas><div>${S.cgs.includes(k)?v.n:'???'}</div></div>`).join('')}</div></div>
   <div class="panel"><h3>인물</h3>${Object.entries(CAST).map(([k,c])=>`<div class="person"><div class="por" style="background-image:url(${PORF[k]||PORF[k+':미소']||SPR[c.img]});${PORF[k]||PORF[k+':미소']?'background-size:cover;background-position:center 30%':''}"></div><div><b>${c.n}</b><p class="small" style="margin:4px 0 0;line-height:1.6">${c.d}</p></div></div>`).join('')}</div></div>`;
@@ -1206,7 +1431,7 @@ function step(){
       case 'lb': break;
       case 'fx': R.fx[s.e]=1; break;
       case 'cg': if(!S.cgs.includes(s.id)){ S.cgs.push(s.id); toast('장면 수집 · '+CGS[s.id].n); } break;
-      case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; break;
+      case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; S.F['end'+R.e.part.no]=s.id; break;
       case 'n': case 's': showLine(s); return;
       case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
@@ -1233,6 +1458,7 @@ function pickChoice(idx){
   const o=R.choice[idx];
   if(o.prem&&!BETA){ if(S.stones<o.prem){ toast(`혼석이 ${o.prem} 필요해요. 상점에서 충전할 수 있어요`); return; } S.stones-=o.prem; toast(`혼석 -${o.prem} · 특별 선택지`); }
   R.log.push(`<span style="color:#9fd1c0">▶ ${o.t}</span>`);
+  if(R.snap){ if(!S.seen) S.seen={}; const k=R.e.id+':'+R.snap.i; S.seen[k]=S.seen[k]||[]; if(!S.seen[k].includes(o.t)) S.seen[k].push(o.t); }
   if(o.f) o.f(S.F);
   R.picked=o.t; R.choice=null; if(o.go) R.i=R.e.lb[o.go]; save(); step();
 }
@@ -1271,12 +1497,12 @@ function drawUI(){
       else nextBtn=`<div class="small" style="color:#d8cdb6">다음 화 「${nx.t}」는 ${left(S.wait[nx.id]-Date.now())} 후 무료로 열려요.</div><button class="btn pri" data-a="keyNext" data-v="${nx.id}">열쇠 1개로 바로 보기 (보유 ${S.keys})</button><button class="btn sm" data-a="skipWait" data-v="${nx.id}">테스트: 기다림 끝내기</button>`;
     } else if(BETA&&R.e.id==='1-3'){ nextBtn=`<div style="color:#f4ecd8;line-height:1.7;font-size:14px">베타는 여기까지예요.<br>다음 화 「${nx.t}」에서 홍련은 마침내 언니와 마주칩니다.</div>${FORM_URL?`<a class="btn pri" href="${FORM_URL}" target="_blank" rel="noopener" style="text-decoration:none">3분 설문 참여하기</a>`:''}<button class="btn" data-a="restart">처음부터 다른 선택으로 읽기</button>`; }
     else if(nx) nextBtn=`<div class="small" style="color:#d8cdb6">다음 이야기 「${nx.part.n} · ${nx.part.sub}」는 준비 중이에요.</div>`;
-    ui.innerHTML=`<div class="endcard"><div class="small" style="color:#d8cdb6">${R.e.part.no}부 ${R.e.no}화</div><h2>「${R.e.t}」 끝</h2>${en?`<span class="en">엔딩 ${en.n}</span><div class="small" style="color:#d8cdb6">${en.d}</div>`:''}${nextBtn}<button class="btn" data-a="exit">이야기 목록</button></div>`;
+    ui.innerHTML=`<div class="endcard"><div class="small" style="color:#d8cdb6">${R.e.part.no}부 ${R.e.no}화</div><h2>「${R.e.t}」 끝</h2>${en?`<span class="en">엔딩 ${en.n}</span><div class="small" style="color:#d8cdb6">${en.d}</div>`:''}${(()=>{const st=routeStats(R.e); return `<div class="small" style="color:#d8cdb6">이 화의 갈림길 ${st.got}/${st.tot} 발견</div>`;})()}${nextBtn}<div class="row" style="justify-content:center"><button class="btn sm" data-a="routes">갈림길 지도</button><button class="btn sm" data-a="exit">이야기 목록</button></div></div>`;
     return;
   }
   if(R.mode){ drawMode(); return; }
   if(R.choice){
-    ui.innerHTML=`<div class="choices">${R.choice.map((o,i)=>`<button class="opt${o.prem||o.secret?' prem':''}" data-a="pick" data-v="${i}"><span>${o.secret?`<span class="lbl">숨은 선택지 · ${o.secret}</span>`:o.prem?'<span class="lbl">특별 선택지</span>':''}${o.t}</span>${o.prem?`<span class="cost">베타 무료</span>`:''}</button>`).join('')}</div>`;
+    ui.innerHTML=`<div class="choices">${R.choice.some(o=>o.major)?'<div class="major">큰 갈림길 · 이 선택으로 이후 이야기가 크게 달라져요</div>':''}${R.choice.map((o,i)=>`<button class="opt${o.prem||o.secret?' prem':''}" data-a="pick" data-v="${i}"><span>${o.secret?`<span class="lbl">숨은 선택지 · ${o.secret}</span>`:o.prem?'<span class="lbl">특별 선택지</span>':''}${o.t}</span>${o.prem?`<span class="cost">베타 무료</span>`:''}</button>`).join('')}</div>`;
     return;
   }
   if(!R.line){ ui.innerHTML=''; return; }
@@ -1521,6 +1747,7 @@ function act(a,v){
     case 'noop': return;
     case 'hint': invHint(); return;
     case 'undo': undoAsk(); return;
+    case 'routes': clearInterval(typer); clearTimeout(autoT); R=null; UI.tab='book'; render(); setTimeout(()=>{ const el=document.getElementById('routes'); if(el) el.scrollIntoView({behavior:'smooth'}); },50); return;
     case 'undoGo': undoGo(); return;
     case 'invdone': invDone(); return;
     case 'ep': {
