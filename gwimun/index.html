@@ -220,6 +220,13 @@ h3{font-size:16px;font-weight:700;margin:0}
 .tsub{font-size:15px;font-weight:700;letter-spacing:.3em;color:#efe4cb;text-shadow:0 0 8px #000,0 2px 10px #000;animation:tin 1.4s .3s ease-out backwards}
 .thook{font-size:17px;font-weight:700;color:#f3ecdd;line-height:1.6;animation:tin 1.4s .5s ease-out backwards;text-shadow:0 2px 10px #000}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}}
+.inkwipe{position:fixed;inset:0;z-index:90;pointer-events:all;background:radial-gradient(circle at 50% 55%,#050404 0%,#050404 30%,rgba(5,4,4,0) 31%);background-size:100% 100%;animation:inkin 1.7s cubic-bezier(.6,0,.3,1) forwards}
+.inkwipe::after{content:'';position:absolute;inset:-20%;background:radial-gradient(ellipse 30% 22% at 30% 40%,#050404 60%,transparent 62%),radial-gradient(ellipse 26% 30% at 70% 62%,#050404 60%,transparent 62%),radial-gradient(ellipse 22% 18% at 55% 25%,#050404 60%,transparent 62%);filter:blur(6px);animation:inkblot 1.7s ease-in forwards;opacity:0}
+@keyframes inkin{0%{background:radial-gradient(circle at 50% 55%,rgba(5,4,4,.95) 0%,rgba(5,4,4,0) 2%)}55%{background:radial-gradient(circle at 50% 55%,rgba(5,4,4,.98) 0%,rgba(5,4,4,.9) 40%,rgba(5,4,4,0) 70%)}100%{background:#050404}}
+@keyframes inkblot{0%{opacity:0;transform:scale(.4)}60%{opacity:1}100%{opacity:1;transform:scale(1.6)}}
+.inkwipe.out{animation:inkout 1.2s ease-out forwards}
+.inkwipe.out::after{animation:none;opacity:0}
+@keyframes inkout{from{background:#050404;opacity:1}to{background:#050404;opacity:0}}
 .sndhint{font-size:11.5px;letter-spacing:.15em;font-weight:400;color:#cfc3a8;opacity:.85}
 .ttap{margin-top:18px;font-size:15px;font-weight:700;letter-spacing:.3em;color:#f3ecdd;text-shadow:0 0 8px #000;animation:blink 1.6s ease-in-out infinite,tin 1s 1s backwards}
 .tcard{width:100%;margin-top:10px;background:linear-gradient(180deg,rgba(26,23,19,.92),rgba(14,12,10,.95));border:1px solid rgba(201,162,74,.45);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px #000c;cursor:default;animation:tin .5s ease-out backwards}
@@ -1667,11 +1674,11 @@ function step(){
       case 'if': if(s.f(S.F)) R.i=R.e.lb[s.n]; break;
       case 'go': R.i=R.e.lb[s.n]; break;
       case 'lb': break;
-      case 'fx': R.fx[s.e]=1; if(s.e==='red') sfx('whisper'); break;
+      case 'fx': R.fx[s.e]=1; break;
       case 'cg': if(!S.cgs.includes(s.id)){ S.cgs.push(s.id); toast('장면 수집 · '+CGS[s.id].n); } break;
       case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; S.F['end'+R.e.part.no]=s.id; break;
       case 'remember': S.F.forgot=(S.F.forgot||[]).filter(x=>x!==s.n); break;
-      case 'forget': { sfx('forget'); S.F.forgot=[...(S.F.forgot||[]).filter(x=>x!==s.n),s.n]; R.log=R.log.map(l=>l.split('<b>'+s.n+'</b>').join('<b style="color:#8a7f6a">???</b>').split(s.n).join('<s style="opacity:.5">　　</s>')); R.fx.flash=1; toast('이름 하나가 지워졌다'); break; }
+      case 'forget': { S.F.forgot=[...(S.F.forgot||[]).filter(x=>x!==s.n),s.n]; R.log=R.log.map(l=>l.split('<b>'+s.n+'</b>').join('<b style="color:#8a7f6a">???</b>').split(s.n).join('<s style="opacity:.5">　　</s>')); R.fx.flash=1; toast('이름 하나가 지워졌다'); break; }
       case 'n': case 's': showLine(s); return;
       case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
@@ -1819,22 +1826,49 @@ function clueSay(ev){
 
 /* ===================== 소리: 배경음악 · 효과음 ===================== */
 const BGM_URL=n=>'bgm/'+n+'.mp3';
-const AU={on:true,cur:null,el:null,vol:.55,unlocked:false};
+const AU={on:true,cur:null,el:null,vol:.3,unlocked:false};
 try{ const v=localStorage.getItem(KEY+'-snd'); if(v==='0') AU.on=false; }catch(e){}
-const SFXV={bell:.7,page:.25,pick:.55,clue:.6,scare:.9,whisper:.7,drip:.6,brush:.35,ritok:.8,ritfail:.7,ach:.55,forget:.8};
+const SFXV={bell:.7,page:.75,pick:.55,clue:.6,scare:.9,whisper:.7,drip:.6,brush:.35,ritok:.8,ritfail:.7,ach:.55,forget:.8};
 const sfxPool={};
 function sfx(k){ if(!AU.on||typeof SFXDATA==='undefined'||!SFXDATA[k]) return; try{ const a=new Audio(SFXDATA[k]); a.volume=SFXV[k]??.6; a.play().catch(()=>{}); }catch(e){} }
 let brushT=0; function sfxBrush(){ const t=performance.now(); if(t-brushT>420){ brushT=t; sfx('brush'); } }
-function fadeTo(a,to,ms,done){ const from=a.volume, t0=performance.now(); const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); a.volume=Math.max(0,Math.min(1,from+(to-from)*p)); if(p<1) requestAnimationFrame(tick); else if(done) done(); }; tick(); }
+function fadeTo(a,to,ms,done){ if(a._fade) cancelAnimationFrame(a._fade); const from=a.volume, t0=performance.now(); const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); a.volume=Math.max(0,Math.min(1,from+(to-from)*p)); if(p<1) a._fade=requestAnimationFrame(tick); else { a._fade=0; if(done) done(); } }; tick(); }
+/* 곡마다 Audio를 하나씩 두고, 바꿀 때는 이전 곡을 끝까지 줄인 뒤 멈추고(위치 기억) 다음 곡을 이어서 키운다 */
+const TRK={}, PRIO=[1,4,5,8];
+let bgmWant=null, bgmTimer=0, bgmSince=0;
+const XF=5; // 곡 끝에서 처음으로 돌아갈 때 5초 동안 겹쳐 자연스럽게 이어 붙임
+function mkTrk(n){ const a=new Audio(BGM_URL(n)); a.loop=false; a.preload='auto'; a.volume=0;
+  a.addEventListener('timeupdate',()=>{ if(a._xf||!a.duration||a.duration-a.currentTime>XF||TRK[n]!==a) return; a._xf=1;
+    const b=mkTrk(n); TRK[n]=b; if(AU.cur===n){ AU.el=b; b.play().then(()=>fadeTo(b,AU.vol,XF*1000)).catch(()=>{}); } fadeTo(a,0,XF*1000,()=>a.pause()); });
+  return a; }
+function trk(n){ if(!TRK[n]) TRK[n]=mkTrk(n); return TRK[n]; }
+function bgmSwitch(n){
+  if(AU.cur===n) return;
+  const old=AU.cur&&TRK[AU.cur]; AU.cur=n; bgmSince=performance.now();
+  const start=()=>{ if(AU.cur!==n||!n) return; const a=trk(n); if(n===8||n===4) { try{ a.currentTime=0; }catch(e){} }
+    a.volume=0; AU.el=a; a.play().then(()=>{ if(AU.cur===n) fadeTo(a,AU.vol,n===4?400:1800); else a.pause(); }).catch(()=>{ if(AU.cur===n){ AU.cur=null; AU.el=null; AU.blocked=true; } }); };
+  if(old&&!old.paused){ fadeTo(old,0,n===4?300:900,()=>{ old.pause(); setTimeout(start,n===4?0:250); }); } else start();
+}
 function bgm(n){
   if(!AU.unlocked||!AU.on){ AU.want=n; return; }
-  if(AU.cur===n) return; AU.cur=n;
-  const old=AU.el; if(old) fadeTo(old,0,1200,()=>{ old.pause(); });
-  if(!n){ AU.el=null; return; }
-  const a=new Audio(BGM_URL(n)); a.loop=true; a.volume=0; a.preload='auto'; AU.el=a; a.play().then(()=>fadeTo(a,AU.vol,1500)).catch(()=>{ if(AU.el===a){ AU.cur=null; AU.el=null; AU.blocked=true; } });
+  if(n===bgmWant&&(AU.cur===n||bgmTimer)) return;
+  bgmWant=n; clearTimeout(bgmTimer); bgmTimer=0;
+  if(!n){ const o=AU.cur&&TRK[AU.cur]; AU.cur=null; if(o) fadeTo(o,0,500,()=>o.pause()); return; }
+  // 공포·퇴마·엔딩·타이틀은 바로, 나머지는 잠깐 지켜본 뒤(같은 분위기가 이어질 때만) 바꾼다
+  const held=performance.now()-bgmSince, prioNow=PRIO.includes(n), prioOld=PRIO.includes(AU.cur);
+  const wait=(!AU.cur||prioNow||prioOld)?0:Math.max(2500,15000-held);
+  if(!wait) bgmSwitch(n); else bgmTimer=setTimeout(()=>{ bgmTimer=0; if(bgmWant===n) bgmSwitch(n); },wait);
+}
+/* 타이틀 → 이야기: 먹물이 번지며 화면이 잠기고, 타이틀 곡은 천천히 사라졌다가 이야기 곡이 새로 피어난다 */
+function storyGo(fn){
+  if(document.querySelector('.inkwipe')) return;
+  sfx('bell'); bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0;
+  const o=AU.cur&&TRK[AU.cur]; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,1600,()=>o.pause());
+  const d=document.createElement('div'); d.className='inkwipe'; document.body.appendChild(d);
+  setTimeout(()=>{ fn(); d.classList.add('out'); setTimeout(()=>d.remove(),1300); },1700);
 }
 function unlockAudio(){ if(AU.unlocked&&!AU.blocked&&AU.el) return; AU.unlocked=true; AU.blocked=false; updateBgm(); }
-function setSound(on){ AU.on=on; try{ localStorage.setItem(KEY+'-snd',on?'1':'0'); }catch(e){} if(!on){ const o=AU.el; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,400,()=>o.pause()); } else updateBgm(); }
+function setSound(on){ AU.on=on; try{ localStorage.setItem(KEY+'-snd',on?'1':'0'); }catch(e){} if(!on){ bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; const o=AU.cur&&TRK[AU.cur]; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,400,()=>o.pause()); } else updateBgm(); }
 const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
@@ -1843,9 +1877,9 @@ function bgmFor(){
   if(M&&M.k==='rit') return 5;
   if(M&&M.k==='inv') return M.scare?4:3;
   const ch=R.chars.filter(c=>c.ta>0).map(c=>c.c);
-  if(ch.includes('cheong')) return R.cheongCalm?6:4;
+  if(ch.includes('cheong')) return R.cheongCalm?6:3;
   if(R.e.id==='1-5'&&R.bg.b==='temple') return 7;
-  if(['yunjae','wisp','mul','dok','gumi','momghost'].some(k=>ch.includes(k))) return 4;
+  if(['yunjae','wisp','dok','gumi'].some(k=>ch.includes(k))) return 4;
   if(DAYBG.includes(R.bg.b)&&R.bg.m!=='night'&&R.bg.m!=='dream') return 2;
   return 3;
 }
@@ -2147,11 +2181,11 @@ function act(a,v){
     case 'gLogin': gLogin(v==='reuse'); return;
     case 'guest': setAcc({mode:'guest'}); load(); TITLE.step='menu'; break;
     case 'tSwitch': TITLE.step='login'; break;
-    case 'tContinue': if(S.resume){ startEp(S.resume.ep,S.resume); return; } UI.tab='home'; break;
+    case 'tContinue': storyGo(()=>{ if(S.resume) startEp(S.resume.ep,S.resume); else { UI.tab='home'; render(); } }); return;
     case 'tNew':
       if(hasProg(S)){ openModal(`<h3>새로하기</h3><p class="small" style="margin:0;line-height:1.6">지금까지의 기록(진행한 화, 엔딩, 업적, 장면 수집)이 모두 지워지고 1부 1화부터 다시 시작해요.<br><span class="muted">${progLabel(S)}까지 진행했어요.</span></p><button class="btn pri" data-a="tNewGo">기록을 지우고 새로하기</button><button class="btn" data-a="close">취소</button>`); return; }
-      S=defState(); save(); startEp('1-1',null); return;
-    case 'tNewGo': closeModal(); S=defState(); save(); startEp('1-1',null); return;
+      storyGo(()=>{ S=defState(); save(); startEp('1-1',null); }); return;
+    case 'tNewGo': closeModal(); storyGo(()=>{ S=defState(); save(); startEp('1-1',null); }); return;
     case 'account': openModal(`<h3>계정</h3><p class="small" style="margin:0;line-height:1.6">${ACC&&ACC.mode==='google'?`${ACC.name||'구글 계정'}으로 로그인했어요. 기록이 클라우드에 저장돼요.`:'게스트로 읽고 있어요. 기록은 이 기기에만 저장돼요. Google 계정으로 시작하면 다른 기기에서도 이어서 읽을 수 있어요.'}</p><button class="btn pri" data-a="toTitle">타이틀 화면으로</button>${ACC&&ACC.mode==='google'?'<button class="btn" data-a="logout">로그아웃</button>':''}<button class="btn" data-a="close">닫기</button>`); return;
     case 'toTitle': closeModal(); if(R){ clearInterval(typer); clearTimeout(autoT); R=null; } UI.tab='title'; TITLE.step='login'; break;
     case 'logout': closeModal(); if(FB) FB.auth.signOut(); setAcc(null); load(); UI.tab='title'; TITLE.step='login'; break;
