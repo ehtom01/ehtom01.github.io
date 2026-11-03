@@ -193,13 +193,13 @@ h3{font-size:16px;font-weight:700;margin:0}
 .title .ash{position:absolute;top:-10px;width:3px;height:3px;border-radius:50%;background:#e9d9b8;opacity:.0;animation:ash linear infinite;pointer-events:none}
 @keyframes ash{10%{opacity:.7}90%{opacity:.4}to{transform:translate(40px,105vh);opacity:0}}
 .title .in{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,480px);padding:0 24px calc(36px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
-.tlogo{display:flex;align-items:center;gap:14px;animation:tin 1.4s ease-out backwards}
+.tlogo{position:relative;display:flex;justify-content:center;animation:tin 1.4s ease-out backwards}
 .tlogo h1{margin:0;font-family:"Noto Serif KR",serif;font-weight:900;font-size:clamp(72px,22vw,108px);line-height:1;color:#f3ecdd;text-shadow:0 0 30px #000,0 4px 24px #000}
-.tseal{width:52px;height:52px;background:linear-gradient(180deg,#c3332a,#9b2019);border-radius:5px;transform:rotate(-5deg);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:900;font-size:19px;color:#f8eedd;box-shadow:inset 0 1px 0 #ffffff40,0 4px 12px #000a}
-.tsub{font-size:13px;letter-spacing:.35em;color:#cfc3a8;animation:tin 1.4s .3s ease-out backwards}
-.thook{font-size:16px;color:#e9dfc9;line-height:1.6;animation:tin 1.4s .5s ease-out backwards;text-shadow:0 2px 10px #000}
+.tseal{position:absolute;left:100%;top:50%;margin:-26px 0 0 12px;width:52px;height:52px;background:linear-gradient(180deg,#c3332a,#9b2019);border-radius:5px;transform:rotate(-5deg);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:900;font-size:19px;color:#f8eedd;box-shadow:inset 0 1px 0 #ffffff40,0 4px 12px #000a}
+.tsub{font-size:15px;font-weight:700;letter-spacing:.3em;color:#efe4cb;text-shadow:0 0 8px #000,0 2px 10px #000;animation:tin 1.4s .3s ease-out backwards}
+.thook{font-size:17px;font-weight:700;color:#f3ecdd;line-height:1.6;animation:tin 1.4s .5s ease-out backwards;text-shadow:0 2px 10px #000}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}}
-.ttap{margin-top:18px;font-size:14px;letter-spacing:.3em;color:#e9dfc9;animation:blink 1.6s ease-in-out infinite,tin 1s 1s backwards}
+.ttap{margin-top:18px;font-size:15px;font-weight:700;letter-spacing:.3em;color:#f3ecdd;text-shadow:0 0 8px #000;animation:blink 1.6s ease-in-out infinite,tin 1s 1s backwards}
 .tcard{width:100%;margin-top:10px;background:linear-gradient(180deg,rgba(26,23,19,.92),rgba(14,12,10,.95));border:1px solid rgba(201,162,74,.45);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px #000c;cursor:default;animation:tin .5s ease-out backwards}
 .tcard h3{font-size:15px;color:#e9dfc9;letter-spacing:.1em}
 .tcard .btn{width:100%;padding:13px 14px;font-size:15px}
