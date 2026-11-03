@@ -499,7 +499,7 @@ const E1=[
  Q('태석','…농담이오?'),
  Q('홍련|결의','이제부터 제가 하는 말은 전부 농담이 아니에요. 익숙해지세요.'),
  L('e1dawn'),
- CL, CUT({sub:'이튿날 새벽',sub2:'소리개 마을 가는 산길'}), BG('road','dawn'),
+ CL, CUT({sub:'이튿날 새벽',sub2:'소리개 마을 가는 산길',bgm:6}), BG('road','dawn'),
  N('두 사람은 소리개 마을로 가는 산길에 올랐다.'),
  N('하루 반나절 거리. 장승 몇 개를 지나면 고개가 나오고, 고개를 넘으면 마을이다.'),
  SH('hong','l'), SH('dol','r'),
@@ -1688,7 +1688,7 @@ function startEp(id,resume){
   const e=epById(id);
   if(!resume){ S.snap[id]=JSON.parse(JSON.stringify(S.F)); if(S.cleared.includes(id)) S.F=JSON.parse(JSON.stringify(S.snap[id])); }
   R={e,i:resume?resume.i:0,bg:resume?resume.bg:{b:'paper',m:'day'},chars:resume?resume.chars.map(c=>({...c,x:posX(c.p),a:1,ta:1})):[],line:null,full:'',shown:0,choice:null,ended:null,log:[],fx:{shake:0,red:0,flash:0,dip:0},speaker:null};
-  if(resume) e.s.forEach((x,i)=>{ if(i>=R.i) return; if(x.k==='cut'&&x.bgm) R.bgmOv=x.bgm; if(x.k==='bg'&&(x.m==='night'||x.m==='dream')) R.bgmOv=0; });
+  if(resume){ let keep=0; e.s.forEach((x,i)=>{ if(i>=R.i) return; if(x.k==='cut'&&x.bgm){ R.bgmOv=x.bgm; keep=1; } if(x.k==='bg'){ if(keep) keep=0; else R.bgmOv=0; } }); }
   UI.tab='read'; render(); step();
 }
 function posX(p){ return {l:92,c:180,r:268}[p]; }
@@ -1697,7 +1697,7 @@ function step(){
   while(R.i<st.length){
     const s=st[R.i++];
     switch(s.k){
-      case 'bg': if(R.bg&&R.bg.b!=='paper'&&(R.bg.b!==s.b||R.bg.m!==s.m)) R.fx.dip=1; R.bg={b:s.b,m:s.m}; if(s.m==='night'||s.m==='dream') R.bgmOv=0; if(s.b==='well'||s.b==='gwell') sfx('drip'); break;
+      case 'bg': if(R.bg&&R.bg.b!=='paper'&&(R.bg.b!==s.b||R.bg.m!==s.m)) R.fx.dip=1; R.bg={b:s.b,m:s.m}; if(R.bgmKeep) R.bgmKeep=0; else R.bgmOv=0; // 컷신이 정한 곡은 그 장면까지만 if(s.b==='well'||s.b==='gwell') sfx('drip'); break;
       case 'show': { if(s.c==='cheong') R.cheongCalm=cheongAhead(R.i); let c=R.chars.find(x=>x.c===s.c); if(c){ c.p=s.p; c.ta=1; } else R.chars.push({c:s.c,p:s.p,x:posX(s.p)+(s.p==='l'?-30:s.p==='r'?30:0),a:0,ta:1}); break; }
       case 'hide': { const c=R.chars.find(x=>x.c===s.c); if(c) c.ta=0; break; }
       case 'clear': R.chars.forEach(c=>c.ta=0); break;
@@ -1813,7 +1813,7 @@ function playCut(s){
   const T=t=>new Promise(r=>setTimeout(r,t));
   const wait=()=>{ ready=true; nx.classList.add('on'); };
   const finish=()=>{ if(fin) return; fin=true; R.cut=0; ov.classList.add('done');
-    if(s.bgm){ R.bgmOv=s.bgm; bgmWant=s.bgm; clearTimeout(bgmTimer); bgmTimer=0; if(AU.unlocked&&AU.on) bgmSwitch(s.bgm); } else if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2200);
+    if(s.bgm){ R.bgmOv=s.bgm; R.bgmKeep=1; bgmWant=s.bgm; clearTimeout(bgmTimer); bgmTimer=0; if(AU.unlocked&&AU.on) bgmSwitch(s.bgm); } else if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2200);
     const c=$('#cv'); if(c){ c.classList.remove('reveal'); void c.offsetWidth; c.classList.add('reveal'); }
     setTimeout(()=>ov.remove(),1500); step(); };
   ov.addEventListener('click',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on'); sfx('page');
@@ -1966,6 +1966,7 @@ const EP_BGM={'1-1':3}; // 이 화는 처음부터 끝까지 한 곡으로 이�
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
   if(R.mode&&R.mode.k==='inv'&&R.mode.scare) return 4; // 깜짝 이벤트는 화 고정곡보다 우선
+  if(R.mode&&R.mode.k==='rit') return 5;
   { const on=R.chars.filter(c=>c.ta>0).map(c=>c.c); if((on.includes('cheong')&&!R.cheongCalm)||['yunjae','wisp','dok','gumi'].some(k=>on.includes(k))) return 4; } // 귀신이 나오면 공포곡
   if(R.bgmOv) return R.bgmOv;
   if(EP_BGM[R.e.id]) return EP_BGM[R.e.id];
