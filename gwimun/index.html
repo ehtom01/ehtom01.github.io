@@ -109,6 +109,22 @@ h3{font-size:16px;font-weight:700;margin:0}
 .log b{color:var(--gold);font-weight:700}
 #modal{position:fixed;inset:0;background:#000b;z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;width:100%;max-width:480px;max-height:88%;overflow:auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.inv,.rit{position:absolute;inset:0;cursor:crosshair}
+.rit{cursor:default}
+.inv-top{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(20,17,14,.82);border:1px solid rgba(233,221,184,.25);border-radius:6px;padding:6px 10px;font-size:12.5px;color:#f1e9d6;pointer-events:none}
+.inv-top b{font-family:serif;color:#e0483a;margin-right:4px}
+.inv-c{color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+.inv-msg{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(20,17,14,.88);border:1px solid rgba(233,221,184,.25);border-radius:8px;padding:12px 14px;color:#f1e9d6;font-size:14.5px;line-height:1.6;display:flex;flex-direction:column;gap:10px;cursor:default}
+.inv-msg b{color:var(--gold)}
+.mark{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:#fff6ea;text-shadow:0 1px 3px #000;pointer-events:none;white-space:nowrap}
+.mark i{width:22px;height:22px;border-radius:50%;border:2.5px solid #e0483a;box-shadow:0 0 8px #e0483a99}
+.pulse{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #f3d27a;box-shadow:0 0 18px #f3d27a;animation:pz 1.1s ease-in-out infinite;pointer-events:none}
+@keyframes pz{50%{transform:translate(-50%,-50%) scale(1.18);opacity:.55}}
+.miss{position:absolute;width:30px;height:30px;transform:translate(-50%,-50%);border-radius:50%;border:2px solid rgba(255,255,255,.6);animation:mz .5s ease-out forwards;pointer-events:none}
+@keyframes mz{to{transform:translate(-50%,-50%) scale(1.8);opacity:0}}
+#ritc{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.ritres{position:absolute;left:0;right:0;top:44%;text-align:center;font-family:var(--f-disp);font-size:56px;color:#e0483a;text-shadow:0 2px 12px #000;opacity:0;transform:scale(.8);transition:all .3s;pointer-events:none}
+.ritres.show{opacity:1;transform:scale(1)} .ritres.fail{color:#d8cdb6;font-size:38px}
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--raise);border:1px solid var(--accent);border-radius:8px;padding:8px 14px;z-index:60;font-size:13px;max-width:90%;text-align:center}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -145,7 +161,7 @@ const IMG={}; Object.entries(SPR).forEach(([k,src])=>{ const im=new Image(); im.
 /* ===================== 대본 도구 ===================== */
 const N=t=>({k:'n',t}), Q=(w,t)=>({k:'s',w,t}), SH=(c,p='c')=>({k:'show',c,p}), HD=c=>({k:'hide',c}), CL={k:'clear'},
   BG=(b,m='day')=>({k:'bg',b,m}), CH=(...o)=>({k:'ch',o}), L=n=>({k:'lb',n}), G=n=>({k:'go',n}), IF=(f,n)=>({k:'if',f,n}),
-  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'};
+  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
 
 const ENDINGS={
   A:{n:'A. 연꽃이 진 밤',d:'언니의 한을 풀어 저승으로 보냈다.'},
@@ -248,7 +264,15 @@ const E2=[
  Q('홍련','(작게) 살려고 배운 거예요.'),
  L('well'),
  CL, BG('well','night'),
- N('그러나 밤이 되자, 두 사람은 결국 우물 앞에 서 있었다. 우물가엔 이미 누군가 있었다.'),
+ N('그러나 밤이 되자, 두 사람은 결국 우물 앞에 서 있었다.'),
+ Q('돌쇠','마지막 아이가 사라진 곳이오. 뭔가 남아 있을지 모르니 살펴봅시다.'),
+ INV({intro:'우물가를 살펴보자. 수상한 곳을 눌러 보세요.',spots:[
+   {id:'well',x:185,y:212,r:42,req:1,name:'우물 속',txt:'칠흑같이 어둡다. 아주 깊은 곳에서… 누군가 훌쩍이는 소리가 들린다.'},
+   {id:'thread',x:72,y:108,r:30,name:'붉은 끈',txt:'버드나무 가지에 붉은 실이 걸려 있다. 연꽃 무늬… 언니 방울 끈의 실이다.',f:F=>{F.c_thread=1}},
+   {id:'pail',x:285,y:288,r:32,name:'두레박',txt:'두레박줄이 끊어져 있다. 닳아서가 아니라, 칼로 자른 자국이다.',f:F=>{F.c_rope=1}},
+   {id:'foot',x:62,y:200,r:28,name:'장승 발치',txt:'작은 맨발 자국이 장승 앞에서 우물 쪽으로 이어져 있다. 아이의 발이다.',f:F=>{F.c_foot=1}}],
+   all:F=>{F.allclue2=1}}),
+ N('그때 등 뒤에서 낮은 염불 소리가 들렸다. 우물가엔 이미 누군가 있었다.'),
  SH('hong','l'), SH('mujin','r'),
  N('잿빛 장삼에 붉은 가사를 걸친 승려가 우물을 향해 낮게 염불하고 있었다.'),
  Q('무진','나무아미타불… 물러가시오. 여기는 산 자의 땅이오.'),
@@ -260,15 +284,26 @@ const E2=[
  Q('무진','물러서시오!'),
  Q('아이','살려 줘… 언니… 살려 줘…'),
  Q('홍련|놀람','우물 안에 아이가 있어요!'),
- CH({t:'품속의 언니 방울을 흔든다.',f:F=>{F.bell=1;F.grudge+=10},go:'bell'},
+ CH({t:'부적을 꺼내 물귀신을 묶는다.',f:F=>{F.bell=1},go:'bell'},
     {t:'무진에게 맡기고 아이를 끌어올린다.',f:F=>{F.mujin++},go:'trust'},
     {t:'물귀신의 한을 들어 본다.',prem:20,f:F=>{F.truth2=1},go:'listen'}),
  L('bell'),
- N('홍련의 손이 저절로 움직였다. 품속의 방울이 미친 듯이 울렸다.'),
+ N('홍련은 품속에서 누런 부적 한 장을 꺼냈다. 어머니가 가르쳐 준 획이 손끝에 되살아났다.'),
+ RIT('talisman','bellwin','belllose'),
+ L('bellwin'),
  FX('flash'),
  Q('홍련|결의','물러가라! 여긴 네 자리가 아니다!'),
- N('물귀신이 비명을 지르며 우물 속으로 곤두박질쳤다. 홍련의 코에서 붉은 피가 한 줄기 흘렀다.'),
- Q('무진','…삼 년을 눌러 둔 신기를 한 번에 쓰다니. 몸이 버티지 못하오.'),
+ N('부적이 붉게 타오르며 물귀신의 이마에 달라붙었다. 물귀신이 비명을 지르며 우물 속으로 곤두박질쳤다.'),
+ SET(F=>{F.grudge+=3;F.sealwin=1}),
+ Q('무진','…삼 년을 눌러 둔 신기가 아직 살아 있구려. 그대는 무당이오.'),
+ G('save'),
+ L('belllose'),
+ FX('red'), FX('shake'),
+ N('획이 어긋났다. 부적은 힘없이 젖어 떨어졌고, 차가운 손이 홍련의 발목을 움켜쥐었다.'),
+ SET(F=>{F.grudge+=15;F.mujin++}),
+ Q('무진','옴 마니 반메 훔!'),
+ N('무진의 석장이 땅을 울리자 물귀신이 손을 놓고 우물 속으로 물러났다.'),
+ Q('무진','부적은 마음이 흐트러지면 종이 한 장에 불과하오.'),
  G('save'),
  L('trust'),
  Q('홍련','스님, 부탁해요!'),
@@ -290,6 +325,12 @@ const E2=[
  Q('돌쇠','하얀 언니라니?'),
  Q('아이','머리가 길고… 붉은 연꽃 방울을 단…'),
  Q('홍련|슬픔','…언니.'),
+ IF(F=>F.c_thread,'thr'), G('thr2'),
+ L('thr'), Q('홍련|결의','(버드나무에 걸려 있던 붉은 실… 역시 언니였어.)'),
+ L('thr2'),
+ IF(F=>F.c_rope,'rope'), G('rope2'),
+ L('rope'), Q('돌쇠','두레박줄은 칼로 잘려 있었소. 누군가 아이를 다시 못 꺼내게 하려 했던 거요.'),
+ L('rope2'),
  Q('홍련|결의','(언니는 아이들을 잡아간 게 아니야. 숨긴 거야. 무엇으로부터?)'),
  END];
 
@@ -301,7 +342,13 @@ const E3=[
  Q('홍련|슬픔','삼 년 만이네… 어머니가 쓰시던 무구가 그대로야.'),
  N('오방색 천이 바람에 나부꼈다. 바래고 찢어졌지만 아직 색이 남아 있었다.'),
  Q('홍련|슬픔','(어머니는 언니에게 신을 물려주셨고, 나는 도망쳤지. 무당 딸이라 손가락질받는 게 싫어서.)'),
- N('제단 아래, 기름 먹인 보자기에 싸인 책 한 권이 있었다. 청련의 일기였다.'),
+ INV({intro:'어머니의 신당을 살펴보자. 언니가 남긴 것이 있을지도 모른다.',spots:[
+   {id:'altar',x:222,y:232,r:36,req:1,name:'돌제단',txt:'제단 아래, 기름 먹인 보자기에 싸인 책 한 권. 언니의 일기다.'},
+   {id:'bell',x:306,y:214,r:28,name:'녹슨 방울',txt:'어머니가 굿할 때 쓰던 방울. 녹슬었는데도 흔들자 맑은 소리가 난다.',f:F=>{F.c_bell=1}},
+   {id:'cloth',x:165,y:165,r:34,name:'오방색 천',txt:'천 한 폭이 길게 찢겨 있다. 칼이 아니라… 짐승의 발톱 자국이다.',f:F=>{F.c_claw=1}},
+   {id:'jang',x:64,y:212,r:26,name:'장승',txt:'장승 발치에 하얀 털 한 줌이 엉켜 있다. 개털보다 길고 부드럽다. 여우 털이다.',f:F=>{F.c_fox=1}}],
+   all:F=>{F.allclue3=1}}),
+ N('홍련은 보자기를 풀었다. 언니의 반듯한 글씨가 눈에 들어왔다.'),
  N('「보름마다 폐사찰의 귀문이 넓어진다. 문 너머에 아홉 개의 꼬리가 보였다.」'),
  N('「관아에 알렸으나 아무도 믿지 않는다. 오직 한 사람, 그분만이 돕겠다고 했다.」'),
  Q('홍련|놀람','그분…?'),
@@ -326,11 +373,16 @@ const E3=[
  HD('beom'),
  L('page'),
  N('일기의 마지막 장은 풀칠한 듯 단단히 붙어 있었다.'),
+ IF(F=>F.c_fox&&F.c_claw,'lastfree'),
  CH({t:'방울로 봉인을 풀고 마지막 장을 읽는다.',prem:20,f:F=>{F.truth3=1},go:'last'},
     {t:'억지로 떼지 않고 덮어 둔다.',go:'close'}),
+ L('lastfree'),
+ N('발톱 자국, 그리고 여우 털. 홍련은 여우 털을 붙은 장 사이에 대 보았다. 종이가 스르르 떨어졌다. 여우의 기운으로 봉해 둔 것이었다.'),
+ SET(F=>{F.truth3=1}), G('lastread'),
  L('last'),
  FX('flash'),
  N('방울이 울리자 종이가 스스로 떨어졌다. 흐린 먹으로 쓴 마지막 몇 줄.'),
+ L('lastread'),
  N('「그분을 믿은 것이 실수였다. 그분은 여우에게 아이들의 간을 바치기로 약속했다.」'),
  N('「나는 아이들을 숨기고 귀문으로 간다. 홍련아, 너만은 오지 마라.」'),
  Q('홍련|슬픔','그분이… 누구야, 언니. 이름을 써 줘야지…'),
@@ -630,6 +682,8 @@ function step(){
       case 'n': case 's': showLine(s); return;
       case 'ch': R.choice=s.o; R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
+      case 'inv': R.mode={k:'inv',...s,found:[],msg:null,hint:null,miss:null}; R.line=null; R.chars.forEach(c=>c.ta=0); drawUI(); return;
+      case 'rit': R.mode={k:'rit',kind:s.kind,win:s.win,lose:s.lose}; R.line=null; drawUI(); startRitual(); return;
     }
   }
   finishEp();
@@ -643,7 +697,7 @@ function showLine(s){
   typer=setInterval(()=>{ R.shown+=1; const el=$('#txt'); if(el) el.textContent=R.full.slice(0,R.shown); if(R.shown>=R.full.length){ clearInterval(typer); typer=null; drawUI(); if(S.auto) autoT=setTimeout(advance,1200+R.full.length*35); } },28);
 }
 function advance(){
-  if(!R||R.choice||R.ended) return;
+  if(!R||R.choice||R.ended||R.mode) return;
   if(typer){ clearInterval(typer); typer=null; R.shown=R.full.length; drawUI(); if(S.auto){ clearTimeout(autoT); autoT=setTimeout(advance,1500); } return; }
   clearTimeout(autoT); step();
 }
@@ -685,6 +739,7 @@ function drawUI(){
     ui.innerHTML=`<div class="endcard"><div class="small" style="color:#d8cdb6">${R.e.part.no}부 ${R.e.no}화</div><h2>「${R.e.t}」 끝</h2>${en?`<span class="en">엔딩 ${en.n}</span><div class="small" style="color:#d8cdb6">${en.d}</div>`:''}${nextBtn}<button class="btn" data-a="exit">이야기 목록</button></div>`;
     return;
   }
+  if(R.mode){ drawMode(); return; }
   if(R.choice){
     ui.innerHTML=`<div class="choices">${R.choice.map((o,i)=>`<button class="opt${o.prem?' prem':''}" data-a="pick" data-v="${i}"><span>${o.prem?'<span class="lbl">특별 선택지</span>':''}${o.t}</span>${o.prem?`<span class="cost">베타 무료</span>`:''}</button>`).join('')}</div>`;
     return;
@@ -694,6 +749,92 @@ function drawUI(){
   const pk=sp&&porFor(s.w); const human=ck==='cheong'&&exprOf(s.w); ui.innerHTML=`<div class="box${sp?'':' narr'}${pk?' hasp':''}">${pk?`<span class="por${human?'':cls}" style="background-image:url(${pk})"></span>`:''}${sp?`<span class="nameplate${cls}">${who}</span>`:''}<span id="txt">${R.full.slice(0,R.shown)}</span>${typer?'':'<span class="next">▼</span>'}</div>`;
 }
 function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
+
+
+/* ===================== 조사 · 퇴마 ===================== */
+const isBeta=()=>typeof BETA!=='undefined'&&BETA;
+const MISS=['별다른 것은 없다.','흙과 먼지뿐이다.','아무것도 느껴지지 않는다.','바람 소리만 스친다.'];
+function drawMode(){
+  const ui=$('#ui'), M=R.mode;
+  if(M.k==='inv'){
+    const reqLeft=M.spots.some(s=>s.req&&!M.found.includes(s.id)), all=M.found.length===M.spots.length;
+    const pc=(v,d)=>(v/d*100).toFixed(2)+'%';
+    const h=M.hint&&M.spots.find(s=>s.id===M.hint);
+    ui.innerHTML=`<div class="inv"><div class="inv-top"><span class="inv-t"><b>察</b> 살펴볼 곳을 눌러 보세요</span><span class="inv-c">단서 ${M.found.length}/${M.spots.length}</span></div>
+     ${M.spots.filter(s=>M.found.includes(s.id)).map(s=>`<span class="mark" style="left:${pc(s.x,W)};top:${pc(s.y,H)}"><i></i>${s.name}</span>`).join('')}
+     ${h?`<span class="pulse" style="left:${pc(h.x,W)};top:${pc(h.y,H)};width:${pc(h.r*2,W)}"></span>`:''}
+     ${M.miss?`<span class="miss" style="left:${pc(M.miss.x,W)};top:${pc(M.miss.y,H)}"></span>`:''}
+     <div class="inv-msg"><div class="inv-txt">${M.msg||M.intro}</div><div class="row" style="justify-content:flex-end;gap:6px">
+      ${all?'':`<button class="btn sm" data-a="hint">힌트${isBeta()?'':' · 혼석 5'}</button>`}
+      <button class="btn sm${reqLeft?'':' pri'}" data-a="invdone" ${reqLeft?'disabled':''}>${reqLeft?'중요한 단서를 더 찾아야 해요':all?'조사 마치기':'이대로 넘어가기'}</button></div></div></div>`;
+    return;
+  }
+  if(M.k==='rit'&&!M.built){
+    M.built=1;
+    ui.innerHTML=`<div class="rit" data-a="noop"><div class="inv-top"><span class="inv-t"><b>符</b> 붉은 획을 손가락으로 따라 그리세요</span><span class="inv-c" id="ritT"></span></div><canvas id="ritc"></canvas><div class="ritres" id="ritRes"></div></div>`;
+  }
+}
+function invTap(e){
+  const M=R&&R.mode; if(!M||M.k!=='inv') return;
+  const r=$('#stage').getBoundingClientRect(), x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H;
+  let best=null,bd=1e9; M.spots.forEach(s=>{ const d=Math.hypot(s.x-x,s.y-y); if(d<s.r&&d<bd){bd=d;best=s;} });
+  M.miss=null;
+  if(best){
+    if(!M.found.includes(best.id)){ M.found.push(best.id); if(best.f) best.f(S.F); R.log.push(`<span style="color:#c9a24a">察 ${best.name}</span> ${best.txt}`); if(M.hint===best.id) M.hint=null; R.fx.flash=.35;
+      if(M.found.length===M.spots.length){ if(M.all) M.all(S.F); toast('모든 단서를 찾았다'); } save(); }
+    M.msg=`<b>${best.name}</b> ${best.txt}`;
+  } else { M.miss={x,y}; M.msg=MISS[Math.floor(Math.random()*MISS.length)]; }
+  drawMode();
+}
+function invHint(){
+  const M=R.mode; const left=M.spots.filter(s=>!M.found.includes(s.id)).sort((a,b)=>(b.req||0)-(a.req||0)); if(!left.length) return;
+  if(!isBeta()){ if(S.stones<5){ toast('혼석이 5 필요해요'); return; } S.stones-=5; save(); }
+  M.hint=left[0].id; M.msg='희미한 기운이 느껴진다. 빛나는 곳을 눌러 보자.'; drawMode();
+}
+function invDone(){ const M=R.mode; R.log.push(`▶ 조사 마침 · 단서 ${M.found.length}/${M.spots.length}`); R.mode=null; save(); step(); }
+
+const TALI=[[[134,104],[226,104]],[[180,86],[180,330]],[[140,168],[220,196],[140,228],[220,262]],(()=>{const p=[];for(let a=0;a<=Math.PI*2+.01;a+=.3)p.push([180+Math.cos(a-Math.PI/2)*20,306+Math.sin(a-Math.PI/2)*20]);return p;})()];
+function sampleStrokes(strokes){ const out=[]; strokes.forEach((st,si)=>{ for(let i=0;i<st.length-1;i++){ const [x1,y1]=st[i],[x2,y2]=st[i+1], L=Math.hypot(x2-x1,y2-y1), n=Math.max(1,Math.round(L/5)); for(let k=0;k<n;k++) out.push({x:x1+(x2-x1)*k/n,y:y1+(y2-y1)*k/n,s:si,c:0}); } out.push({x:st[st.length-1][0],y:st[st.length-1][1],s:si,c:0}); }); return out; }
+function startRitual(){
+  const M=R.mode, cv2=$('#ritc'); if(!cv2) return;
+  const ctx2=cv2.getContext('2d'), T0=performance.now(), LIM=20000;
+  const smp=sampleStrokes(TALI), ink=[]; let cur=null, done=false, total=0, off=0;
+  const toStage=e=>{ const r=cv2.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]; };
+  const cover=()=>smp.filter(p=>p.c).length/smp.length;
+  const addPt=pt=>{ cur.push(pt); total++; let md=1e9; for(const p of smp){ const d=Math.hypot(p.x-pt[0],p.y-pt[1]); if(d<md) md=d; if(d<17) p.c=1; } if(md>26) off++; };
+  cv2.addEventListener('pointerdown',e=>{ if(done) return; e.preventDefault(); cv2.setPointerCapture(e.pointerId); cur=[]; ink.push(cur); addPt(toStage(e)); });
+  cv2.addEventListener('pointermove',e=>{ if(done||!cur) return; e.preventDefault(); addPt(toStage(e)); });
+  const up=()=>{ cur=null; if(!done&&cover()>=.85) finish(true); };
+  cv2.addEventListener('pointerup',up); cv2.addEventListener('pointercancel',up);
+  function finish(ok){
+    if(done) return; done=true; ok=ok&&(total<30||off/total<.45);
+    const res=$('#ritRes'); if(res){ res.textContent=ok?'봉인!':'획이 흐트러졌다…'; res.className='ritres show'+(ok?'':' fail'); }
+    R.log.push(ok?'<span style="color:#e0483a">符 부적 봉인 성공</span>':'<span style="color:#9b968b">符 부적 실패</span>');
+    setTimeout(()=>{ if(!R||R.mode!==M) return; R.mode=null; R.i=R.e.lb[ok?M.win:M.lose]; step(); },1200);
+  }
+  function loop(now){
+    if(!R||R.mode!==M||!document.body.contains(cv2)) return;
+    requestAnimationFrame(loop);
+    const w=cv2.clientWidth, dpr=Math.min(2,devicePixelRatio||1); if(!w) return;
+    if(cv2.width!==Math.round(w*dpr)){ cv2.width=Math.round(w*dpr); cv2.height=Math.round(w*dpr*H/W); }
+    const c=ctx2, sc=cv2.width/W; c.setTransform(sc,0,0,sc,0,0); c.clearRect(0,0,W,H);
+    c.fillStyle='rgba(12,9,7,.5)'; c.fillRect(0,0,W,H);
+    c.save(); c.shadowColor='rgba(0,0,0,.6)'; c.shadowBlur=14; c.fillStyle='#e8d6a2'; c.fillRect(112,62,136,300); c.restore();
+    c.strokeStyle='#a8281e'; c.lineWidth=3; c.strokeRect(118,68,124,288); c.lineWidth=1; c.strokeRect(122,72,116,280);
+    c.lineCap='round'; c.lineJoin='round';
+    TALI.forEach(st=>{ c.strokeStyle='rgba(168,40,30,.28)'; c.lineWidth=11; c.beginPath(); st.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y)); c.stroke(); });
+    TALI.forEach(st=>{ c.fillStyle='rgba(168,40,30,.55)'; c.beginPath(); c.arc(st[0][0],st[0][1],5,0,7); c.fill(); });
+    smp.forEach(p=>{ if(p.c){ c.fillStyle='#8e1b14'; c.beginPath(); c.arc(p.x,p.y,5.5,0,7); c.fill(); } });
+    c.strokeStyle='rgba(28,22,16,.82)'; c.lineWidth=5; ink.forEach(st=>{ if(st.length<2) return; c.beginPath(); st.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y)); c.stroke(); });
+    const left=Math.max(0,LIM-(now-T0)), cv=cover();
+    c.fillStyle='rgba(0,0,0,.45)'; c.fillRect(112,372,136,8); c.fillStyle=left<4000?'#e0483a':'#c9a24a'; c.fillRect(112,372,136*left/LIM,8);
+    c.fillStyle='rgba(0,0,0,.45)'; c.fillRect(112,386,136,8); c.fillStyle='#8e1b14'; c.fillRect(112,386,136*Math.min(1,cv/.85),8);
+    c.font='11px "Gowun Batang",serif'; c.fillStyle='#e9ddb8'; c.textAlign='left'; c.fillText('남은 시간',30,380); c.fillText('봉인',30,394);
+    const t=$('#ritT'); if(t) t.textContent=Math.ceil(left/1000)+'초';
+    if(!done&&left<=0) finish(cv>=.85);
+  }
+  requestAnimationFrame(loop);
+}
 
 /* ===================== 배경 그리기 ===================== */
 const W=360,H=450;
@@ -836,6 +977,9 @@ function act(a,v){
     case 'auto': S.auto=!S.auto; save(); { const b=document.querySelector('[data-a="auto"]'); if(b){ b.textContent='자동 '+(S.auto?'켬':'끔'); b.classList.toggle('on',S.auto); } } if(S.auto&&R&&!typer&&R.line) autoT=setTimeout(advance,800); return;
     case 'log': openModal(`<h3>대사 기록</h3><div class="log">${R.log.map(l=>`<div>${l}</div>`).join('')}</div><button class="btn" data-a="close">닫기</button>`); return;
     case 'close': closeModal(); return;
+    case 'noop': return;
+    case 'hint': invHint(); return;
+    case 'invdone': invDone(); return;
     case 'ep': {
       const e=epById(v), st=epState(e);
       if(st==='done'||st==='open') { if(S.resume&&S.resume.ep===v&&st==='open') startEp(v,S.resume); else startEp(v,null); return; }
@@ -853,7 +997,7 @@ function act(a,v){
   }
   render();
 }
-document.addEventListener('click',e=>{ const t=e.target.closest('[data-a]'); if(!t) return; e.stopPropagation(); act(t.dataset.a,t.dataset.v); });
+document.addEventListener('click',e=>{ if(e.target.closest('.inv')&&!e.target.closest('button')){ e.stopPropagation(); invTap(e); return; } const t=e.target.closest('[data-a]'); if(!t) return; e.stopPropagation(); act(t.dataset.a,t.dataset.v); });
 document.addEventListener('keydown',e=>{ if(UI.tab==='read'&&(e.key===' '||e.key==='Enter')&&!e.target.closest('button')){ e.preventDefault(); advance(); } });
 render();
 </script>
