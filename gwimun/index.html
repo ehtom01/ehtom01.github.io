@@ -168,7 +168,7 @@ const ENDINGS={
   A:{n:'A. 연꽃이 진 밤',d:'언니의 한을 풀어 저승으로 보냈다.'},
   N:{n:'N. 반쪽의 천도',d:'한이 다 풀리지 않아 언니가 귀문 안으로 사라졌다.'},
   B:{n:'B. 방울 속의 언니',d:'언니를 부적에 봉인해 곁에 두었다.'},
-  S:{n:'S. 두 개의 목소리',d:'언니의 혼을 몸에 받아 진짜 무당이 되었다. (특별 선택지)'},
+  S:{n:'S. 두 개의 목소리',d:'언니의 혼을 몸에 받아 진짜 무당이 되었다. (숨은 엔딩)'},
   C:{n:'C. 붉은 안개',d:'쌓인 원한에 홀려 홍련마저 귀문으로 걸어 들어갔다.'},
 };
 const CGS={
@@ -237,7 +237,7 @@ const E1=[
  N('짤랑. 방울 소리가 또 울렸다. 이번에는 끈을 쥔 손바닥 안에서였다.'),
  CH({t:'언니의 결백을 밝히겠다. 같이 가겠다.',f:F=>{F.dol++},go:'go'},
     {t:'무당 일은 버렸다. 다른 사람을 찾으라고 한다.',go:'refuse'},
-    {t:'방울 끈을 쥐고 언니의 기운을 읽는다.',prem:20,f:F=>{F.truth1=1},go:'read'}),
+    {t:'방울 끈을 쥐고 언니의 기운을 읽는다.',secret:'막례 할멈을 챙긴 마음',show:F=>F.kind,f:F=>{F.truth1=1},go:'read'}),
  L('read'),
  FX('red'),
  N('끈을 쥐는 순간, 차가운 물이 손목을 타고 흘렀다. 아니, 물이 아니라 누군가의 손이었다.'),
@@ -462,7 +462,7 @@ const E2=[
  Q('홍련|놀람','우물 안에 아이가 있어요!'),
  CH({t:'부적을 꺼내 물귀신을 묶는다.',f:F=>{F.bell=1},go:'bell'},
     {t:'무진에게 맡기고 아이를 끌어올린다.',f:F=>{F.mujin++},go:'trust'},
-    {t:'물귀신의 한을 들어 본다.',prem:20,f:F=>{F.truth2=1},go:'listen'}),
+    {t:'물귀신의 한을 들어 본다.',secret:'우물 단서를 모두 찾았거나 도깨비불을 봉인함',show:F=>F.allclue2||F.sealwin1,f:F=>{F.truth2=1},go:'listen'}),
  L('bell'),
  N('홍련은 품속에서 누런 부적 한 장을 꺼냈다. 어머니가 가르쳐 준 획이 손끝에 되살아났다.'),
  RIT('talisman','bellwin','belllose'),
@@ -642,7 +642,7 @@ const E3=[
  SH('hong','c'),
  N('일기의 마지막 장은 풀칠한 듯 단단히 붙어 있었다.'),
  IF(F=>F.c_fox&&F.c_claw,'lastfree'),
- CH({t:'방울로 봉인을 풀고 마지막 장을 읽는다.',prem:20,f:F=>{F.truth3=1},go:'last'},
+ CH({t:'방울로 봉인을 풀고 마지막 장을 읽는다.',secret:'녹슨 방울을 찾음',show:F=>F.c_bell,f:F=>{F.truth3=1},go:'last'},
     {t:'억지로 떼지 않고 덮어 둔다.',go:'close'}),
  L('lastfree'),
  N('발톱 자국, 그리고 여우 털. 홍련은 여우 털을 붙은 장 사이에 대 보았다. 종이가 스르르 떨어졌다. 여우의 기운으로 봉해 둔 것이었다.'),
@@ -1000,7 +1000,7 @@ const E5=[
  IF(F=>F.grudge>=40,'bad'),
  CH({t:'언니의 한을 풀어 저승으로 보내 준다. (천도)',go:'send'},
     {t:'언니를 부적에 봉인해 곁에 둔다. (봉인)',go:'seal'},
-    {t:'언니의 혼을 내 몸에 받는다. (신내림)',prem:30,go:'possess'}),
+    {t:'언니의 혼을 내 몸에 받는다. (신내림)',secret:'언니와의 약속 · 어머니의 손 · 맑은 마음',show:F=>F.vow&&F.mom&&F.grudge<20,go:'possess'}),
  L('send'),
  IF(F=>F.talk&&(F.truth1||F.truth2||F.truth3||F.mujinHelp||F.lotus),'sendok'),
  Q('홍련|슬픔','언니. 이제 가도 돼. 아이들은 내가 지킬게.'),
@@ -1151,7 +1151,7 @@ function vHome(){
    <div class="small" style="color:#e9ddb8">베타 테스트 · 1부 1~3화 무료 공개</div><h1>귀문 <b>퇴마단</b></h1>
    <div class="small" style="color:#d8cdb6">조선 말, 도성 밖 폐사찰에 귀문이 열렸다. 무당, 포졸, 퇴마승, 사냥꾼. 네 사람의 이야기가 보름달 아래 하나로 모인다.</div></div></div>
   ${r?`<button class="btn pri" data-a="resume">이어 읽기 · ${r.part.no}부 ${r.no}화 「${r.t}」</button>`:`<button class="btn pri" data-a="play" data-v="1-1">처음부터 읽기</button>`}
-  <div class="panel"><h3>이렇게 즐겨요</h3><div class="small muted" style="line-height:1.7">대사를 누르면 이야기가 넘어가요. 선택지에 따라 인물의 마음, 쌓이는 원한, 알게 되는 진실이 달라지고, 부마다 여러 엔딩으로 갈라져요. 베타에서는 특별 선택지를 포함해 모두 무료예요. 한 화에 10분 남짓, 세 화를 이어서 읽으면 30분쯤 걸려요.${FORM_URL?' 다 읽으신 뒤 짧은 설문에 답해 주시면 정식판에 큰 도움이 돼요.':''}</div></div>
+  <div class="panel"><h3>이렇게 즐겨요</h3><div class="small muted" style="line-height:1.7">대사를 누르면 이야기가 넘어가요. 선택지에 따라 인물의 마음, 쌓이는 원한, 알게 되는 진실이 달라지고, 부마다 여러 엔딩으로 갈라져요. 모든 선택지는 무료예요. 조사와 퇴마를 잘해 내거나 인물에게 마음을 쓰면, 금빛 숨은 선택지가 열려요. 베타에서는 선택 되돌리기까지 모두 무료예요. 조사와 퇴마를 잘해 내면 금빛 숨은 선택지가 열려요. 한 화에 10분 남짓, 세 화를 이어서 읽으면 30분쯤 걸려요.${FORM_URL?' 다 읽으신 뒤 짧은 설문에 답해 주시면 정식판에 큰 도움이 돼요.':''}</div></div>
   <div class="panel"><div class="row sp"><h3>시즌 구성</h3><span class="small muted">${PARTS.length}부 · ${EPS.length}화</span></div>
    ${PARTS.map(p=>`<div class="row sp small"><span>${p.no<5?p.no+'부':'종장'} · ${p.n} 「${p.sub}」</span><span class="muted">${p.eps.length}화</span></div>`).join('')}</div></div>`;
 }
@@ -1177,7 +1177,7 @@ function vShop(){
   <div class="panel"><h3>열쇠</h3><div class="small muted">다음 화는 앞 화를 다 읽고 3시간이 지나면 무료로 열려요. 기다리기 싫다면 열쇠 1개로 바로 볼 수 있어요.</div>
    <div class="prod"><div><div>열쇠 3개</div><div class="small muted">혼석 30</div></div><button class="btn sm pri" data-a="buyKey" data-v="3">구매</button></div>
    <div class="prod"><div><div>열쇠 10개 (1개 덤)</div><div class="small muted">혼석 90</div></div><button class="btn sm pri" data-a="buyKey" data-v="10">구매</button></div></div>
-  <div class="panel"><h3>혼석</h3><div class="small muted">특별 선택지(숨은 진실, 숨은 엔딩)와 열쇠에 써요. 프로토타입이라 실제 결제 없이 바로 지급돼요.</div>
+  <div class="panel"><h3>혼석</h3><div class="small muted">열쇠, 조사 힌트, 선택 되돌리기에 써요. 선택지는 모두 무료예요. 프로토타입이라 실제 결제 없이 바로 지급돼요.</div>
    ${[[1100,100],[5500,550],[11000,1150],[33000,3600]].map(([w,s])=>`<div class="prod"><div><div>혼석 ${fmt(s)}</div><div class="small muted">${fmt(w)}원</div></div><button class="btn sm" data-a="buyStone" data-v="${s}">테스트 지급</button></div>`).join('')}</div>
   <div class="panel"><h3>준비 중인 상품</h3><div class="small muted" style="line-height:1.7">· 인물 외전 묶음 (홍련 어린 시절, 돌쇠의 첫 사건 등)<br>· 의상 (홍련 신복, 무진 금란가사)<br>· 장면 그림 고화질 소장</div></div></div>`;
 }
@@ -1208,7 +1208,7 @@ function step(){
       case 'cg': if(!S.cgs.includes(s.id)){ S.cgs.push(s.id); toast('장면 수집 · '+CGS[s.id].n); } break;
       case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; break;
       case 'n': case 's': showLine(s); return;
-      case 'ch': R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
+      case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
       case 'inv': R.mode={k:'inv',...s,found:[],msg:null,hint:null,miss:null}; R.line=null; R.chars.forEach(c=>c.ta=0); drawUI(); return;
       case 'rit': R.mode={k:'rit',kind:s.kind,win:s.win,lose:s.lose}; R.line=null; drawUI(); startRitual(); return;
@@ -1234,8 +1234,14 @@ function pickChoice(idx){
   if(o.prem&&!BETA){ if(S.stones<o.prem){ toast(`혼석이 ${o.prem} 필요해요. 상점에서 충전할 수 있어요`); return; } S.stones-=o.prem; toast(`혼석 -${o.prem} · 특별 선택지`); }
   R.log.push(`<span style="color:#9fd1c0">▶ ${o.t}</span>`);
   if(o.f) o.f(S.F);
-  R.choice=null; if(o.go) R.i=R.e.lb[o.go]; save(); step();
+  R.picked=o.t; R.choice=null; if(o.go) R.i=R.e.lb[o.go]; save(); step();
 }
+const UNDO_COST=10;
+function undoAsk(){ if(!R||!R.snap||!R.picked) return; const free=isBeta(); openModal(`<h3>선택 되돌리기</h3><p class="small" style="margin:0;line-height:1.6">방금 고른 선택지로 돌아가 다시 고를 수 있어요.<br><span class="muted">「${R.picked}」</span></p><button class="btn pri" data-a="undoGo">${free?'되돌리기 (베타 무료)':'되돌리기 · 혼석 '+UNDO_COST}</button><button class="btn" data-a="close">닫기</button>`); }
+function undoGo(){ const sn=R.snap; if(!sn) return; if(!isBeta()){ if(S.stones<UNDO_COST){ toast('혼석이 부족해요. 상점에서 충전할 수 있어요'); return; } S.stones-=UNDO_COST; }
+  closeModal(); clearInterval(typer); typer=null; clearTimeout(autoT);
+  S.F=JSON.parse(JSON.stringify(sn.F)); R.bg={...sn.bg}; R.chars=sn.chars.map(c=>({...c,x:posX(c.p),a:1,ta:1})); R.log.length=sn.log; R.log.push('<span class="muted">↺ 선택을 되돌렸다</span>');
+  R.ended=null; R.ending=null; R.mode=null; R.line=null; R.picked=null; R.i=sn.i; save(); drawUI(); step(); }
 function finishEp(){
   const e=R.e; clearInterval(typer); clearTimeout(autoT);
   if(!S.cleared.includes(e.id)) S.cleared.push(e.id);
@@ -1252,10 +1258,11 @@ function unlockEp(id,how){
 function vRead(){
   return `<div class="rtop"><button class="btn sm" data-a="exit">← 목록</button><span class="ti">${R.e.part.no}부 ${R.e.no}화 「${R.e.t}」</span><span class="chip" style="color:#e0483a;border-color:#e0483a">베타</span></div>
   <div class="stage" id="stage" data-a="adv"><canvas id="cv" aria-label="이야기 장면"></canvas><div id="ui"></div></div>
-  <div class="rbar"><button class="btn sm" data-a="log">대사 기록</button><button class="btn sm${S.auto?' on':''}" data-a="auto">자동 ${S.auto?'켬':'끔'}</button></div>`;
+  <div class="rbar"><button class="btn sm" data-a="undo" id="undoBtn" hidden>↺ 선택 되돌리기</button><button class="btn sm" data-a="log">대사 기록</button><button class="btn sm${S.auto?' on':''}" data-a="auto">자동 ${S.auto?'켬':'끔'}</button></div>`;
 }
 function drawUI(){
   const ui=$('#ui'); if(!ui) return;
+  const ub=$('#undoBtn'); if(ub) ub.hidden=!(R&&R.snap&&R.picked&&!R.choice);
   if(R.ended){
     const nx=R.ended.nx, st=nx&&epState(nx), en=R.ending&&ENDINGS[R.ending];
     let nextBtn='';
@@ -1269,7 +1276,7 @@ function drawUI(){
   }
   if(R.mode){ drawMode(); return; }
   if(R.choice){
-    ui.innerHTML=`<div class="choices">${R.choice.map((o,i)=>`<button class="opt${o.prem?' prem':''}" data-a="pick" data-v="${i}"><span>${o.prem?'<span class="lbl">특별 선택지</span>':''}${o.t}</span>${o.prem?`<span class="cost">베타 무료</span>`:''}</button>`).join('')}</div>`;
+    ui.innerHTML=`<div class="choices">${R.choice.map((o,i)=>`<button class="opt${o.prem||o.secret?' prem':''}" data-a="pick" data-v="${i}"><span>${o.secret?`<span class="lbl">숨은 선택지 · ${o.secret}</span>`:o.prem?'<span class="lbl">특별 선택지</span>':''}${o.t}</span>${o.prem?`<span class="cost">베타 무료</span>`:''}</button>`).join('')}</div>`;
     return;
   }
   if(!R.line){ ui.innerHTML=''; return; }
@@ -1513,6 +1520,8 @@ function act(a,v){
     case 'close': closeModal(); return;
     case 'noop': return;
     case 'hint': invHint(); return;
+    case 'undo': undoAsk(); return;
+    case 'undoGo': undoGo(); return;
     case 'invdone': invDone(); return;
     case 'ep': {
       const e=epById(v), st=epState(e);
