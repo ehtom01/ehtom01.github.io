@@ -257,7 +257,7 @@ const IMG={}; Object.entries(SPR).forEach(([k,src])=>{ const im=new Image(); im.
 /* ===================== 대본 도구 ===================== */
 const N=t=>({k:'n',t}), Q=(w,t)=>({k:'s',w,t}), SH=(c,p='c')=>({k:'show',c,p}), HD=c=>({k:'hide',c}), CL={k:'clear'},
   BG=(b,m='day')=>({k:'bg',b,m}), CH=(...o)=>({k:'ch',o}), L=n=>({k:'lb',n}), G=n=>({k:'go',n}), IF=(f,n)=>({k:'if',f,n}),
-  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
+  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), REMEMBER=n=>({k:'remember',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
 
 const ENDINGS={
   A:{n:'A. 연꽃이 진 밤',d:'언니의 한을 풀어 저승으로 보냈다.'},
@@ -282,13 +282,22 @@ const CGS={
 /* ----- 1부 1화 ----- */
 const E1=[
  BG('temple','dream'),
- N('보름날 밤. 귀문 앞.'),
+ N('보름날 밤. 폐사찰의 귀문 앞.'),
+ N('검은 소용돌이 앞에 두 자매가 마주 서 있었다. 하나는 산 사람, 하나는 죽은 사람이었다.'),
  SH('hong','l'), SH('cheong','r'), FX('red'),
  Q('청련|슬픔','홍련아. 이제 문을 닫자.'),
  Q('홍련|결의','응, 언니. 이번엔 내가 할게.'),
- Q('청련|놀람','…그런데, 너.'),
- Q('청련|슬픔','이름이… 뭐였더라.'),
- FX('flash'), CL, BG('market','dusk'),
+ N('홍련이 방울을 높이 들었다. 그 순간, 발끝에서부터 그림자가 먹물처럼 번지며 지워지기 시작했다.'),
+ Q('청련|놀람','홍련아, 네 그림자가…!'),
+ Q('홍련|결의','괜찮아. 문만 닫으면 돼.'),
+ N('청련이 동생의 손을 잡으려 손을 뻗었다. 그런데 그 손이 허공에서 멈췄다.'),
+ Q('청련|놀람','…잠깐만.'),
+ FORGET('홍련'),
+ Q('청련|슬픔','방금까지 불렀는데. 내 동생 이름이… 뭐였더라.'),
+ Q('홍련|놀람','언니…?'),
+ N('대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.'),
+ FX('flash'), CL, REMEMBER('홍련'), BG('market','dusk'),
+ N('「이름을 빼앗긴 자는, 그림자부터 사라진다.」'),
  N('모든 일의 시작은, 그 밤보다 보름 앞선 어느 저녁이었다.'),
  N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
  N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
@@ -1637,6 +1646,7 @@ function step(){
       case 'fx': R.fx[s.e]=1; break;
       case 'cg': if(!S.cgs.includes(s.id)){ S.cgs.push(s.id); toast('장면 수집 · '+CGS[s.id].n); } break;
       case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; S.F['end'+R.e.part.no]=s.id; break;
+      case 'remember': S.F.forgot=(S.F.forgot||[]).filter(x=>x!==s.n); break;
       case 'forget': { S.F.forgot=[...(S.F.forgot||[]).filter(x=>x!==s.n),s.n]; R.log=R.log.map(l=>l.split('<b>'+s.n+'</b>').join('<b style="color:#8a7f6a">???</b>').split(s.n).join('<s style="opacity:.5">　　</s>')); R.fx.flash=1; toast('이름 하나가 지워졌다'); break; }
       case 'n': case 's': showLine(s); return;
       case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
