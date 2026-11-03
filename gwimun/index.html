@@ -1542,7 +1542,7 @@ function vTitle(){
       ${lab?`<button class="btn pri cont" data-a="tContinue">이어하기<small>${lab}</small></button><button class="btn" data-a="tNew">새로하기</button>`:`<button class="btn pri" data-a="tNew">새로하기</button>`}
       <button class="tlink" data-a="tSwitch">다른 계정으로 시작</button></div>`;
   } else card=`<div class="ttap">화면을 눌러 시작하세요</div>`;
-  return `<div class="title" data-a="${TITLE.step==='tap'?'ttap':'noop'}"><div class="blur" style="background-image:url(${SPR.key})"></div><div class="art" style="background-image:url(${SPR.key})"></div><div class="shade"></div><div class="mist m3"></div><div class="mist m1"></div>${ash}<div class="mist m2"></div>
+  return `<div class="title" data-a="${TITLE.step==='tap'?'ttap':'noop'}"><div class="blur" style="background-image:url(${SPR.key})"></div><div class="art" style="background-image:url(${SPR.key})"></div><div class="shade"></div>${ash}
    <div class="in"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div>
    ${TITLE.step==='tap'?'<div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div>':''}${card}</div></div>`;
 }
