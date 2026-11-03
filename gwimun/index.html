@@ -308,7 +308,7 @@ const IMG={}; Object.entries(SPR).forEach(([k,src])=>{ const im=new Image(); im.
 /* ===================== 대본 도구 ===================== */
 const N=t=>({k:'n',t}), Q=(w,t)=>({k:'s',w,t}), SH=(c,p='c')=>({k:'show',c,p}), HD=c=>({k:'hide',c}), CL={k:'clear'},
   BG=(b,m='day')=>({k:'bg',b,m}), CH=(...o)=>({k:'ch',o}), L=n=>({k:'lb',n}), G=n=>({k:'go',n}), IF=(f,n)=>({k:'if',f,n}),
-  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), CUT=o=>({k:'cut',...o}), REMEMBER=n=>({k:'remember',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
+  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), CUT=o=>({k:'cut',...o}), M=n=>({k:'bgm',n}), REMEMBER=n=>({k:'remember',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
 
 const ENDINGS={
   A:{n:'A. 연꽃이 진 밤',d:'언니의 한을 풀어 저승으로 보냈다.'},
@@ -333,7 +333,7 @@ const CGS={
 /* ----- 1부 1화 ----- */
 const E1=[
  BG('temple','dream'),
- N('보름날 밤. 폐사찰의 귀문 앞.'),
+ M(3), N('보름날 밤. 폐사찰의 귀문 앞.'),
  N('검은 소용돌이 앞에 두 자매가 마주 서 있었다. 하나는 산 사람, 하나는 죽은 사람이었다.'),
  SH('hong','l'), SH('cheong','r'), FX('red'),
  Q('백련|슬픔','홍련아. 이제 문을 닫자.'),
@@ -348,8 +348,8 @@ const E1=[
  Q('백련|슬픔','방금까지 입에 있었는데. 아무리 떠올려도… 안 떠올라.'),
  Q('홍련|놀람','무슨 소리야, 언니. 나잖아… 나…'),
  N('대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.'),
- CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전',sub2:'도성 남문 밖 · 해 질 녘',bgm:2}), REMEMBER('홍련'), BG('market','dusk'),
- N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
+ CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전',sub2:'도성 남문 밖 · 해 질 녘'}), REMEMBER('홍련'), BG('market','dusk'),
+ M(2), N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
  N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
  Q('분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'),
  N('대여섯 살쯤 된 계집아이가 좌판 앞에서 발돋움을 했다. 홍련은 웃으며 쑥 한 줌을 쥐여 주었다.'),
@@ -462,7 +462,7 @@ const E1=[
  Q('홍련','오늘 밤은 짐을 싸야겠어요. 언니 물건도… 챙길 게 있어요.'),
  L('e1night'),
  CL, CUT({sub:'그날 밤',sub2:'홍련의 셋방'}), BG('room','night'),
- N('그날 밤. 홍련의 작은 셋방.'),
+ M(3), N('그날 밤. 홍련의 작은 셋방.'),
  N('호롱불 아래, 방울 끈이 상 위에 놓여 있었다. 홍련은 한참을 그것만 보고 앉아 있었다.'),
  Q('홍련|슬픔','(3년 동안 이 방에서 한 번도 언니 물건을 꺼내 보지 않았어.)'),
  Q('홍련','(…오늘은 봐야 해.)'),
@@ -494,13 +494,13 @@ const E1=[
  HD('cheong'),
  N('동이 트기도 전에, 홍련은 남문 주막으로 달려갔다.'),
  BG('market','dawn'), SH('hong','l'), SH('dol','r'),
- Q('태석','마음이 바뀌었소?'),
+ M(3), Q('태석','마음이 바뀌었소?'),
  Q('홍련','귀신이 바꿔 줬습니다.'),
  Q('태석','…농담이오?'),
  Q('홍련|결의','이제부터 제가 하는 말은 전부 농담이 아니에요. 익숙해지세요.'),
  L('e1dawn'),
- CL, CUT({sub:'이튿날 새벽',sub2:'소리개 마을 가는 산길',bgm:6}), BG('road','dawn'),
- N('두 사람은 소리개 마을로 가는 산길에 올랐다.'),
+ CL, CUT({sub:'이튿날 새벽',sub2:'소리개 마을 가는 산길'}), BG('road','dawn'),
+ M(6), N('두 사람은 소리개 마을로 가는 산길에 올랐다.'),
  N('하루 반나절 거리. 장승 몇 개를 지나면 고개가 나오고, 고개를 넘으면 마을이다.'),
  SH('hong','l'), SH('dol','r'),
  Q('태석','묻고 싶은 게 있소. 왜 신을 버렸소? 무당 집안에서 신을 버린다는 게 쉬운 일은 아닐 텐데.'),
@@ -533,7 +533,7 @@ const E1=[
  G('e1fire'),
  L('e1pass'),
  CUT({sub:'해 질 녘',sub2:'여우 고개'}), BG('foxpass','dusk'),
- N('여우 고개는 이상하게 조용했다. 새소리도, 벌레 소리도 없었다.'),
+ M(3), N('여우 고개는 이상하게 조용했다. 새소리도, 벌레 소리도 없었다.'),
  N('고개 마루에 다다랐을 때, 해를 등진 바위 그림자 속에서 푸른 불이 하나 둘 떠올랐다.'),
  L('e1fire'),
  FX('shake'), SH('wisp','c'),
@@ -559,7 +559,7 @@ const E1=[
  SET(F=>{F.grudge+=5;F.dol++}), HD('wisp'),
  L('e1arrive'),
  CL, BG('village','dusk'),
- N('해 질 녘. 두 사람은 마침내 소리개 마을 어귀에 닿았다.'),
+ M(3), N('해 질 녘. 두 사람은 마침내 소리개 마을 어귀에 닿았다.'),
  N('3년 만의 고향이었다. 그런데 마을은 이상하리만치 조용했다. 집집마다 대문이 닫혀 있었고, 문 앞에는 하얀 소금이 뿌려져 있었다.'),
  SH('hong','l'), SH('dol','r'),
  Q('태석','사람 사는 마을 맞소? 연기 하나 안 오르는구려.'),
@@ -573,7 +573,7 @@ const E1=[
 /* ----- 1부 2화 ----- */
 const E2=[
  BG('village','dusk'),
- N('우물 쪽으로 걸음을 옮기려는 순간, 닫혀 있던 대문 하나가 벌컥 열렸다.'),
+ M(3), N('우물 쪽으로 걸음을 옮기려는 순간, 닫혀 있던 대문 하나가 벌컥 열렸다.'),
  Q('촌장','누구요! 해 지면 아무도 돌아다니지 말라 했거늘!'),
  SH('hong','l'), SH('dol','r'),
  N('흰 수염에 탕건을 쓴 노인이 몽둥이를 들고 서 있었다. 소리개 마을 촌장이었다.'),
@@ -600,7 +600,7 @@ const E2=[
  Q('홍련','(작게) 장터에서 3년 버티려면 이 정도는 해야죠.'),
  L('e2inn'),
  CL, BG('jumak','night'),
- N('마을 어귀의 주막. 손님이라고는 두 사람뿐이었다.'),
+ M(3), N('마을 어귀의 주막. 손님이라고는 두 사람뿐이었다.'),
  Q('주모','이런 때 손님이라니, 장사는 되겠수. 국밥 두 그릇?'),
  N('주모는 사십 줄의 여자였다. 입이 가벼워 보였고, 눈치는 더 빨라 보였다.'),
  Q('태석','국밥 두 그릇. 그리고 사라진 아이들 얘기도 좀 듣고 싶소.'),
@@ -623,7 +623,7 @@ const E2=[
  Q('주모','그리고 여우 가면을 쓴 사내를 봤다는 애도 있고. …백련 무당을 봤다는 사람도 있다우. 아이들 근처에서 울고 있더래.'),
  SET(F=>{F.c_mask=1;F.innkeep=1}),
  L('e2mom'),
- N('그때, 주막 문이 열리고 한 여자가 비틀거리며 들어왔다. 머리는 산발이었고 눈은 퉁퉁 부어 있었다.'),
+ M(6), N('그때, 주막 문이 열리고 한 여자가 비틀거리며 들어왔다. 머리는 산발이었고 눈은 퉁퉁 부어 있었다.'),
  Q('순이 어미','포졸 나리시오? 관아에서 오신 분이오? 우리 순이… 우리 순이 좀 찾아 주시오!'),
  Q('순이 어미','빨래터에서 잠깐 눈 돌린 사이에… 빨래 방망이만 남아 있었소. 우리 순이 겨우 일곱 살이오…'),
  N('여자는 태석의 소매를 붙잡고 무너지듯 주저앉았다.'),
@@ -642,7 +642,7 @@ const E2=[
  SET(F=>{F.c_white=1}),
  L('e2well'),
  CL, CUT({sub:'자정 무렵',sub2:'마을 우물'}), BG('well','night'),
- N('자정이 가까울 무렵. 두 사람은 결국 우물 앞에 서 있었다.'),
+ M(3), N('자정이 가까울 무렵. 두 사람은 결국 우물 앞에 서 있었다.'),
  Q('태석','마지막 아이가 사라진 곳이오. 뭔가 남아 있을지 모르니 살펴봅시다.'),
  INV({intro:'우물가를 살펴보자. 수상한 곳을 눌러 보세요.',spots:[
    {id:'well',x:185,y:212,r:42,req:1,name:'우물 속',txt:'칠흑같이 어둡다. 아주 깊은 곳에서… 누군가 훌쩍이는 소리가 들린다.'},
@@ -744,7 +744,7 @@ const E2=[
 /* ----- 1부 3화 ----- */
 const E3=[
  BG('village','day'),
- N('이튿날 아침. 촌장의 집 대문은 활짝 열려 있었다. 그리고 집 안은 텅 비어 있었다.'),
+ M(3), N('이튿날 아침. 촌장의 집 대문은 활짝 열려 있었다. 그리고 집 안은 텅 비어 있었다.'),
  SH('hong','l'), SH('dol','r'),
  Q('태석','밤새 짐을 싸서 달아났군. 이거야말로 자백이오.'),
  N('부엌 아궁이에는 타다 만 종이 뭉치가 있었다. 태석이 재를 헤치고 반쯤 남은 서찰 한 장을 꺼냈다.'),
@@ -769,14 +769,14 @@ const E3=[
  Q('홍련','폐사찰로 가기 전에 들를 곳이 있어요. 마을 뒷산의 신당. 언니가 뭔가 남겼다면 거기일 거예요.'),
  Q('태석','복동이는 주모에게 맡기겠소. 그 사람은 믿을 만하오.'),
  CL, CUT({sub:'해 질 녘',sub2:'마을 뒷산 · 무너진 신당'}), BG('shrine','dusk'),
- N('마을 뒷산의 무너진 신당. 홍련과 백련 자매가 자란 집이었다.'),
+ M(6), N('마을 뒷산의 무너진 신당. 홍련과 백련 자매가 자란 집이었다.'),
  SH('hong','c'),
  Q('홍련|슬픔','3년 만이네… 어머니가 쓰시던 무구가 그대로야.'),
  N('오방색 천이 바람에 나부꼈다. 바래고 찢어졌지만 아직 색이 남아 있었다.'),
  Q('홍련|슬픔','(어머니는 언니에게 신을 물려주셨고, 나는 도망쳤지. 무당 딸이라 손가락질받는 게 싫어서.)'),
  N('마당 한쪽, 어릴 적 언니와 키를 재던 기둥이 아직 서 있었다. 칼로 그은 금 두 줄. 언니 것이 늘 한 뼘 더 높았다.'),
  CUT({sub:'열한 살의 여름',sub2:'기억 속 신당'}), BG('shrineday','day'), HD('hong'),
- N('— 기억이 밀려왔다. 열한 살의 여름. 마당에서 언니가 방울을 흔들며 굿 연습을 하고 있었다.'),
+ M(6), N('— 기억이 밀려왔다. 열한 살의 여름. 마당에서 언니가 방울을 흔들며 굿 연습을 하고 있었다.'),
  Q('백련|미소','홍련아, 너도 해 봐. 방울은 손목으로 흔드는 게 아니라 마음으로 흔드는 거야.'),
  Q('어린 홍련','싫어. 난 무당 안 할 거야. 애들이 귀신 딸이라고 놀린단 말이야.'),
  Q('백련|미소','그럼 내가 다 할게. 너는 하고 싶은 거 해. 대신 하나만 약속해.'),
@@ -794,7 +794,7 @@ const E3=[
  Q('홍련|슬픔','(그때 언니는 웃지 않았어. 알고 있었던 거야.)'),
  L('e3inv'),
  BG('shrine','dusk'), SH('hong','c'),
- Q('홍련|결의','…정신 차려. 언니가 남긴 걸 찾아야 해.'),
+ M(3), Q('홍련|결의','…정신 차려. 언니가 남긴 걸 찾아야 해.'),
  INV({intro:'어머니의 신당을 살펴보자. 언니가 남긴 것이 있을지도 모른다.',spots:[
    {id:'altar',x:222,y:232,r:36,req:1,name:'돌제단',txt:'제단 아래, 기름 먹인 보자기에 싸인 책 한 권. 언니의 일기다.'},
    {id:'bell',x:306,y:214,r:28,name:'녹슨 방울',txt:'어머니가 굿할 때 쓰던 방울. 녹슬었는데도 흔들자 맑은 소리가 난다.',f:F=>{F.c_bell=1}},
@@ -867,7 +867,7 @@ const E3=[
  Q('홍련','(언니가 숨긴 데는 이유가 있겠지. 언니 입으로 직접 들을 거야.)'),
  L('e3dream'),
  CL, CUT({sub:'그날 밤',sub2:'무너진 신당'}), BG('shrine','night'),
- N('그날 밤, 홍련은 신당 마루에서 잠이 들었다. 그리고 꿈을 꾸었다.'),
+ M(6), N('그날 밤, 홍련은 신당 마루에서 잠이 들었다. 그리고 꿈을 꾸었다.'),
  FX('flash'),
  BG('dreamshrine','night'),
  N('꿈속의 신당은 새것처럼 단청이 선명했다. 마당 한가운데 흰 옷의 여인이 서 있었다. 어머니였다.'),
@@ -892,7 +892,7 @@ const E3=[
  N('어머니의 모습이 흐려지고, 마지막 목소리가 바람처럼 남았다.'),
  Q('어머니','문 아래의 것이 깨어나고 있다. 서둘러라.'),
  CL, BG('shrine','dawn'),
- N('홍련은 숨을 몰아쉬며 눈을 떴다. 손에는, 꿈속의 그 방울이 쥐어져 있었다.'),
+ M(3), N('홍련은 숨을 몰아쉬며 눈을 떴다. 손에는, 꿈속의 그 방울이 쥐어져 있었다.'),
  SH('hong','l'), SH('dol','r'),
  N('그때 태석이 숨을 몰아쉬며 신당으로 뛰어들었다.'),
  Q('태석','홍련 아씨! 산길에서 하얀 여자를 봤다는 사람이 있소! 아이 둘을 데리고 폐사찰 쪽으로 갔다고!'),
@@ -903,7 +903,7 @@ const E3=[
 /* ----- 1부 4화 ----- */
 const E4=[
  BG('road','dusk'),
- N('관아 포졸들을 피해, 일행은 사냥꾼들이나 쓰는 옛 산길로 접어들었다.'),
+ M(3), N('관아 포졸들을 피해, 일행은 사냥꾼들이나 쓰는 옛 산길로 접어들었다.'),
  IF(F=>F.mujin>0||F.bell,'e4mj'),
  N('산길 입구에서, 누군가 바위에 앉아 염주를 굴리고 있었다. 무진이었다.'),
  Q('무진','폐사찰로 가시는 길이오? 소승도 그쪽이오. 길동무나 합시다.'),
@@ -920,7 +920,7 @@ const E4=[
  SET(F=>{F.beomjoin=1}),
  L('e4camp'),
  CL, CUT({sub:'그날 밤',sub2:'산중 야영지'}), BG('camp','night'),
- N('밤이 깊었다. 일행은 산중턱 바위 아래 작은 모닥불을 피웠다. 폐사찰까지는 한나절. 내일 새벽에 오르기로 했다.'),
+ M(6), N('밤이 깊었다. 일행은 산중턱 바위 아래 작은 모닥불을 피웠다. 폐사찰까지는 한나절. 내일 새벽에 오르기로 했다.'),
  N('불꽃이 튀는 소리만 들렸다. 누구도 쉽게 잠들지 못했다.'),
  Q('홍련','(내일이면 언니를 볼 수 있을까. 본다면… 나는 뭐라고 말해야 할까.)'),
  CH({t:'태석 옆에 앉는다.',f:F=>{F.dol++},go:'e4dol'},
@@ -955,7 +955,7 @@ const E4=[
  SET(F=>{F.beomdoubt=1}),
  L('e4sleep'),
  CL,
- N('새벽이 오기 직전, 모닥불이 파랗게 변했다.'),
+ M(3), N('새벽이 오기 직전, 모닥불이 파랗게 변했다.'),
  N('짤랑. 안개 속에서 방울 소리가 울렸다. 이번엔 모두가 들었다.'),
  SH('hong','l'), SH('dol','r'),
  Q('태석','…들리오. 나도 들리오.'),
@@ -1053,7 +1053,7 @@ const E4=[
  Q('범이','…저놈, 여우 졸개라더니 관아 얘기를 하더군. 내 딸을 죽인 게 정말 여우였을까.'),
  L('e4end'),
  CL, BG('mountain','night'),
- N('도깨비가 사라진 뒤, 일행은 바위 틈에 몸을 숨겼다. 아이 둘이 홍련의 치맛자락을 놓지 않았다.'),
+ M(6), N('도깨비가 사라진 뒤, 일행은 바위 틈에 몸을 숨겼다. 아이 둘이 홍련의 치맛자락을 놓지 않았다.'),
  Q('순이','언니… 하얀 언니랑 똑같이 생겼어.'),
  Q('홍련|놀람','…하얀 언니가 너희한테 잘해 줬니?'),
  Q('막동','응. 밤마다 노래 불러 줬어. 근데 노래 부를 때마다 울었어.'),
@@ -1071,7 +1071,7 @@ const E4=[
  N('아이들은 금세 잠이 들었다. 홍련은 밤새 그 작은 숨소리를 지켰다.'),
  L('e4kidsend'),
  CL, CUT({sub:'새벽',sub2:'귀문 폐사찰'}), BG('temple','dawn'), SH('hong','c'),
- N('날이 밝을 무렵, 일행은 폐사찰 앞 공터에 닿았다. 아이들은 무사했다. 백련의 모습은 어디에도 없었다.'),
+ M(3), N('날이 밝을 무렵, 일행은 폐사찰 앞 공터에 닿았다. 아이들은 무사했다. 백련의 모습은 어디에도 없었다.'),
  N('바닥에 젖은 글씨만 남아 있었다.'),
  N('「보름. 귀문 앞에서.」'),
  Q('홍련|결의','보름이면… 사흘 뒤야.'),
@@ -1084,7 +1084,7 @@ const E4=[
 /* ----- 1부 5화 ----- */
 const E5=[
  BG('village','day'),
- N('사흘. 일행에게 주어진 시간이었다.'),
+ M(3), N('사흘. 일행에게 주어진 시간이었다.'),
  N('순이와 막동이는 마을로 돌아갔다. 순이 어미는 딸을 끌어안고 한참을 울었다.'),
  IF(F=>F.promise,'e5prom'), G('e5prom2'),
  L('e5prom'),
@@ -1116,7 +1116,7 @@ const E5=[
  Q('태석','그 말도 맞소. 다만 굿은 혼자 하는 게 아니라고 방금 당신이 말했소.'),
  L('e5prep'),
  CL, CUT({sub:'굿 전날 밤',sub2:'주막'}), BG('jumak','night'),
- N('굿 전날 밤. 홍련은 주막 마루에 혼자 앉아 있었다.'),
+ M(6), N('굿 전날 밤. 홍련은 주막 마루에 혼자 앉아 있었다.'),
  SH('hong','l'), SH('dol','r'),
  Q('태석','잠이 안 오는 모양이오.'),
  Q('홍련|슬픔','내일… 언니를 보내야 할지도 몰라요. 3년 만에 겨우 만났는데.'),
@@ -1132,7 +1132,7 @@ const E5=[
  Q('태석','그럼 됐소. 내일은 내가 등 뒤를 지키겠소.'),
  L('e5night2'),
  CL, CUT({sub:'보름날',sub2:'귀문 폐사찰 · 해 질 녘'}), BG('temple','dusk'),
- N('보름날 해 질 녘. 폐사찰 마당.'),
+ M(3), N('보름날 해 질 녘. 폐사찰 마당.'),
  N('반쯤 무너진 대웅전 문 너머로 검은 소용돌이가 천천히 돌고 있었다. 사흘 전보다 분명히 커져 있었다.'),
  Q('홍련','(굿상을 차리기 전에… 이 절을 살펴봐야 해.)'),
  INV({intro:'귀문 폐사찰. 굿을 시작하기 전에 살펴보자.',spots:[
@@ -1157,7 +1157,7 @@ const E5=[
  CL,
  L('e5yun2'),
  BG('temple','night'),
- N('보름달이 떴다. 굿상이 차려졌다.'),
+ M(7), N('보름달이 떴다. 굿상이 차려졌다.'),
  IF(F=>F.villagers,'e5vg'), G('e5vg2'),
  L('e5vg'),
  N('마당 가장자리에 마을 사람들이 횃불을 들고 둘러섰다. 주모가 징채를 쥐었다. 징— 첫 소리가 산을 울렸다.'),
@@ -1253,7 +1253,7 @@ const E5=[
  ENDING('C'), END,
  L('epi'),
  CL, CUT({sub:'새벽',sub2:'굿이 끝난 자리'}), BG('temple','dawn'),
- N('새벽. 굿판의 불씨가 꺼져 갔다.'),
+ M(3), N('새벽. 굿판의 불씨가 꺼져 갔다.'),
  N('귀문의 소용돌이는 작아졌지만, 사라지지는 않았다. 문틀 깊은 곳에서 무언가가 천천히 숨을 쉬고 있었다.'),
  SH('hong','l'), SH('mujin','r'),
  Q('무진','이 문은 하나가 아니오. 석탑에 새겨진 다섯 방위… 오방진. 나라 곳곳에 다섯 개의 진이 박혀 있소.'),
@@ -1265,7 +1265,7 @@ const E5=[
  Q('범이','…다시 만나게 되겠지. 빚은 아직 다 안 갚았으니까.'),
  L('e5bm2'),
  CL, CUT({sub:'사흘 뒤',sub2:'소리개 마을'}), BG('village','day'), SH('hong','l'), SH('dol','r'),
- N('사흘 뒤. 소리개 마을의 아이들은 모두 집으로 돌아갔다.'),
+ M(2), N('사흘 뒤. 소리개 마을의 아이들은 모두 집으로 돌아갔다.'),
  Q('태석','홍련 아씨. 나는 관아로 돌아가야겠소. 사또를 이대로 둘 수는 없소.'),
  Q('태석','…그런데 이상한 소식이 있소. 사또 댁 도령도 실종됐었다는 걸 이제야 들었소. 그리고 그 아이만 아직 돌아오지 않았소.'),
  Q('홍련|결의','(관아… 한양… 그리고 문 아래의 것.) 저도 가겠어요. 아직 끝나지 않았으니까.'),
@@ -1281,7 +1281,7 @@ const E6=[
  IF(F=>F.end1==='A','p_a'), IF(F=>F.end1==='B','p_b'), IF(F=>F.end1==='S','p_s'), IF(F=>F.end1==='C','p_c'),
  /* N: 반쪽의 천도 */
  CUT({sub:'열흘 뒤',sub2:'홍련의 셋방'}), BG('room','night'),
- N('천도굿 이후 열흘. 홍련은 매일 밤 같은 꿈을 꾸었다.'),
+ M(6), N('천도굿 이후 열흘. 홍련은 매일 밤 같은 꿈을 꾸었다.'),
  N('검은 소용돌이 안쪽, 끝없는 복도. 그 끝에서 언니가 문을 두드리고 있었다.'),
  Q('백련|슬픔','홍련아… 여기… 너무 추워…'),
  SH('hong','c'),
@@ -1290,7 +1290,7 @@ const E6=[
  SET(F=>{F.r2='N'}), G('p_end'),
  L('p_a'),
  CUT({sub:'열흘 뒤',sub2:'홍련의 셋방'}), BG('room','dawn'),
- N('천도굿 이후 열흘. 홍련의 귀에서 방울 소리가 사라졌다. 3년 만에 처음 맞는 고요한 아침이었다.'),
+ M(6), N('천도굿 이후 열흘. 홍련의 귀에서 방울 소리가 사라졌다. 3년 만에 처음 맞는 고요한 아침이었다.'),
  SH('hong','c'),
  Q('홍련|슬픔','(언니는 갔어. 이제 정말로.)'),
  N('그런데 그 고요가 오히려 낯설었다. 홍련은 머리맡의 방울 끈을 한참 동안 쓰다듬었다.'),
@@ -1298,7 +1298,7 @@ const E6=[
  SET(F=>{F.r2='A';F.grudge=Math.max(0,F.grudge-5)}), G('p_end'),
  L('p_b'),
  CUT({sub:'열흘 뒤',sub2:'홍련의 셋방'}), BG('room','night'),
- N('천도굿 이후 열흘. 홍련은 방울을 늘 품에 지니고 다녔다. 그 안에 언니가 있었다.'),
+ M(6), N('천도굿 이후 열흘. 홍련은 방울을 늘 품에 지니고 다녔다. 그 안에 언니가 있었다.'),
  SH('hong','c'),
  Q('백련|슬픔','…홍련아. 오늘은 바람이 차구나.'),
  N('방울 속 목소리는 가끔씩만 들렸다. 그리고 들릴 때마다 조금씩 더 차가워져 있었다.'),
@@ -1308,7 +1308,7 @@ const E6=[
  SET(F=>{F.r2='B'}), G('p_end'),
  L('p_s'),
  CUT({sub:'열흘 뒤',sub2:'홍련의 셋방'}), BG('room','night'),
- N('천도굿 이후 열흘. 홍련의 몸 안에는 두 개의 마음이 살고 있었다.'),
+ M(6), N('천도굿 이후 열흘. 홍련의 몸 안에는 두 개의 마음이 살고 있었다.'),
  SH('hong','c'),
  Q('홍련','(아침에 일어나면 손이 먼저 방울을 찾는다. 내 버릇이 아니라, 언니 버릇이다.)'),
  Q('홍련|결의','「홍련아. 오늘은 장터에 가지 말자. 남쪽에서 비린 바람이 불어.」'),
@@ -1317,7 +1317,7 @@ const E6=[
  SET(F=>{F.r2='S';F.grudge=Math.max(0,F.grudge-5)}), G('p_end'),
  L('p_c'),
  BG('temple','night'),
- N('천도굿이 끝난 밤, 홍련은 귀문 안으로 사라졌다.'),
+ M(3), N('천도굿이 끝난 밤, 홍련은 귀문 안으로 사라졌다.'),
  SH('dol','l'), SH('mujin','r'),
  Q('태석','열흘이오. 열흘째 이 문 앞에서 기다리고 있소.'),
  Q('무진','안에서 시간은 다르게 흐르오. 소승도 장담할 수 없소.'),
@@ -1331,7 +1331,7 @@ const E6=[
  SET(F=>{F.r2='C';F.tainted=1;F.grudge=Math.max(F.grudge,30)}),
  L('p_end'),
  CL, CUT({sub:'2부 · 사흘 뒤',sub2:'태석 — 물 아래의 관아'}), BG('gwana','day'),
- N('사흘 뒤, 고을 관아 앞 저잣거리. 태석은 오랜만에 포졸 옷을 다시 입었다.'),
+ M(3), N('사흘 뒤, 고을 관아 앞 저잣거리. 태석은 오랜만에 포졸 옷을 다시 입었다.'),
  SH('dol','l'), SH('hong','r'),
  Q('태석','관아에서 나를 부른다는 전갈이 왔소. 쫓던 포졸을 이제 와서 부른다니, 이상하지 않소?'),
  Q('홍련','사또가 무슨 꿍꿍이인지 들어 봐야죠. 저는 근처에서 기다릴게요.'),
@@ -1399,7 +1399,7 @@ const E6=[
  Q('사또','…후회할 걸세.'),
  N('태석이 동헌을 나서자, 등 뒤에서 대문이 무겁게 닫혔다. 그리고 그날 저녁부터 태석의 이름이 수배 방에 붙었다.'),
  CL, CUT({sub:'그날 밤',sub2:'저잣거리 뒷골목 주막'}), BG('jumak','night'),
- N('밤. 저잣거리 뒷골목의 작은 주막. 홍련, 무진, 그리고 소리개 마을에서 따라온 주모가 모였다.'),
+ M(3), N('밤. 저잣거리 뒷골목의 작은 주막. 홍련, 무진, 그리고 소리개 마을에서 따라온 주모가 모였다.'),
  SH('dol','l'), SH('hong','r'),
  Q('주모','도성 주막들끼리는 소문이 빠르다우. 관아 뒤뜰 우물에서 밤마다 아이 울음소리가 난다는 소문이 돈 지 보름이우.'),
  Q('홍련','사또의 아들 윤재가 사라진 것도 보름 전이에요.'),
@@ -1434,7 +1434,7 @@ const E6=[
  N('사또가 고개를 숙였다. 그 순간 태석은 보았다. 사또의 목덜미에 찍힌 붉은 인장 모양의 멍. 아버지 서찰의 그 인장과 같은 문양이었다.'),
  Q('태석','(윤 대감의 인장… 사람 몸에 찍혀 있다고?)'),
  CL, CUT({sub:'그날 밤',sub2:'관아 뒤뜰 우물'}), BG('gwell','night'),
- N('그날 밤. 태석은 사또의 뒤를 밟았다. 사또는 등불도 없이 관아 뒤뜰의 낡은 우물로 향했다.'),
+ M(3), N('그날 밤. 태석은 사또의 뒤를 밟았다. 사또는 등불도 없이 관아 뒤뜰의 낡은 우물로 향했다.'),
  SH('dol','l'),
  SH('sato','r'),
  N('사또가 우물가에 무릎을 꿇었다. 그리고 품에서 꺼낸 무언가를 우물 속으로 떨어뜨렸다. 피 묻은 쌀이었다.'),
@@ -1449,7 +1449,7 @@ const E6=[
  /* ── 합류: 관아 뒤뜰 우물 ── */
  L('night'),
  CL, CUT({sub:'자정',sub2:'관아 뒤뜰 우물'}), BG('gwell','night'),
- N('자정. 관아 뒤뜰. 아무도 길어 올리지 않는 우물이 쇠사슬에 칭칭 감겨 있었다.'),
+ M(3), N('자정. 관아 뒤뜰. 아무도 길어 올리지 않는 우물이 쇠사슬에 칭칭 감겨 있었다.'),
  SH('dol','l'), SH('hong','r'),
  IF(F=>F.route2==='gov','n_gov'), G('n_gov2'),
  L('n_gov'),
@@ -1688,7 +1688,7 @@ function startEp(id,resume){
   const e=epById(id);
   if(!resume){ S.snap[id]=JSON.parse(JSON.stringify(S.F)); if(S.cleared.includes(id)) S.F=JSON.parse(JSON.stringify(S.snap[id])); }
   R={e,i:resume?resume.i:0,bg:resume?resume.bg:{b:'paper',m:'day'},chars:resume?resume.chars.map(c=>({...c,x:posX(c.p),a:1,ta:1})):[],line:null,full:'',shown:0,choice:null,ended:null,log:[],fx:{shake:0,red:0,flash:0,dip:0},speaker:null};
-  if(resume){ let keep=0; e.s.forEach((x,i)=>{ if(i>=R.i) return; if(x.k==='cut'&&x.bgm){ R.bgmOv=x.bgm; keep=1; } if(x.k==='bg'){ if(keep) keep=0; else R.bgmOv=0; } }); }
+  if(resume) e.s.forEach((x,i)=>{ if(i<R.i&&x.k==='bgm') R.sceneBgm=x.n; });
   UI.tab='read'; render(); step();
 }
 function posX(p){ return {l:92,c:180,r:268}[p]; }
@@ -1697,7 +1697,8 @@ function step(){
   while(R.i<st.length){
     const s=st[R.i++];
     switch(s.k){
-      case 'bg': if(R.bg&&R.bg.b!=='paper'&&(R.bg.b!==s.b||R.bg.m!==s.m)) R.fx.dip=1; R.bg={b:s.b,m:s.m}; if(R.bgmKeep) R.bgmKeep=0; else R.bgmOv=0; // 컷신이 정한 곡은 그 장면까지만 if(s.b==='well'||s.b==='gwell') sfx('drip'); break;
+      case 'bgm': R.sceneBgm=s.n; updateBgm(); break;
+      case 'bg': if(R.bg&&R.bg.b!=='paper'&&(R.bg.b!==s.b||R.bg.m!==s.m)) R.fx.dip=1; R.bg={b:s.b,m:s.m}; if(s.b==='well'||s.b==='gwell') sfx('drip'); break;
       case 'show': { if(s.c==='cheong') R.cheongCalm=cheongAhead(R.i); let c=R.chars.find(x=>x.c===s.c); if(c){ c.p=s.p; c.ta=1; } else R.chars.push({c:s.c,p:s.p,x:posX(s.p)+(s.p==='l'?-30:s.p==='r'?30:0),a:0,ta:1}); break; }
       case 'hide': { const c=R.chars.find(x=>x.c===s.c); if(c) c.ta=0; break; }
       case 'clear': R.chars.forEach(c=>c.ta=0); break;
@@ -1914,18 +1915,15 @@ function bgmSwitch(n){
   if(AU.cur===n) return;
   const old=AU.cur&&TRK[AU.cur]; AU.cur=n; bgmSince=performance.now();
   const start=()=>{ if(AU.cur!==n||!n) return; const a=trk(n); if(n===8||n===4) { try{ a.currentTime=0; }catch(e){} }
-    a.volume=0; AU.el=a; a.play().then(()=>{ if(AU.cur===n) fadeTo(a,AU.vol,n===4?400:1800); else a.pause(); }).catch(()=>{ if(AU.cur===n){ AU.cur=null; AU.el=null; AU.blocked=true; } }); };
-  if(old&&!old.paused){ fadeTo(old,0,n===4?300:900,()=>{ old.pause(); setTimeout(start,n===4?0:250); }); } else start();
+    a.volume=0; AU.el=a; a.play().then(()=>{ if(AU.cur===n) fadeTo(a,AU.vol,n===4?700:1600); else a.pause(); }).catch(()=>{ if(AU.cur===n){ AU.cur=null; AU.el=null; AU.blocked=true; } }); };
+  if(old&&!old.paused){ fadeTo(old,0,n===4?600:1000,()=>{ old.pause(); setTimeout(start,n===4?80:250); }); } else start();
 }
 function bgm(n){
   if(!AU.unlocked||!AU.on){ AU.want=n; return; }
-  if(n===bgmWant&&(AU.cur===n||bgmTimer)) return;
+  if(n===bgmWant&&AU.cur===n) return;
   bgmWant=n; clearTimeout(bgmTimer); bgmTimer=0;
   if(!n){ const o=AU.cur&&TRK[AU.cur]; AU.cur=null; if(o) fadeTo(o,0,500,()=>o.pause()); return; }
-  // 공포·퇴마·엔딩·타이틀은 바로, 나머지는 잠깐 지켜본 뒤(같은 분위기가 이어질 때만) 바꾼다
-  const held=performance.now()-bgmSince, prioNow=PRIO.includes(n), prioOld=PRIO.includes(AU.cur);
-  const wait=(!AU.cur||prioNow||prioOld)?0:Math.max(2500,15000-held);
-  if(!wait) bgmSwitch(n); else bgmTimer=setTimeout(()=>{ bgmTimer=0; if(bgmWant===n) bgmSwitch(n); },wait);
+  bgmSwitch(n);
 }
 /* 타이틀 → 이야기: 먹물이 번지며 화면이 잠기고, 타이틀 곡은 천천히 사라졌다가 이야기 곡이 새로 피어난다 */
 function inkSpread(cv,dur,done){
@@ -1962,20 +1960,15 @@ function storyGo(fn){
 function unlockAudio(){ if(AU.unlocked&&!AU.blocked&&AU.el) return; AU.unlocked=true; AU.blocked=false; updateBgm(); }
 function setSound(on){ AU.on=on; try{ localStorage.setItem(KEY+'-snd',on?'1':'0'); }catch(e){} if(!on){ bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; const o=AU.cur&&TRK[AU.cur]; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,400,()=>o.pause()); } else updateBgm(); }
 const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
-const EP_BGM={'1-1':3}; // 이 화는 처음부터 끝까지 한 곡으로 이어 간다
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
   if(R.ended) return 8;
-  const M=R.mode, on=R.chars.filter(c=>c.ta>0).map(c=>c.c);
-  if(M&&M.k==='inv'&&M.scare) return 4;            // 깜짝 이벤트
-  if(R.e.id==='1-5'&&R.bg.b==='temple') return 7;    // 천도굿 장면은 굿 음악 하나로
-  if(M&&M.k==='rit') return 5;                       // 퇴마
-  if((on.includes('cheong')&&(!R.cheongCalm||R.e.id==='1-4'))||FOES.some(k=>on.includes(k))) return 4; // 귀신이 화면에 있으면 공포곡
-  if(R.bgmOv) return R.bgmOv;                        // 컷신이 정한 곡(그 장면까지만)
-  if(EP_BGM[R.e.id]) return EP_BGM[R.e.id];
-  if(R.bg.b==='shrineday'||on.includes('cheong')) return 6; // 자매의 기억, 슬픈 백련
-  if(DAYBG.includes(R.bg.b)&&R.bg.m==='day') return 2; // 낮 장면만 장터곡, 해 질 녘부터는 조사곡
-  return 3;
+  const M=R.mode, on=R.chars.filter(c=>c.ta>0).map(c=>c.c), sc=R.sceneBgm||3;
+  if(M&&M.k==='inv'&&M.scare) return 4;            // 이벤트: 깜짝
+  if(sc===7) return 7;                               // 천도굿은 굿 음악이 끝까지
+  if(M&&M.k==='rit') return 5;                       // 이벤트: 퇴마
+  if((on.includes('cheong')&&(!R.cheongCalm||R.e.id==='1-4'))||FOES.some(k=>on.includes(k))) return 4; // 이벤트: 귀신 등장
+  return sc;                                         // 장면 음악(대본의 M 표시)
 }
 const FOES=['yunjae','wisp','dok','gumi','mul'];
 function updateBgm(){ if(!AU.unlocked||(AU.hush&&performance.now()<AU.hush)) return; bgm(AU.on?bgmFor():null); }
