@@ -119,6 +119,18 @@ h3{font-size:16px;font-weight:700;margin:0}
 .mark{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:#fff6ea;text-shadow:0 1px 3px #000;pointer-events:none;white-space:nowrap}
 .mark i{width:22px;height:22px;border-radius:50%;border:2.5px solid #e0483a;box-shadow:0 0 8px #e0483a99}
 .clueimg{float:left;height:92px;margin:0 12px 4px 0;filter:drop-shadow(0 4px 8px #000a);animation:optin .4s ease-out backwards}
+.scare{position:absolute;left:10px;right:10px;bottom:10px;background:linear-gradient(180deg,rgba(40,10,8,.95),rgba(14,8,6,.97));border:1px solid rgba(224,72,58,.6);border-radius:8px;padding:16px 14px;color:#f1e9d6;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 30px rgba(160,20,10,.45),0 10px 26px #000c;animation:optin .35s ease-out backwards;cursor:default}
+.scare.link{border-color:rgba(201,162,74,.6);background:linear-gradient(180deg,rgba(32,26,14,.96),rgba(14,12,8,.97));box-shadow:0 10px 26px #000c}
+.sc-t{font-family:var(--f-disp);font-size:24px;color:#e0483a;line-height:1} .scare.link .sc-t{color:#f3d27a}
+.sc-x{font-size:14.5px;line-height:1.6} .sc-r{font-size:14px;line-height:1.6;color:#e9d9b8;border-left:3px solid #c9a24a;padding-left:10px}
+.scare .opt{padding:11px 12px 11px 50px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip2{background:linear-gradient(180deg,#2b303a,#1d2128);border:1px solid #4a4f5a;border-radius:999px;padding:8px 14px;font-size:13.5px;box-shadow:0 2px 0 #0a0c10}
+.chip2.on{background:linear-gradient(180deg,#d9483b,#a5251c);border-color:#7d1a13;color:#fff6ea}
+.btn.gold{background:linear-gradient(180deg,#e2be62,#b8902e);color:#1c1915;border-color:#8a6416;font-weight:700}
+.clsay{display:flex;gap:8px;align-items:center;margin-bottom:8px;padding-bottom:8px;border-bottom:1px dashed rgba(233,221,184,.2);font-size:14px}
+.clsay b{color:var(--gold);margin-right:4px}
+.clpor{flex:none;width:38px;height:38px;border-radius:5px;background:center/cover no-repeat;border:1.5px solid #e9ddb8}
 .glint{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff8e0;box-shadow:0 0 6px 2px #ffe9a8,0 0 16px 6px #f3d27a88;opacity:0;pointer-events:none;animation:glint 3.6s ease-in-out infinite}
 .glint::before,.glint::after{content:'';position:absolute;left:50%;top:50%;width:22px;height:1.5px;margin:-.75px 0 0 -11px;background:linear-gradient(90deg,transparent,#fff8e0,transparent)}
 .glint::after{transform:rotate(90deg)}
@@ -1746,9 +1758,65 @@ function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
 /* ===================== 조사 · 퇴마 ===================== */
 const isBeta=()=>typeof BETA!=='undefined'&&BETA;
 const MISS=['별다른 것은 없다.','흙과 먼지뿐이다.','아무것도 느껴지지 않는다.','바람 소리만 스친다.'];
+/* ===================== 단서 이벤트: 혼잣말 · 깜짝 · 추리 ===================== */
+const CLUE={
+ '1-1:chest':{say:['슬픔','…언니 글씨야. 「봉」 한 글자.']},
+ '1-1:window':{scare:{fx:'shake',txt:'손자국을 들여다보는 순간, 창호지 너머에서 무언가가 「쿵」 하고 문을 쳤다. 젖은 손바닥 자국이 하나, 둘… 점점 늘어난다.',
+   opts:[{t:'숨을 죽이고 가만히 있는다.',res:'두드림이 멈췄다. 문틈으로 스며들던 물기가 천천히 물러갔다.'},
+         {t:'문에 대고 「누구야!」 외친다.',res:'대답 대신 낮게 웃는 소리. 손자국들이 한꺼번에 사라졌다. 등골이 서늘하다.',f:F=>{F.grudge+=3}}]}},
+ '1-1:lamp':{say:['놀람','(불이 파래… 지금 이 근처에 뭔가 있어.)']},
+ '1-1:herb':{say:['결의','(쑥이 하룻밤 새… 잡귀가 이 방을 드나들었다는 거야.)']},
+ '1-2:well':{scare:{fx:'red',txt:'우물을 들여다보는 순간 훌쩍임이 뚝 멎었다. 수면에 비친 홍련의 얼굴 뒤로, 젖은 머리카락이 천천히 떠오른다.',
+   opts:[{t:'뒤를 돌아본다.',res:'아무도 없다. 다시 보니 수면은 잔잔했다. …그런데 등 뒤 땅바닥에 젖은 발자국 두 개가 찍혀 있다.',f:F=>{F.grudge+=3}},
+         {t:'눈을 떼지 않고 방울을 흔든다.',res:'짤랑. 머리카락이 물속으로 가라앉았다. 아주 작은 목소리가 남았다. 「…무서워.」',f:F=>{F.wellcalm=1}}]}},
+ '1-2:thread':{say:['슬픔','(언니 방울 끈 실이야. 언니가 여기 왔었어.)']},
+ '1-2:pail':{say:['결의','(칼자국… 누군가 일부러 끊었어.)']},
+ '1-2:foot':{say:['슬픔','(이렇게 작은 발로… 혼자 우물까지 걸어간 거야?)']},
+ '1-3:altar':{say:['슬픔','(언니 일기… 언니는 여기 다 적어 뒀구나.)']},
+ '1-3:bell':{say:['슬픔','(어머니 방울… 아직 소리가 맑아.)']},
+ '1-3:cloth':{scare:{fx:'shake',txt:'천을 들추자 등 뒤로 무언가 휙 지나갔다. 하얀 꼬리 끝이 마루 밑으로 사라진다.',
+   opts:[{t:'마루 밑을 들여다본다.',res:'어둠 속에서 두 개의 눈이 반짝였다가 사라졌다. 사람의 눈이 아니었다. 그런데 이상하게… 무섭지 않았다.',f:F=>{F.foxeyes=1}},
+         {t:'부적을 꺼내 든다.',res:'기척이 순식간에 멀어졌다. 마루 밑에는 하얀 털 한 올만 남았다.',f:F=>{F.grudge+=2}}]}},
+ '1-3:jang':{say:['놀람','(여우 털… 사냥꾼이 쫓는다던 그 여우?)']},
+ '1-4:stone':{say:['슬픔','(아이 발자국 옆에 맨발 하나… 언니 발이야.)']},
+ '1-4:pillar':{say:['결의','(언니가 길을 남겼어. 따라오라고.)']},
+ '1-4:lantern':{scare:{fx:'red',txt:'꺼진 초가 저절로 다시 타올랐다. 불빛에 비친 안개 속으로 아이 둘의 그림자가 손을 잡고 걸어간다. 그런데 그 사이에… 키 큰 그림자가 하나 더 있다.',
+   opts:[{t:'「얘들아!」 하고 부른다.',res:'그림자들이 동시에 멈춰 섰다. 키 큰 그림자만 천천히 고개를 돌렸다. 그리고 안개가 모든 걸 덮었다.',f:F=>{F.grudge+=2}},
+         {t:'숨을 죽이고 방향만 기억한다.',res:'그림자들은 돌계단 위쪽으로 사라졌다. 홍련은 그 방향을 똑똑히 봐 두었다.',f:F=>{F.c_dir=1}}]}},
+ '1-4:tree':{say:['놀람','(위에서… 계속 지켜보고 있었어.)']},
+ '1-5:gate':{scare:{fx:'shake',txt:'귀문에 손을 대자 소용돌이 안에서 손 하나가 불쑥 튀어나와 홍련의 손목을 붙잡았다. 차갑다. 그런데 손목에 맨 붉은 실 매듭이… 언니가 매던 그 매듭이다.',
+   opts:[{t:'그 손을 마주 잡는다.',res:'손이 잠시 힘을 주었다가 스르르 풀렸다. 「…아직, 아니야.」 언니 목소리였다.',f:F=>{F.gatehand=1}},
+         {t:'부적으로 손을 떼어 낸다.',res:'손이 비명을 지르며 소용돌이 안으로 끌려 들어갔다. 문틀의 부적 하나가 검게 탔다.',f:F=>{F.grudge+=3}}]}},
+ '1-5:pagoda':{say:['결의','(다섯 방위… 무진 스님이 말한 오방진이야.)']},
+ '1-5:tile':{say:['놀람','(혜각… 무진 스님 스승의 이름.)']},
+ '1-5:lantern':{say:['슬픔','(윤… 그분이 이렇게 가까이 있었어.)']},
+ '2-1:desk':{who:'돌쇠',say:['슬픔','(어린 것이… 이걸 보고 혼자 얼마나 무서웠을까.)']},
+ '2-1:cab':{who:'돌쇠',say:['분노','(아이 셋을… 공물이라고 적었어.)']},
+ '2-1:lamp':{scare:{fx:'red',txt:'등잔을 들어 올리자 기름 위에 비친 얼굴이 돌쇠가 아니었다. 어린 도령이 새까만 눈으로 이쪽을 올려다보고 있다.',
+   opts:[{t:'등잔을 내려놓는다.',res:'다시 들여다보니 기름에는 돌쇠 자신의 얼굴뿐이다. 손이 떨렸다.'},
+         {t:'「윤재 도령이냐?」 하고 묻는다.',res:'기름 위의 입술이 움직였다. 「…우물.」 그리고 불이 꺼졌다.',f:F=>{F.c_down=1}}]}},
+ '2-1:herb':{who:'돌쇠',say:['','(부적은 몰라도, 거꾸로 붙인 건 알겠다. 누가 일부러 이랬어.)']},
+};
+const LINK={
+ '1-1':{a:'lamp',b:'window',txt:'파랗게 타는 불과 이상하게 긴 손가락. 산 사람이 아닌 것이 이 방 문 앞까지 와 있었다. 그리고 들어오지는 않았다.',f:F=>{F.d1=1}},
+ '1-2':{a:'foot',b:'pail',txt:'아이는 제 발로 우물에 갔다. 그런데 두레박줄은 칼로 잘렸다. 누군가 아이가 올라오지 못하게 막았다. 사람이다.',f:F=>{F.d2=1}},
+ '1-3':{a:'cloth',b:'jang',txt:'발톱 자국과 하얀 여우 털. 여우가 이 신당에 들었다. 그런데 언니의 일기는 건드리지 않았다. 여우는 뭔가를 훔치러 온 게 아니라, 지키고 있었던 걸까.',f:F=>{F.d3=1}},
+ '1-4':{a:'stone',b:'tree',txt:'맨발 자국이 끊긴 자리, 바로 위 가지에 여우 털. 아이들을 데려간 하얀 언니 곁에 여우가 함께 있었다.',f:F=>{F.d4=1}},
+ '1-5':{a:'pagoda',b:'lantern',txt:'깨진 가운데 방위, 그리고 「셋을 채우면 문이 열린다」. 사라진 아이 셋은 가운데 진을 깨뜨릴 제물이었다.',f:F=>{F.d5=1}},
+ '2-1':{a:'cab',b:'desk',txt:'장부의 「아이 셋」과 아들의 습자. 사또는 아이들을 바쳤고, 그걸 본 아들이 우물로 내려갔다.',f:F=>{F.d6=1;F.dol++}},
+};
+function clueSay(ev){
+  const who=ev.who||'홍련', [ex,t]=ev.say, k=SPK[who], p=(ex&&POR[k+':'+ex])||POR[k];
+  return `<div class="clsay">${p?`<span class="clpor" style="background-image:url(${p})"></span>`:''}<span><b>${who}</b> ${t}</span></div>`;
+}
+
 function drawMode(){
   const ui=$('#ui'), M=R.mode;
   if(M.k==='inv'){
+    if(M.scare){ const sc=M.scare;
+      ui.innerHTML=`<div class="inv"><div class="scare"><div class="sc-t">${sc.name}</div><div class="sc-x">${sc.txt}</div>${sc.res?`<div class="sc-r">${sc.res}</div><button class="btn pri" data-a="scareDone">계속 살펴본다</button>`:sc.opts.map((o,i)=>`<button class="opt" data-a="scarePick" data-v="${i}" data-n="${'一二'[i]}">${o.t}</button>`).join('')}</div></div>`; return; }
+    if(M.linking){ const L=LINK[R.e.id], sel=M.sel||[];
+      ui.innerHTML=`<div class="inv"><div class="scare link"><div class="sc-t">단서 잇기</div><div class="sc-x">서로 이어지는 단서 두 개를 고르세요.</div><div class="chips">${M.spots.filter(s=>M.found.includes(s.id)).map(s=>`<button class="chip2${sel.includes(s.id)?' on':''}" data-a="linkPick" data-v="${s.id}">${s.name}</button>`).join('')}</div>${M.linkMsg?`<div class="sc-r">${M.linkMsg}</div>`:''}<button class="btn" data-a="linkClose">돌아가기</button></div></div>`; return; }
     const reqLeft=M.spots.some(s=>s.req&&!M.found.includes(s.id)), all=M.found.length===M.spots.length;
     const pc=(v,d)=>(v/d*100).toFixed(2)+'%';
     const h=M.hint&&M.spots.find(s=>s.id===M.hint);
@@ -1758,7 +1826,7 @@ function drawMode(){
      ${h?`<span class="pulse" style="left:${pc(h.x,W)};top:${pc(h.y,H)};width:${pc(h.r*2,W)}"></span>`:''}
      ${M.miss?`<span class="miss" style="left:${pc(M.miss.x,W)};top:${pc(M.miss.y,H)}"></span>`:''}
      <div class="inv-msg"><div class="inv-txt">${M.msg||M.intro}</div><div class="row" style="justify-content:flex-end;gap:6px">
-      ${all?'':`<button class="btn sm" data-a="hint">힌트${isBeta()?'':' · 혼석 5'}</button>`}
+      ${LINK[R.e.id]&&!M.linked&&M.found.length>=3?'<button class="btn sm gold" data-a="linkOpen">단서 잇기</button>':''}${all?'':`<button class="btn sm" data-a="hint">힌트${isBeta()?'':' · 혼석 5'}</button>`}
       <button class="btn sm${reqLeft?'':' pri'}" data-a="invdone" ${reqLeft?'disabled':''}>${reqLeft?'중요한 단서를 더 찾아야 해요':all?'조사 마치기':'이대로 넘어가기'}</button></div></div></div>`;
     return;
   }
@@ -1775,7 +1843,9 @@ function invTap(e){
   if(best){
     if(!M.found.includes(best.id)){ M.found.push(best.id); if(best.f) best.f(S.F); R.log.push(`<span style="color:#c9a24a">察 ${best.name}</span> ${best.txt}`); if(M.hint===best.id) M.hint=null; R.fx.flash=.35;
       if(M.found.length===M.spots.length){ if(M.all) M.all(S.F); toast('모든 단서를 찾았다'); } save(); }
-    M.msg=`${best.img&&IMG[best.img]?`<img class="clueimg" src="${SPR[best.img]}" alt="${best.name}">`:''}<b>${best.name}</b> ${best.txt}`;
+    const ev=CLUE[R.e.id+':'+best.id];
+    if(ev&&ev.scare&&!M.scared){ M.scared=1; M.scare={...ev.scare,name:best.name,res:null,clue:`<b>${best.name}</b> ${best.txt}`}; R.fx[ev.scare.fx||'shake']=1; R.fx.red=1; drawMode(); return; }
+    M.msg=(ev&&ev.say?clueSay(ev):'')+`${best.img&&IMG[best.img]?`<img class="clueimg" src="${SPR[best.img]}" alt="${best.name}">`:''}<b>${best.name}</b> ${best.txt}`;
   } else { M.miss={x,y}; M.msg=MISS[Math.floor(Math.random()*MISS.length)]; }
   drawMode();
 }
@@ -1866,9 +1936,11 @@ const ACH=[
  {id:'song',c:'인연',n:'언니의 자장가',d:'아이들에게서 언니의 노래를 들었다',r:10,hid:1,t:()=>S.F.song},
  {id:'father',c:'인연',n:'넋거리의 아버지',d:'돌쇠 아버지의 넋을 불렀다',r:20,hid:1,t:()=>S.F.c_yun&&S.F.dolfather},
  {id:'pure',c:'도전',n:'맑은 마음',d:'원한 0으로 1부를 끝냈다',r:40,t:()=>st().pure},
+ {id:'ded1',c:'조사',n:'실마리',d:'단서 두 개를 이어 첫 추리를 해냈다',r:15,t:()=>(st().ded||0)>=1},
+ {id:'ded5',c:'조사',n:'먹빛 추리',d:'추리를 다섯 번 해냈다',r:40,t:()=>(st().ded||0)>=5},
  {id:'routes3',c:'도전',n:'세 갈래 길',d:'2부 1화의 세 루트를 모두 걸었다',r:40,t:()=>(st().routes2||[]).length>=3},
 ];
-{ const keep=['ep1','ep2','ep3','rit1','rit5','ritPerfect','ritFast','ritBack','inv1','inv5','sec1','route50','route100','dol','kind']; const f=ACH.filter(a=>keep.includes(a.id)); ACH.length=0; ACH.push(...f); }
+{ const keep=['ep1','ep2','ep3','rit1','rit5','ritPerfect','ritFast','ritBack','inv1','inv5','ded1','sec1','route50','route100','dol','kind']; const f=ACH.filter(a=>keep.includes(a.id)); ACH.length=0; ACH.push(...f); }
 const st=()=>S.stat||(S.stat={ritOk:0,invPerfect:0,secrets:[],routes2:[]});
 function routePct(){ const E=EPS.filter(e=>e.s); const t=E.reduce((a,e)=>a+routeStats(e).tot,0); return t?E.reduce((a,e)=>a+routeStats(e).got,0)/t:0; }
 let achQ=[], achBusy=false;
@@ -2056,6 +2128,15 @@ function act(a,v){
     case 'routes': clearInterval(typer); clearTimeout(autoT); R=null; UI.tab='book'; render(); setTimeout(()=>{ const el=document.getElementById('routes'); if(el) el.scrollIntoView({behavior:'smooth'}); },50); return;
     case 'undoGo': undoGo(); return;
     case 'invdone': invDone(); return;
+    case 'scarePick': { const M=R.mode, o=M.scare.opts[+v]; if(o.f) o.f(S.F); M.scare.res=o.res; R.log.push(`<span style="color:#e0483a">怪 ${M.scare.name}</span> ${M.scare.txt} ▶ ${o.t} — ${o.res}`); save(); drawMode(); return; }
+    case 'scareDone': { const M=R.mode; const c=M.scare.clue; M.scare=null; M.msg=c; drawMode(); return; }
+    case 'linkOpen': R.mode.linking=1; R.mode.sel=[]; R.mode.linkMsg=null; drawMode(); return;
+    case 'linkClose': R.mode.linking=0; drawMode(); return;
+    case 'linkPick': { const M=R.mode, L=LINK[R.e.id]; M.sel=M.sel||[]; if(M.sel.includes(v)) M.sel=M.sel.filter(x=>x!==v); else M.sel.push(v);
+      if(M.sel.length===2){ const ok=M.sel.includes(L.a)&&M.sel.includes(L.b);
+        if(ok){ M.linked=1; M.linking=0; if(L.f) L.f(S.F); st().ded=(st().ded||0)+1; if(!isBeta()) S.stones+=5; R.fx.flash=.6; R.log.push(`<span style="color:#c9a24a">推 추리</span> ${L.txt}`); M.msg=`<b style="color:#f3d27a">추리 성공</b> ${L.txt}`; toast(isBeta()?'추리 성공':'추리 성공 · 혼석 +5'); save(); checkAch(); }
+        else { M.sel=[]; M.linkMsg='…두 단서는 이어지지 않는 것 같다. 다시 생각해 보자.'; } }
+      drawMode(); return; }
     case 'ep': {
       const e=epById(v), st=epState(e);
       if(st==='done'||st==='open') { if(S.resume&&S.resume.ep===v&&st==='open') startEp(v,S.resume); else startEp(v,null); return; }
