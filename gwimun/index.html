@@ -1,7 +1,7 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>귀문 퇴마단 베타</title>
-<meta name="description" content="조선 괴담 선택지 이야기 게임 「귀문 퇴마단」 베타 테스트. 1부 1~3화 무료 공개.">
-<meta property="og:title" content="귀문 퇴마단 · 베타 테스트">
-<meta property="og:description" content="원귀가 된 언니, 사라진 아이들, 보름에 열리는 귀문. 당신의 선택으로 이야기가 갈라집니다.">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>묵야 베타</title>
+<meta name="description" content="조선 괴담 선택지 이야기 게임 「묵야(墨夜)」 베타 테스트. 1부 1~3화 무료 공개.">
+<meta property="og:title" content="묵야 墨夜 · 베타 테스트">
+<meta property="og:description" content="이름을 빼앗긴 자는, 그림자부터 사라진다. 당신의 선택으로 이야기가 갈라집니다.">
 <meta property="og:image" content="https://ehtom01.github.io/gwimun/og.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -171,7 +171,7 @@ const CAST={
   chongs:{n:'주모',img:null,side:'npc',d:'소리개 마을 어귀의 주막 주인. 입이 가볍지만 의리가 있다. 청련 무당에게 딸의 병을 고친 은혜가 있다.'},
 };
 const BGI={}; Object.entries(typeof BGDATA!=='undefined'?BGDATA:{}).forEach(([k,src])=>{ const im=new Image(); im.onload=()=>document.querySelectorAll('canvas[data-cg]').forEach(drawCGThumb); im.src=src; BGI[k]=im; });
-const baseName=w=>w.split('|')[0], exprOf=w=>w.split('|')[1]||'';
+const dispName=w=>{ const b=w.split('|')[0]; return S&&S.F&&(S.F.forgot||[]).includes(b)?'???':b; }, baseName=w=>w.split('|')[0], exprOf=w=>w.split('|')[1]||'';
 function porFor(w){ const ck=SPK[baseName(w)]; if(!ck) return null; const e=exprOf(w); return (e&&POR[ck+':'+e])||POR[ck]||(CAST[ck].img&&POR[CAST[ck].img])||null; }
 const SPK={}; Object.entries(CAST).forEach(([k,v])=>SPK[v.n]=k);
 const IMG={}; Object.entries(SPR).forEach(([k,src])=>{ const im=new Image(); im.onload=()=>{ document.querySelectorAll('canvas[data-cg]').forEach(drawCGThumb); }; im.src=src; IMG[k]=im; });
@@ -179,7 +179,7 @@ const IMG={}; Object.entries(SPR).forEach(([k,src])=>{ const im=new Image(); im.
 /* ===================== 대본 도구 ===================== */
 const N=t=>({k:'n',t}), Q=(w,t)=>({k:'s',w,t}), SH=(c,p='c')=>({k:'show',c,p}), HD=c=>({k:'hide',c}), CL={k:'clear'},
   BG=(b,m='day')=>({k:'bg',b,m}), CH=(...o)=>({k:'ch',o}), L=n=>({k:'lb',n}), G=n=>({k:'go',n}), IF=(f,n)=>({k:'if',f,n}),
-  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
+  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
 
 const ENDINGS={
   A:{n:'A. 연꽃이 진 밤',d:'언니의 한을 풀어 저승으로 보냈다.'},
@@ -202,18 +202,58 @@ const CGS={
 
 /* ----- 1부 1화 ----- */
 const E1=[
+ BG('temple','dream'),
+ N('보름날 밤. 귀문 앞.'),
+ SH('hong','l'), SH('cheong','r'), FX('red'),
+ Q('청련|슬픔','홍련아. 이제 문을 닫자.'),
+ Q('홍련|결의','응, 언니. 이번엔 내가 할게.'),
+ Q('청련|놀람','…그런데, 너.'),
+ Q('청련|슬픔','이름이… 뭐였더라.'),
+ FX('flash'), CL,
+ N('— 그보다 보름 전.'),
  BG('market','dusk'),
- N('조선 말. 도성 남문 밖 장터.'),
- N('해가 기울 무렵이면 장꾼들은 서둘러 좌판을 접는다. 요즘 들어 해 진 뒤의 장터에는 이상한 소문이 돌았다.'),
- N('홍련은 좌판의 약초를 하나씩 거두고 있었다. 쑥, 익모초, 당귀. 손끝에서 마른 풀 냄새가 났다.'),
- Q('홍련','(오늘도 방울 소리… 장터 한가운데서까지 들리다니.)'),
- N('짤랑. 누구의 손에도 들리지 않은 방울이, 오직 그녀의 귀에만 울렸다.'),
- Q('홍련|결의','안 들려. 난 아무것도 안 들려.'),
+ N('조선 말. 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
+ N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
+ Q('분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'),
+ N('대여섯 살쯤 된 계집아이가 좌판 앞에서 발돋움을 했다. 홍련은 웃으며 쑥 한 줌을 쥐여 주었다.'),
+ Q('홍련','돈은 됐어. 어머니께 달여 드려. 이름이 뭐니?'),
+ Q('분이','분이요! 김분이!'),
+ N('분이가 깡충 뛰어 돌아섰다. 노을이 길게 깔린 장터 바닥 위로 아이가 달려갔다.'),
+ N('그런데, 그림자가 없었다.'),
+ FX('red'),
+ Q('홍련|놀람','(…저 아이, 그림자가.)'),
+ N('짤랑. 누구의 손에도 들리지 않은 방울이, 오직 홍련의 귀에만 울렸다.'),
  N('3년 전부터였다. 언니가 사라진 그 밤 이후로, 방울 소리는 한 번도 그친 적이 없었다.'),
- Q('막례','아이고, 홍련이 오늘도 늦게까지 있었네. 떡 두 개 남았는데 가져가.'),
+ Q('홍련|결의','(안 들려. 난 아무것도 안 들려.)'),
+ N('홍련이 고개를 들었을 때, 아이는 장터 끝 골목으로 사라진 뒤였다.'),
+ N('얼마 지나지 않아, 한 여인이 장터를 헤매며 들어왔다.'),
+ Q('여인','혹시… 우리 애 못 봤어요? 이만한 계집애인데. 쑥 사러 간다고…'),
+ Q('홍련','방금 왔었어요. 분이요. 저쪽 골목으로—'),
+ Q('여인','분… 이?'),
+ N('여인이 그 이름을 처음 듣는 사람처럼 되뇌었다.'),
+ FORGET('분이'),
+ Q('여인','…그런데 내가 왜 여기 왔더라. 애? 나는… 애가 없는데.'),
+ N('여인은 고개를 갸웃하더니 빈손으로 돌아섰다. 체한 사람의 걸음이 아니었다.'),
+ Q('홍련|놀람','(방금 그 아이 이름이… 뭐였지? 분명히 들었는데.)'),
+ N('혀끝에 걸린 이름이 물에 젖은 먹처럼 번져 갔다. 대사 기록을 열어 보아도, 아이의 이름은 이미 지워져 있었다.'),
+ CH({t:'잊기 전에, 손바닥에 먹으로 아이의 이름을 적는다.',f:F=>{F.wrote=1},go:'e1wrote'},
+    {t:'아이가 사라진 골목으로 뛰어간다.',f:F=>{F.c_fox0=1},go:'e1chase'}),
+ L('e1wrote'),
+ N('홍련은 장부용 먹을 찍어 손바닥에 급히 적었다. 첫 글자를 쓰자마자 붓끝이 멈췄다. 나머지는 이미 기억에 없었다.'),
+ N('손바닥에 남은 것은 한 글자. 「분」.'),
+ Q('홍련|슬픔','(한 글자. 그래도 한 글자는 붙잡았어.)'),
+ G('e1after'),
+ L('e1chase'),
+ N('골목 끝은 막다른 담이었다. 아이는 없었다.'),
+ N('담벼락 아래, 하얀 털 한 줌과 쑥 한 줌이 나란히 떨어져 있었다. 털은 개털보다 길고 부드러웠다.'),
+ Q('홍련|놀람','(여우 털…?)'),
+ L('e1after'),
+ Q('막례','홍련아, 넋 나간 얼굴로 뭘 그리 서 있어. 떡 두 개 남았는데 가져가.'),
  N('옆 좌판의 떡장수 막례 할멈이었다. 장터에서 홍련의 사정을 아는 유일한 사람.'),
- Q('홍련','할머니, 오늘은 일찍 들어가세요. 요즘 해 지면 애들이 없어진다는 흉흉한 소문도 돌잖아요.'),
- Q('막례','소리개 마을 얘기 말이냐. 벌써 아이가 셋이나 없어졌단다.'),
+ Q('홍련','할머니… 방금 여기 쑥 사러 온 계집애, 보셨죠?'),
+ Q('막례','계집애? 오늘은 하루 종일 파리만 날렸는데.'),
+ Q('홍련|슬픔','……'),
+ Q('막례','해 지면 일찍 들어가거라. 요즘 흉흉하잖니. 소리개 마을에선 벌써 아이가 셋이나 없어졌단다.'),
  Q('막례','…거기가 네 고향 아니냐.'),
  Q('홍련|슬픔','…고향은 버렸어요.'),
  Q('막례','버린다고 버려지는 게 고향이면 세상에 무당이 왜 있겠냐.'),
@@ -1364,7 +1404,7 @@ const TABS=[['home','門','처음'],['list','卷','이야기'],['book','錄','�
 function render(){
   const app=$('#app'), reading=UI.tab==='read';
   app.classList.toggle('reading',reading);
-  const top=reading?'':`<div class="top"><div class="logo">귀문 <b>퇴마단</b></div><div class="cur"><span class="chip" style="color:#e0483a;border-color:#e0483a">베타</span></div></div>`;
+  const top=reading?'':`<div class="top"><div class="logo">墨夜 <b>묵야</b></div><div class="cur"><span class="chip" style="color:#e0483a;border-color:#e0483a">베타</span></div></div>`;
   app.innerHTML=top+({home:vHome,list:vList,book:vBook,ach:vAch,shop:vShop,read:vRead})[UI.tab]();
   $('#nav').hidden=reading;
   $('#nav .in').innerHTML=TABS.map(([k,i,n])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}"><i>${i}</i>${n}</button>`).join('');
@@ -1374,8 +1414,8 @@ function render(){
 function vHome(){
   const r=S.resume&&epById(S.resume.ep);
   return `<div class="sec"><div class="cover" style="background-image:linear-gradient(180deg,transparent 40%,rgba(10,8,6,.9)),url(${SPR.key})"><div class="t">
-   <div class="small" style="color:#e9ddb8">베타 테스트 · 1부 1~3화 무료 공개</div><h1>귀문 <b>퇴마단</b></h1>
-   <div class="small" style="color:#d8cdb6">조선 말, 도성 밖 폐사찰에 귀문이 열렸다. 무당, 포졸, 퇴마승, 사냥꾼. 네 사람의 이야기가 보름달 아래 하나로 모인다.</div></div></div>
+   <div class="small" style="color:#e9ddb8">베타 테스트 · 1부 1~3화 무료 공개</div><h1>墨夜 <b>묵야</b></h1>
+   <div class="small" style="color:#d8cdb6">이름을 빼앗긴 자는, 그림자부터 사라진다. 조선 말, 귀문이 열린 도성에서 신을 버린 무당과 귀신을 믿지 않는 포졸이 사라진 이름들을 쫓는다.</div></div></div>
   ${r?`<button class="btn pri" data-a="resume">이어 읽기 · ${r.part.no}부 ${r.no}화 「${r.t}」</button>`:`<button class="btn pri" data-a="play" data-v="1-1">처음부터 읽기</button>`}
   <div class="panel"><h3>이렇게 즐겨요</h3><div class="small muted" style="line-height:1.7">대사를 누르면 이야기가 넘어가요. 선택지에 따라 인물의 마음, 쌓이는 원한, 알게 되는 진실이 달라지고, 부마다 여러 엔딩으로 갈라져요. 모든 선택지는 무료예요. 조사와 퇴마를 잘해 내거나 인물에게 마음을 쓰면, 금빛 숨은 선택지가 열려요. 베타에서는 선택 되돌리기까지 모두 무료예요. 조사와 퇴마를 잘해 내면 금빛 숨은 선택지가 열려요. 한 화에 10분 남짓, 세 화를 이어서 읽으면 30분쯤 걸려요.${FORM_URL?' 다 읽으신 뒤 짧은 설문에 답해 주시면 정식판에 큰 도움이 돼요.':''}</div></div>
   <div class="panel"><div class="row sp"><h3>시즌 구성</h3><span class="small muted">${PARTS.length}부 · ${EPS.length}화</span></div>
@@ -1441,6 +1481,7 @@ function step(){
       case 'fx': R.fx[s.e]=1; break;
       case 'cg': if(!S.cgs.includes(s.id)){ S.cgs.push(s.id); toast('장면 수집 · '+CGS[s.id].n); } break;
       case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; S.F['end'+R.e.part.no]=s.id; break;
+      case 'forget': { S.F.forgot=[...(S.F.forgot||[]).filter(x=>x!==s.n),s.n]; R.log=R.log.map(l=>l.split('<b>'+s.n+'</b>').join('<b style="color:#8a7f6a">???</b>').split(s.n).join('<s style="opacity:.5">　　</s>')); R.fx.flash=1; toast('이름 하나가 지워졌다'); break; }
       case 'n': case 's': showLine(s); return;
       case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
@@ -1452,7 +1493,7 @@ function step(){
 }
 function showLine(s){
   R.line=s; R.full=s.t; R.shown=0; R.speaker=s.k==='s'?SPK[baseName(s.w)]||null:null;
-  R.log.push(s.k==='s'?`<b>${baseName(s.w)}</b> ${s.t}`:s.t);
+  R.log.push(s.k==='s'?`<b>${dispName(s.w)}</b> ${s.t}`:s.t);
   S.resume={ep:R.e.id,i:R.i-1,bg:R.bg,chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p}))}; save();
   clearInterval(typer); clearTimeout(autoT);
   drawUI();
@@ -1519,7 +1560,7 @@ function drawUI(){
   }
   if(!R.line){ ui.innerHTML=''; return; }
   const s=R.line, sp=s.k==='s', who=sp?baseName(s.w):'', ck=SPK[who], cls=ck?(CAST[ck].side==='ghost'?' ghost':CAST[ck].side==='foe'?' foe':''):'';
-  const pk=sp&&porFor(s.w); const human=ck==='cheong'&&exprOf(s.w); ui.innerHTML=`<div class="box${sp?'':' narr'}${pk?' hasp':''}">${pk?`<span class="por${human?'':cls}" style="background-image:url(${pk})"></span>`:''}${sp?`<span class="nameplate${cls}">${who}</span>`:''}<span id="txt">${R.full.slice(0,R.shown)}</span>${typer?'':'<span class="next">▼</span>'}</div>`;
+  const pk=sp&&porFor(s.w); const human=ck==='cheong'&&exprOf(s.w); ui.innerHTML=`<div class="box${sp?'':' narr'}${pk?' hasp':''}">${pk?`<span class="por${human?'':cls}" style="background-image:url(${pk})"></span>`:''}${sp?`<span class="nameplate${cls}">${dispName(s.w)}</span>`:''}<span id="txt">${R.full.slice(0,R.shown)}</span>${typer?'':'<span class="next">▼</span>'}</div>`;
 }
 function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
 
