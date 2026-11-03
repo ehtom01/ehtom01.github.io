@@ -596,8 +596,8 @@ const E2=[
  L('lie'),
  Q('홍련','저는 약초꾼입니다. 포졸 나리 길 안내를 하고 있어요.'),
  Q('촌장','흥, 그렇다면야. 주막에서 지내시오. …밤엔 우물 근처에 얼씬도 마시오.'),
- Q('태석','(작게) 거짓말이 느셨구려.'),
- Q('홍련','(작게) 살려고 배운 거예요.'),
+ Q('태석','(작게) 얼굴색 하나 안 변하고 잘도 둘러대는구려.'),
+ Q('홍련','(작게) 장터에서 3년 버티려면 이 정도는 해야죠.'),
  L('e2inn'),
  CL, BG('jumak','night'),
  N('마을 어귀의 주막. 손님이라고는 두 사람뿐이었다.'),
@@ -1965,22 +1965,19 @@ const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
 const EP_BGM={'1-1':3}; // 이 화는 처음부터 끝까지 한 곡으로 이어 간다
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
-  if(R.mode&&R.mode.k==='inv'&&R.mode.scare) return 4; // 깜짝 이벤트는 화 고정곡보다 우선
-  if(R.mode&&R.mode.k==='rit') return 5;
-  { const on=R.chars.filter(c=>c.ta>0).map(c=>c.c); if((on.includes('cheong')&&!R.cheongCalm)||['yunjae','wisp','dok','gumi'].some(k=>on.includes(k))) return 4; } // 귀신이 나오면 공포곡
-  if(R.bgmOv) return R.bgmOv;
-  if(EP_BGM[R.e.id]) return EP_BGM[R.e.id];
   if(R.ended) return 8;
-  const M=R.mode;
-  if(M&&M.k==='rit') return 5;
-  if(M&&M.k==='inv') return M.scare?4:3;
-  const ch=R.chars.filter(c=>c.ta>0).map(c=>c.c);
-  if(ch.includes('cheong')) return R.cheongCalm?6:3;
-  if(R.e.id==='1-5'&&R.bg.b==='temple') return 7;
-  if(['yunjae','wisp','dok','gumi'].some(k=>ch.includes(k))) return 4;
-  if(DAYBG.includes(R.bg.b)&&R.bg.m!=='night'&&R.bg.m!=='dream') return 2;
+  const M=R.mode, on=R.chars.filter(c=>c.ta>0).map(c=>c.c);
+  if(M&&M.k==='inv'&&M.scare) return 4;            // 깜짝 이벤트
+  if(R.e.id==='1-5'&&R.bg.b==='temple') return 7;    // 천도굿 장면은 굿 음악 하나로
+  if(M&&M.k==='rit') return 5;                       // 퇴마
+  if((on.includes('cheong')&&(!R.cheongCalm||R.e.id==='1-4'))||FOES.some(k=>on.includes(k))) return 4; // 귀신이 화면에 있으면 공포곡
+  if(R.bgmOv) return R.bgmOv;                        // 컷신이 정한 곡(그 장면까지만)
+  if(EP_BGM[R.e.id]) return EP_BGM[R.e.id];
+  if(R.bg.b==='shrineday'||on.includes('cheong')) return 6; // 자매의 기억, 슬픈 백련
+  if(DAYBG.includes(R.bg.b)&&R.bg.m==='day') return 2; // 낮 장면만 장터곡, 해 질 녘부터는 조사곡
   return 3;
 }
+const FOES=['yunjae','wisp','dok','gumi','mul'];
 function updateBgm(){ if(!AU.unlocked||(AU.hush&&performance.now()<AU.hush)) return; bgm(AU.on?bgmFor():null); }
 
 function drawMode(){
