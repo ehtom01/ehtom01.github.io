@@ -1484,8 +1484,8 @@ function cloudSave(){ if(!ACC||ACC.mode!=='google'||!FB) return; clearTimeout(cl
 const hasProg=st=>!!(st&&(st.cleared.length||st.resume));
 load();
 let TITLE={step:'tap'};
-(async()=>{ let f=null; try{ f=localStorage.getItem(KEY+'-redir'); localStorage.removeItem(KEY+'-redir'); }catch(e){} if(!f||!FB_CONFIG) return;
-  try{ TITLE.step='busy'; render(); const fb=await fbInit(); const r=await fb.auth.getRedirectResult(); const u=r&&r.user||await authReady(fb); if(u){ await afterLogin(u); } else TITLE.step='login'; }catch(e){ TITLE.step='login'; toast('구글 로그인에 실패했어요. 다시 시도해 주세요'); } if(UI.tab==='title') render(); })();
+setTimeout(async()=>{ let f=null; try{ f=localStorage.getItem(KEY+'-redir'); localStorage.removeItem(KEY+'-redir'); }catch(e){} if(!f||!FB_CONFIG) return;
+  try{ TITLE.step='busy'; render(); const fb=await fbInit(); const r=await fb.auth.getRedirectResult(); const u=r&&r.user||await authReady(fb); if(u){ await afterLogin(u); } else TITLE.step='login'; }catch(e){ TITLE.step='login'; toast('구글 로그인에 실패했어요. 다시 시도해 주세요'); } if(UI.tab==='title') render(); },0);
 
 /* ===================== 공통 ===================== */
 const $=s=>document.querySelector(s);
