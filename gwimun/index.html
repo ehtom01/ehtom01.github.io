@@ -178,6 +178,10 @@ h3{font-size:16px;font-weight:700;margin:0}
 .acc i{width:7px;height:7px;border-radius:50%;background:#6b675f;display:inline-block}
 .acc.on i{background:#5fbf8a;box-shadow:0 0 6px #5fbf8a}
 /* ===== 타이틀 ===== */
+.title .ttop{position:absolute;left:0;right:0;top:calc(18px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;gap:6px}
+.title .ttop .tlogo h1{font-size:clamp(44px,8vh,64px)} .title .ttop .tseal{width:38px;height:38px;margin-top:-19px;font-size:14px;margin-left:8px}
+.title .ttop .tsub{font-size:13px}
+@media (max-height:820px){.title .in{gap:10px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}.tcard{padding:14px 14px;gap:8px}.tcard .btn{padding:11px 12px}.tseal{width:44px;height:44px;margin-top:-22px;font-size:16px}}
 @media (max-width:600px){.title .art{-webkit-mask-image:none!important;mask-image:none!important}}
 .title{position:fixed;inset:0;z-index:40;background:#060607;overflow:hidden;cursor:pointer}
 .title .blur{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(28px) brightness(.35) saturate(.8)}
@@ -194,7 +198,7 @@ h3{font-size:16px;font-weight:700;margin:0}
 @keyframes ash{10%{opacity:.7}90%{opacity:.4}to{transform:translate(40px,105vh);opacity:0}}
 .title .in{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,480px);padding:0 24px calc(36px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 .tlogo{position:relative;display:flex;justify-content:center;animation:tin 1.4s ease-out backwards}
-.tlogo h1{margin:0;font-family:"Noto Serif KR",serif;font-weight:900;font-size:clamp(72px,22vw,108px);line-height:1;color:#f3ecdd;text-shadow:0 0 30px #000,0 4px 24px #000}
+.tlogo h1{margin:0;font-family:"Noto Serif KR",serif;font-weight:900;font-size:clamp(56px,min(22vw,11vh),108px);line-height:1;color:#f3ecdd;text-shadow:0 0 30px #000,0 4px 24px #000}
 .tseal{position:absolute;left:100%;top:50%;margin:-26px 0 0 12px;width:52px;height:52px;background:linear-gradient(180deg,#c3332a,#9b2019);border-radius:5px;transform:rotate(-5deg);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:900;font-size:19px;color:#f8eedd;box-shadow:inset 0 1px 0 #ffffff40,0 4px 12px #000a}
 .tsub{font-size:15px;font-weight:700;letter-spacing:.3em;color:#efe4cb;text-shadow:0 0 8px #000,0 2px 10px #000;animation:tin 1.4s .3s ease-out backwards}
 .thook{font-size:17px;font-weight:700;color:#f3ecdd;line-height:1.6;animation:tin 1.4s .5s ease-out backwards;text-shadow:0 2px 10px #000}
@@ -1541,9 +1545,9 @@ function vTitle(){
   if(TITLE.step==='login'){
     const fbOn=!!FB_CONFIG;
     card=`<div class="tcard" data-a="noop"><h3>계정을 선택하세요</h3>
-      ${ACC&&ACC.mode==='google'?`<button class="btn gbtn" data-a="gLogin" data-v="reuse"><span class="g">G</span>${ACC.name||'구글 계정'}으로 계속</button>`:''}
-      <button class="btn gbtn" data-a="gLogin"><span class="g">G</span>Google 계정으로 시작${fbOn?'':'<span class="soon">준비 중</span>'}</button>
+      ${ACC&&ACC.mode==='google'?`<button class="btn gbtn" data-a="gLogin" data-v="reuse"><span class="g">G</span>${ACC.name||'Google'} 계정으로 계속</button>`:`<button class="btn gbtn" data-a="gLogin"><span class="g">G</span>Google 계정으로 시작${fbOn?'':'<span class="soon">준비 중</span>'}</button>`}
       <button class="btn" data-a="guest">게스트로 시작</button>
+      ${ACC&&ACC.mode==='google'?'<button class="tlink" data-a="gLogin">다른 Google 계정으로 시작</button>':''}
       <div class="note">Google 계정으로 시작하면 휴대폰을 바꾸거나 다른 기기에서도 이어서 읽을 수 있어요. 게스트 기록은 이 기기에만 저장돼요.</div></div>`;
   } else if(TITLE.step==='busy'){
     card=`<div class="tcard" data-a="noop"><h3>계정을 확인하고 있어요…</h3></div>`;
@@ -1554,8 +1558,8 @@ function vTitle(){
       <button class="tlink" data-a="tSwitch">다른 계정으로 시작</button></div>`;
   } else card=`<div class="ttap">화면을 눌러 시작하세요</div>`;
   return `<div class="title" data-a="${TITLE.step==='tap'?'ttap':'noop'}"><div class="blur" style="background-image:url(${SPR.key})"></div><div class="art" style="background-image:url(${SPR.key})"></div><div class="shade"></div><div class="mist m3"></div><div class="mist m1"></div>${ash}<div class="mist m2"></div>
-   <div class="in"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div>
-   ${TITLE.step==='tap'?'<div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div>':''}${card}</div></div>`;
+   ${TITLE.step==='tap'?`<div class="in"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div><div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div>${card}</div>`
+   :`<div class="ttop"><div class="tlogo"><h1>墨夜</h1><div class="tseal">묵야</div></div><div class="tsub">시즌 1 · 보름의 귀문</div></div><div class="in">${card}</div>`}</div>`;
 }
 function authReady(fb){ return new Promise(ok=>{ const un=fb.auth.onAuthStateChanged(u=>{ un(); ok(u); }); }); }
 async function afterLogin(u){
