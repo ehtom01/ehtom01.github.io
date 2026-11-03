@@ -35,7 +35,7 @@ button:focus-visible,[data-a]:focus-visible{outline:2px solid var(--gold);outlin
 .g{color:var(--gold)} .s{color:#9fd1c0}
 nav{position:fixed;left:0;right:0;bottom:0;background:#0a0c10;border-top:1px solid var(--line);z-index:20;
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
-nav .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+nav .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
 nav button{background:none;border:0;padding:6px 0;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:8px}
 nav button i{font-style:normal;font-size:16px;line-height:1;font-family:serif}
 nav button.on{color:var(--hanji);background:var(--surface)} nav button.on i{color:var(--accent)}
@@ -133,6 +133,15 @@ h3{font-size:16px;font-weight:700;margin:0}
 .rpt ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:13px}
 .rpt li.on{color:var(--fg)} .rpt li.unk{color:#6b675f;letter-spacing:.2em} .rpt li.sec{color:var(--gold)}
 .mj{color:var(--gold)}
+.achpop{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-20px);opacity:0;z-index:70;display:flex;gap:10px;align-items:center;background:#1f1a10;border:1.5px solid var(--gold);border-radius:10px;padding:10px 14px;width:min(92%,380px);color:#f1e9d6;box-shadow:0 6px 20px #000a;animation:achin .35s forwards}
+.achpop.out{animation:achout .35s forwards}
+@keyframes achin{to{transform:translate(-50%,0);opacity:1}} @keyframes achout{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-20px);opacity:0}}
+.ai{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:serif;font-weight:700;background:#3a3220;color:var(--gold);border:1px solid var(--gold)}
+.ar{margin-left:auto;flex:none;font-size:12px;color:var(--gold);white-space:nowrap}
+.achrow{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.achrow .at{min-width:0;font-size:13.5px}
+.achrow:not(.on) .ai{background:var(--raise);color:var(--muted);border-color:var(--line)}
+.achrow:not(.on) .ar{color:var(--muted)}
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--raise);border:1px solid var(--accent);border-radius:8px;padding:8px 14px;z-index:60;font-size:13px;max-width:90%;text-align:center}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -203,9 +212,9 @@ const E1=[
  N('삼 년 전부터였다. 언니가 사라진 그 밤 이후로, 방울 소리는 한 번도 그친 적이 없었다.'),
  Q('막례','아이고, 홍련이 오늘도 늦게까지 있었네. 떡 두 개 남았는데 가져가.'),
  N('옆 좌판의 떡장수 막례 할멈이었다. 장터에서 홍련의 사정을 아는 유일한 사람.'),
- Q('홍련','할머니, 오늘은 일찍 들어가세요. 해 지면 장터에 이상한 게 돈다잖아요.'),
- Q('막례','그 소문 말이냐. 소리개 마을에서 애들이 없어진다는 거.'),
- Q('막례','벌써 셋째란다. 거기가 네 고향 아니냐.'),
+ Q('홍련','할머니, 오늘은 일찍 들어가세요. 요즘 해 지면 애들이 없어진다는 흉흉한 소문도 돌잖아요.'),
+ Q('막례','소리개 마을 얘기 말이냐. 벌써 셋째란다.'),
+ Q('막례','…거기가 네 고향 아니냐.'),
  Q('홍련|슬픔','…고향은 버렸어요.'),
  Q('막례','버린다고 버려지는 게 고향이면 세상에 무당이 왜 있겠냐.'),
  N('막례가 떡 보따리를 내밀며 기침을 했다. 마른기침이 길게 이어졌다.'),
@@ -654,7 +663,7 @@ const E3=[
     {t:'억지로 떼지 않고 덮어 둔다.',go:'close'}),
  L('lastfree'),
  N('발톱 자국, 그리고 여우 털. 홍련은 여우 털을 붙은 장 사이에 대 보았다. 종이가 스르르 떨어졌다. 여우의 기운으로 봉해 둔 것이었다.'),
- SET(F=>{F.truth3=1}), G('lastread'),
+ SET(F=>{F.truth3=1; if(!st().secrets.some(x=>x.startsWith('1-3:'))) st().secrets.push('1-3:lastfree');}), G('lastread'),
  L('last'),
  FX('flash'),
  N('방울이 울리자 종이가 스스로 떨어졌다. 흐린 먹으로 쓴 마지막 몇 줄.'),
@@ -1351,12 +1360,12 @@ function epState(e){
 function left(ms){ ms=Math.max(0,ms); const h=Math.floor(ms/3600000), m=Math.floor(ms%3600000/60000); return `${h}시간 ${m}분`; }
 
 /* ===================== 화면 ===================== */
-const TABS=[['home','門','처음'],['list','卷','이야기'],['book','錄','도감']];
+const TABS=[['home','門','처음'],['list','卷','이야기'],['book','錄','도감'],['ach','功','업적']];
 function render(){
   const app=$('#app'), reading=UI.tab==='read';
   app.classList.toggle('reading',reading);
   const top=reading?'':`<div class="top"><div class="logo">귀문 <b>퇴마단</b></div><div class="cur"><span class="chip" style="color:#e0483a;border-color:#e0483a">베타</span></div></div>`;
-  app.innerHTML=top+({home:vHome,list:vList,book:vBook,shop:vShop,read:vRead})[UI.tab]();
+  app.innerHTML=top+({home:vHome,list:vList,book:vBook,ach:vAch,shop:vShop,read:vRead})[UI.tab]();
   $('#nav').hidden=reading;
   $('#nav .in').innerHTML=TABS.map(([k,i,n])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}"><i>${i}</i>${n}</button>`).join('');
   if(reading) mountStage();
@@ -1458,9 +1467,10 @@ function pickChoice(idx){
   const o=R.choice[idx];
   if(o.prem&&!BETA){ if(S.stones<o.prem){ toast(`혼석이 ${o.prem} 필요해요. 상점에서 충전할 수 있어요`); return; } S.stones-=o.prem; toast(`혼석 -${o.prem} · 특별 선택지`); }
   R.log.push(`<span style="color:#9fd1c0">▶ ${o.t}</span>`);
+  if(o.secret){ const k=R.e.id+':'+o.t.slice(0,12); if(!st().secrets.includes(k)) st().secrets.push(k); }
   if(R.snap){ if(!S.seen) S.seen={}; const k=R.e.id+':'+R.snap.i; S.seen[k]=S.seen[k]||[]; if(!S.seen[k].includes(o.t)) S.seen[k].push(o.t); }
   if(o.f) o.f(S.F);
-  R.picked=o.t; R.choice=null; if(o.go) R.i=R.e.lb[o.go]; save(); step();
+  R.picked=o.t; R.choice=null; if(o.go) R.i=R.e.lb[o.go]; save(); step(); checkAch();
 }
 const UNDO_COST=10;
 function undoAsk(){ if(!R||!R.snap||!R.picked) return; const free=isBeta(); openModal(`<h3>선택 되돌리기</h3><p class="small" style="margin:0;line-height:1.6">방금 고른 선택지로 돌아가 다시 고를 수 있어요.<br><span class="muted">「${R.picked}」</span></p><button class="btn pri" data-a="undoGo">${free?'되돌리기 (베타 무료)':'되돌리기 · 혼석 '+UNDO_COST}</button><button class="btn" data-a="close">닫기</button>`); }
@@ -1474,8 +1484,10 @@ function finishEp(){
   const nx=nextEp(e);
   if(nx&&playable(nx)&&!S.open.includes(nx.id)) S.open.push(nx.id);
   if(!S.track) S.track={}; S.track[e.id]=(S.track[e.id]||0)+1;
+  if(e.id==='1-5'&&S.F.grudge===0) st().pure=1;
+  if(e.id==='2-1'&&S.F.route2&&!st().routes2.includes(S.F.route2)) st().routes2.push(S.F.route2);
   S.resume=null; save();
-  R.ended={nx}; R.choice=null; drawUI();
+  R.ended={nx}; R.choice=null; drawUI(); checkAch();
 }
 function unlockEp(id,how){
   if(how==='key'){ if(S.keys<1){ toast('열쇠가 없어요. 상점에서 구할 수 있어요'); return false; } S.keys--; toast('열쇠 1개 사용'); }
@@ -1550,9 +1562,9 @@ function invTap(e){
 function invHint(){
   const M=R.mode; const left=M.spots.filter(s=>!M.found.includes(s.id)).sort((a,b)=>(b.req||0)-(a.req||0)); if(!left.length) return;
   if(!isBeta()){ if(S.stones<5){ toast('혼석이 5 필요해요'); return; } S.stones-=5; save(); }
-  M.hint=left[0].id; M.msg='희미한 기운이 느껴진다. 빛나는 곳을 눌러 보자.'; drawMode();
+  M.usedHint=1; M.hint=left[0].id; M.msg='희미한 기운이 느껴진다. 빛나는 곳을 눌러 보자.'; drawMode();
 }
-function invDone(){ const M=R.mode; R.log.push(`▶ 조사 마침 · 단서 ${M.found.length}/${M.spots.length}`); R.mode=null; save(); step(); }
+function invDone(){ const M=R.mode; if(M.found.length===M.spots.length&&!M.usedHint) st().invPerfect++; R.log.push(`▶ 조사 마침 · 단서 ${M.found.length}/${M.spots.length}`); R.mode=null; save(); step(); }
 
 const ring=(cx,cy,r,a0=0,a1=Math.PI*2,st=.25)=>{const p=[];for(let a=a0;a<=a1+.001;a+=st)p.push([cx+Math.cos(a-Math.PI/2)*r,cy+Math.sin(a-Math.PI/2)*r]);return p;};
 const TALI=[[[134,104],[226,104]],[[180,86],[180,330]],[[140,168],[220,196],[140,228],[220,262]],(()=>{const p=[];for(let a=0;a<=Math.PI*2+.01;a+=.3)p.push([180+Math.cos(a-Math.PI/2)*20,306+Math.sin(a-Math.PI/2)*20]);return p;})()];
@@ -1573,6 +1585,7 @@ function startRitual(){
   cv2.addEventListener('pointerup',up); cv2.addEventListener('pointercancel',up);
   function finish(ok){
     if(done) return; done=true; ok=ok&&(total<30||off/total<.45);
+    const sx=st(); if(ok){ sx.ritOk++; if(cover()>=.95) sx.perfect=1; if(performance.now()-T0<6000) sx.fast=1; if(sx.lastFail) sx.comeback=1; sx.lastFail=0; } else sx.lastFail=1; setTimeout(checkAch,1300);
     const res=$('#ritRes'); if(res){ res.textContent=ok?'봉인!':'획이 흐트러졌다…'; res.className='ritres show'+(ok?'':' fail'); }
     R.log.push(ok?'<span style="color:#e0483a">符 부적 봉인 성공</span>':'<span style="color:#9b968b">符 부적 실패</span>');
     setTimeout(()=>{ if(!R||R.mode!==M) return; R.mode=null; R.i=R.e.lb[ok?M.win:M.lose]; step(); },1200);
@@ -1599,6 +1612,64 @@ function startRitual(){
     if(!done&&left<=0) finish(cv>=.85);
   }
   requestAnimationFrame(loop);
+}
+
+
+/* ===================== 업적 ===================== */
+const ACH=[
+ {id:'ep1',c:'이야기',n:'첫 발걸음',d:'1부 1화를 끝까지 읽었다',r:10,t:()=>S.cleared.includes('1-1')},
+ {id:'ep2',c:'이야기',n:'우물 속의 아이',d:'2화에서 복동이를 구해 냈다',r:10,t:()=>S.cleared.includes('1-2')},
+ {id:'ep3',c:'이야기',n:'어머니의 방울',d:'3화를 끝까지 읽었다',r:10,t:()=>S.cleared.includes('1-3')},
+ {id:'part1',c:'이야기',n:'붉은 연꽃의 굿',d:'1부를 완주했다',r:30,t:()=>S.cleared.includes('1-5')},
+ {id:'endA',c:'엔딩',n:'연꽃이 진 밤',d:'언니를 저승으로 보냈다',r:20,t:()=>S.endings.includes('A')},
+ {id:'endN',c:'엔딩',n:'반쪽의 천도',d:'다 풀지 못한 한을 마주했다',r:20,t:()=>S.endings.includes('N')},
+ {id:'endB',c:'엔딩',n:'방울 속의 언니',d:'언니를 곁에 붙잡아 두었다',r:20,t:()=>S.endings.includes('B')},
+ {id:'endS',c:'엔딩',n:'두 개의 목소리',d:'숨은 엔딩, 신내림을 받았다',r:40,hid:1,t:()=>S.endings.includes('S')},
+ {id:'endC',c:'엔딩',n:'붉은 안개',d:'원한에 삼켜졌다',r:30,hid:1,t:()=>S.endings.includes('C')},
+ {id:'endAll',c:'엔딩',n:'다섯 갈래의 밤',d:'1부 엔딩 다섯 개를 모두 봤다',r:100,t:()=>['A','N','B','S','C'].every(x=>S.endings.includes(x))},
+ {id:'rit1',c:'퇴마',n:'첫 봉인',d:'부적 퇴마에 처음 성공했다',r:10,t:()=>st().ritOk>=1},
+ {id:'rit5',c:'퇴마',n:'손이 기억한다',d:'부적 퇴마에 다섯 번 성공했다',r:20,t:()=>st().ritOk>=5},
+ {id:'ritPerfect',c:'퇴마',n:'완벽한 획',d:'부적 획을 95% 이상 정확하게 그렸다',r:20,t:()=>st().perfect},
+ {id:'ritFast',c:'퇴마',n:'번개 같은 손',d:'부적을 6초 안에 완성했다',r:20,t:()=>st().fast},
+ {id:'ritBack',c:'퇴마',n:'다시 쥔 붓',d:'퇴마에 실패한 뒤, 다음 퇴마에서 성공했다',r:15,t:()=>st().comeback},
+ {id:'inv1',c:'조사',n:'매의 눈',d:'힌트 없이 한 장면의 단서를 모두 찾았다',r:10,t:()=>st().invPerfect>=1},
+ {id:'inv5',c:'조사',n:'명탐정',d:'힌트 없이 다섯 장면의 단서를 모두 찾았다',r:30,t:()=>st().invPerfect>=5},
+ {id:'sec1',c:'숨은 길',n:'숨은 길을 걷다',d:'금빛 숨은 선택지를 처음 골랐다',r:15,t:()=>(st().secrets||[]).length>=1},
+ {id:'secAll',c:'숨은 길',n:'숨은 길의 주인',d:'1부 숨은 선택지 네 개를 모두 골랐다',r:50,t:()=>['1-1','1-2','1-3','1-5'].every(ep=>(st().secrets||[]).some(x=>x.startsWith(ep+':')))},
+ {id:'route50',c:'숨은 길',n:'갈림길 탐험가',d:'열린 이야기의 갈림길을 절반 넘게 밝혔다',r:20,t:()=>routePct()>=.5},
+ {id:'route100',c:'숨은 길',n:'갈림길의 주인',d:'열린 이야기의 갈림길을 모두 밝혔다',r:80,t:()=>routePct()>=1},
+ {id:'dol',c:'인연',n:'돌쇠의 신뢰',d:'돌쇠와 깊은 믿음을 쌓았다',r:15,t:()=>(S.F.dol||0)>=4},
+ {id:'mujin',c:'인연',n:'무진의 고백',d:'무진에게서 스승 이야기를 들었다',r:15,t:()=>S.F.mujinstory},
+ {id:'beom',c:'인연',n:'사냥꾼의 빚',d:'범이가 동료가 되었다',r:15,t:()=>S.F.beomjoin},
+ {id:'kind',c:'인연',n:'도라지 한 줌',d:'막례 할멈의 기침을 걱정했다',r:5,hid:1,t:()=>S.F.kind},
+ {id:'song',c:'인연',n:'언니의 자장가',d:'아이들에게서 언니의 노래를 들었다',r:10,hid:1,t:()=>S.F.song},
+ {id:'father',c:'인연',n:'넋거리의 아버지',d:'돌쇠 아버지의 넋을 불렀다',r:20,hid:1,t:()=>S.F.c_yun&&S.F.dolfather},
+ {id:'pure',c:'도전',n:'맑은 마음',d:'원한 0으로 1부를 끝냈다',r:40,t:()=>st().pure},
+ {id:'routes3',c:'도전',n:'세 갈래 길',d:'2부 1화의 세 루트를 모두 걸었다',r:40,t:()=>(st().routes2||[]).length>=3},
+];
+{ const keep=['ep1','ep2','ep3','rit1','rit5','ritPerfect','ritFast','ritBack','inv1','inv5','sec1','route50','route100','dol','kind']; const f=ACH.filter(a=>keep.includes(a.id)); ACH.length=0; ACH.push(...f); }
+const st=()=>S.stat||(S.stat={ritOk:0,invPerfect:0,secrets:[],routes2:[]});
+function routePct(){ const E=EPS.filter(e=>e.s); const t=E.reduce((a,e)=>a+routeStats(e).tot,0); return t?E.reduce((a,e)=>a+routeStats(e).got,0)/t:0; }
+let achQ=[], achBusy=false;
+function checkAch(){
+  if(!S.ach) S.ach={};
+  ACH.forEach(a=>{ if(S.ach[a.id]) return; let ok=false; try{ ok=!!a.t(); }catch(e){} if(ok){ S.ach[a.id]=Date.now(); S.stones+=a.r; achQ.push(a); } });
+  save(); if(!achBusy) achNext();
+}
+function achNext(){
+  const a=achQ.shift(); if(!a){ achBusy=false; return; } achBusy=true;
+  const d=document.createElement('div'); d.className='achpop'; d.innerHTML=`<span class="ai">功</span><span><b>업적 달성 · ${a.n}</b><br><span class="small">${a.d}</span></span>`;
+  document.body.appendChild(d); setTimeout(()=>d.classList.add('out'),2300); setTimeout(()=>{ d.remove(); achNext(); },2700);
+}
+function vAch(){
+  if(!S.ach) S.ach={};
+  const got=ACH.filter(a=>S.ach[a.id]).length, cats=[...new Set(ACH.map(a=>a.c))];
+  return `<div class="sec"><h2>업적</h2>
+  <div class="panel"><div class="row sp"><h3>달성</h3><span class="small muted">${got}/${ACH.length}</span></div>
+   <div style="height:8px;border-radius:4px;background:#07080b;overflow:hidden"><div style="height:100%;width:${got/ACH.length*100}%;background:var(--gold)"></div></div>
+   <div class="small muted">베타에서 달성할 수 있는 업적만 보여요. 숨겨진 업적은 달성하기 전까지 내용이 가려져 있어요.</div></div>
+  ${cats.map(c=>`<div class="panel"><h3>${c}</h3>${ACH.filter(a=>a.c===c).map(a=>{ const on=!!S.ach[a.id], hide=a.hid&&!on;
+    return `<div class="achrow${on?' on':''}"><span class="ai">${on?'功':'?'}</span><span class="at"><b>${hide?'숨겨진 업적':a.n}</b><br><span class="small muted">${hide?'어떤 선택이 이 업적을 열까요?':a.d}</span></span><span class="ar">${on?'달성':''}</span></div>`; }).join('')}</div>`).join('')}</div>`;
 }
 
 /* ===================== 배경 그리기 ===================== */
