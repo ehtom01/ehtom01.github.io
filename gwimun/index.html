@@ -1898,7 +1898,7 @@ function thud(){ if(!AU.on) return; try{ ACX=ACX||new (window.AudioContext||wind
   const n=c.createBuffer(1,c.sampleRate*.35,c.sampleRate), d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
   const ns=c.createBufferSource(); ns.buffer=n; const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=380; const ng=c.createGain(); ng.gain.value=.9; ns.connect(lp); lp.connect(ng); ng.connect(c.destination); ns.start(t);
 }catch(e){} }
-function scareHit(){ const o=AU.cur&&TRK[AU.cur]; if(o){ if(o._fade) cancelAnimationFrame(o._fade); o._fade=0; o.volume=0; o.pause(); }
+function scareHit(){ swTok++; stopAll(0);
   AU.cur=null; AU.el=null; bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; AU.hush=performance.now()+1300;
   thud(); setTimeout(()=>sfx('scare'),250); setTimeout(()=>{ AU.hush=0; updateBgm(); },1350); }
 function fadeTo(a,to,ms,done){ if(a._fade) cancelAnimationFrame(a._fade); const from=a.volume, t0=performance.now(); const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); a.volume=Math.max(0,Math.min(1,from+(to-from)*p)); if(p<1) a._fade=requestAnimationFrame(tick); else { a._fade=0; if(done) done(); } }; tick(); }
@@ -1906,23 +1906,27 @@ function fadeTo(a,to,ms,done){ if(a._fade) cancelAnimationFrame(a._fade); const 
 const TRK={}, PRIO=[1,4,5,8];
 let bgmWant=null, bgmTimer=0, bgmSince=0;
 const XF=5; // 곡 끝에서 처음으로 돌아갈 때 5초 동안 겹쳐 자연스럽게 이어 붙임
-function mkTrk(n){ const a=new Audio(BGM_URL(n)); a.loop=false; a.preload='auto'; a.volume=0;
-  a.addEventListener('timeupdate',()=>{ if(a._xf||!a.duration||a.duration-a.currentTime>XF||TRK[n]!==a) return; a._xf=1;
-    const b=mkTrk(n); TRK[n]=b; if(AU.cur===n){ AU.el=b; b.play().then(()=>fadeTo(b,AU.vol,XF*1000)).catch(()=>{}); } fadeTo(a,0,XF*1000,()=>a.pause()); });
+const ALLBGM=new Set(); let swTok=0;
+function mkTrk(n){ const a=new Audio(BGM_URL(n)); a.loop=false; a.preload='auto'; a.volume=0; ALLBGM.add(a);
+  a.addEventListener('timeupdate',()=>{ if(a._xf||!a.duration||a.duration-a.currentTime>XF||TRK[n]!==a||AU.cur!==n) return; a._xf=1;  // 지금 틀고 있는 곡만 끝에서 이어 붙임
+    const b=mkTrk(n); TRK[n]=b; AU.el=b; b.play().then(()=>{ if(AU.cur===n) fadeTo(b,AU.vol,XF*1000); else b.pause(); }).catch(()=>{}); fadeTo(a,0,XF*1000,()=>a.pause()); });
   return a; }
 function trk(n){ if(!TRK[n]) TRK[n]=mkTrk(n); return TRK[n]; }
+/* 지금 소리 나는 곡을 모두 줄여서 멈춤 (keep은 제외). 곡이 겹쳐 들리지 않게 하는 유일한 통로 */
+function stopAll(ms,keep){ let any=false; ALLBGM.forEach(a=>{ if(a===keep||a.paused) return; any=true; if(ms<=0){ if(a._fade) cancelAnimationFrame(a._fade); a._fade=0; a.volume=0; a.pause(); } else fadeTo(a,0,ms,()=>a.pause()); }); return any; }
 function bgmSwitch(n){
   if(AU.cur===n) return;
-  const old=AU.cur&&TRK[AU.cur]; AU.cur=n; bgmSince=performance.now();
-  const start=()=>{ if(AU.cur!==n||!n) return; const a=trk(n); if(n===8||n===4) { try{ a.currentTime=0; }catch(e){} }
-    a.volume=0; AU.el=a; a.play().then(()=>{ if(AU.cur===n) fadeTo(a,AU.vol,n===4?700:1600); else a.pause(); }).catch(()=>{ if(AU.cur===n){ AU.cur=null; AU.el=null; AU.blocked=true; } }); };
-  if(old&&!old.paused){ fadeTo(old,0,n===4?600:1000,()=>{ old.pause(); setTimeout(start,n===4?80:250); }); } else start();
+  AU.cur=n; bgmSince=performance.now(); const tok=++swTok;
+  const out=n===4?600:1000, gap=n===4?80:250;
+  const playing=stopAll(out);
+  setTimeout(()=>{ if(tok!==swTok||AU.cur!==n||!n) return; stopAll(0); const a=trk(n); if(n===8||n===4){ try{ a.currentTime=0; }catch(e){} }
+    a.volume=0; AU.el=a; a.play().then(()=>{ if(tok===swTok&&AU.cur===n) fadeTo(a,AU.vol,n===4?700:1600); else a.pause(); }).catch(()=>{ if(AU.cur===n){ AU.cur=null; AU.el=null; AU.blocked=true; } }); }, playing?out+gap:0);
 }
 function bgm(n){
   if(!AU.unlocked||!AU.on){ AU.want=n; return; }
   if(n===bgmWant&&AU.cur===n) return;
   bgmWant=n; clearTimeout(bgmTimer); bgmTimer=0;
-  if(!n){ const o=AU.cur&&TRK[AU.cur]; AU.cur=null; if(o) fadeTo(o,0,500,()=>o.pause()); return; }
+  if(!n){ swTok++; AU.cur=null; stopAll(500); return; }
   bgmSwitch(n);
 }
 /* 타이틀 → 이야기: 먹물이 번지며 화면이 잠기고, 타이틀 곡은 천천히 사라졌다가 이야기 곡이 새로 피어난다 */
@@ -1953,12 +1957,12 @@ function inkSpread(cv,dur,done){
 function storyGo(fn){
   if(document.querySelector('.inkwipe')) return;
   sfx('bell'); bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0;
-  const o=AU.cur&&TRK[AU.cur]; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,1600,()=>o.pause());
+  swTok++; AU.cur=null; AU.el=null; AU.hush=performance.now()+1650; stopAll(1600);
   const d=document.createElement('div'); d.className='inkwipe'; const cv=document.createElement('canvas'); d.appendChild(cv); document.body.appendChild(d);
   inkSpread(cv,1700,()=>{ fn(); requestAnimationFrame(()=>d.classList.add('out')); setTimeout(()=>d.remove(),1200); });
 }
 function unlockAudio(){ if(AU.unlocked&&!AU.blocked&&AU.el) return; AU.unlocked=true; AU.blocked=false; updateBgm(); }
-function setSound(on){ AU.on=on; try{ localStorage.setItem(KEY+'-snd',on?'1':'0'); }catch(e){} if(!on){ bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; const o=AU.cur&&TRK[AU.cur]; AU.cur=null; AU.el=null; if(o) fadeTo(o,0,400,()=>o.pause()); } else updateBgm(); }
+function setSound(on){ AU.on=on; try{ localStorage.setItem(KEY+'-snd',on?'1':'0'); }catch(e){} if(!on){ bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; swTok++; AU.cur=null; AU.el=null; stopAll(400); } else updateBgm(); }
 const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
