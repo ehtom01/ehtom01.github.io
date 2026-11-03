@@ -6,7 +6,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Gowun+Batang:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@500;700;900&display=swap">
 <style>
 /* 레이아웃: 폰 세로 한 화면. 위 재화 바, 가운데 화면, 아래 탭(읽기 중엔 숨김). 밤 먹빛 바탕 + 한지 무대 단일 테마 */
 :root{
@@ -226,13 +226,17 @@ h3{font-size:16px;font-weight:700;margin:0}
 .cutsc{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:opacity 1.4s ease}
 .cutsc.done{opacity:0;pointer-events:none}
 .cutink{position:absolute;inset:0;width:100%;height:100%}
-.cutq{position:relative;font-family:var(--f-disp);font-size:clamp(30px,8.5vw,44px);line-height:1.35;color:#efe4cb;text-align:center;text-shadow:0 0 18px rgba(0,0,0,.9)}
+.cutq{position:relative;font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(22px,6.2vw,30px);line-height:1.7;letter-spacing:.06em;color:#efe4cb;text-align:center;text-shadow:0 0 18px rgba(0,0,0,.9)}
 .cutq span{display:inline-block;opacity:0}
 .cutq.on span{animation:brushin .55s ease-out forwards}
 @keyframes brushin{from{opacity:0;filter:blur(6px);transform:translateY(4px) scale(1.15)}to{opacity:1;filter:blur(0);transform:none}}
 .cutq.gone{transition:opacity .8s ease,filter .8s ease,letter-spacing .8s ease;opacity:0;filter:blur(10px);letter-spacing:.25em}
-.cutsub{position:relative;margin-top:18px;font-size:15px;letter-spacing:.6em;color:#c9a24a;opacity:0;transition:opacity .6s ease}
+.cutsub{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-family:'Noto Serif KR',serif;font-weight:900;font-size:clamp(34px,10vw,48px);letter-spacing:.3em;text-indent:.3em;color:#f3d27a;text-shadow:0 0 20px rgba(0,0,0,.9);opacity:0;transition:opacity .6s ease}
 .cutsub.on{opacity:1} .cutsub.gone{opacity:0}
+
+.cutnext{position:absolute;right:18px;bottom:16px;color:#c9a24a;font-size:14px;opacity:0;transition:opacity .4s}
+.cutnext.on{opacity:1;animation:blink 1.2s infinite}
+.cutsc{cursor:pointer}
 #cv.reveal{animation:reveal 1.6s ease-out}
 @keyframes reveal{from{filter:blur(10px) brightness(.35) sepia(.4)}to{filter:none}}
 .tsnd{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));z-index:3;width:44px;height:44px;display:grid;place-items:center;background:rgba(14,12,10,.65);border:1px solid rgba(201,162,74,.45);border-radius:50%;color:#cfc3a8;padding:0}
@@ -337,7 +341,7 @@ const E1=[
  Q('백련|슬픔','방금까지 불렀는데. 내 동생 이름이… 뭐였더라.'),
  Q('홍련|놀람','언니…?'),
  N('대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.'),
- CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전'}), REMEMBER('홍련'), BG('market','dusk'),
+ CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전',bgm:2}), REMEMBER('홍련'), BG('market','dusk'),
  N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
  N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
  Q('분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'),
@@ -1668,6 +1672,7 @@ function startEp(id,resume){
   const e=epById(id);
   if(!resume){ S.snap[id]=JSON.parse(JSON.stringify(S.F)); if(S.cleared.includes(id)) S.F=JSON.parse(JSON.stringify(S.snap[id])); }
   R={e,i:resume?resume.i:0,bg:resume?resume.bg:{b:'paper',m:'day'},chars:resume?resume.chars.map(c=>({...c,x:posX(c.p),a:1,ta:1})):[],line:null,full:'',shown:0,choice:null,ended:null,log:[],fx:{shake:0,red:0,flash:0},speaker:null};
+  if(resume) e.s.forEach((x,i)=>{ if(x.k==='cut'&&x.bgm&&i<R.i) R.bgmOv=x.bgm; });
   UI.tab='read'; render(); step();
 }
 function posX(p){ return {l:92,c:180,r:268}[p]; }
@@ -1779,28 +1784,26 @@ function drawUI(){
 /* 컷신: 먹물이 화면을 덮고 → 붓글씨 문구 → 흩어짐 → 「보름 전」 → 다음 배경이 흐린 기억처럼 또렷해짐 */
 function playCut(s){
   const st=$('#stage'); if(!st){ R.cut=0; step(); return; }
-  const replay=S.cleared.includes(R.e.id);
   const ov=document.createElement('div'); ov.className='cutsc'; ov.dataset.a='noop';
   const ink=document.createElement('canvas'); ink.className='cutink'; ov.appendChild(ink);
   const lines=s.q.split('|'); let k=0;
   const qh=lines.map(l=>`<div>${[...l].map(ch=>`<span style="animation-delay:${(k++)*0.07}s">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>`).join('');
   const q=document.createElement('div'); q.className='cutq'; q.innerHTML=qh; ov.appendChild(q);
   const sub=document.createElement('div'); sub.className='cutsub'; sub.textContent=s.sub||''; ov.appendChild(sub);
+  const nx=document.createElement('div'); nx.className='cutnext'; nx.textContent='▼'; ov.appendChild(nx);
   st.appendChild(ov);
   const o=AU.el; if(o&&AU.on) fadeTo(o,.06,900);
-  const T=[]; let fin=false;
-  const finish=()=>{ if(fin) return; fin=true; T.forEach(clearTimeout); R.cut=0; ov.classList.add('done');
-    if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2200);
+  let phase=0, ready=false, fin=false;
+  const T=t=>new Promise(r=>setTimeout(r,t));
+  const wait=()=>{ ready=true; nx.classList.add('on'); };
+  const finish=()=>{ if(fin) return; fin=true; R.cut=0; ov.classList.add('done');
+    if(s.bgm){ R.bgmOv=s.bgm; bgmWant=s.bgm; clearTimeout(bgmTimer); bgmTimer=0; if(AU.unlocked&&AU.on) bgmSwitch(s.bgm); } else if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2200);
     const c=$('#cv'); if(c){ c.classList.remove('reveal'); void c.offsetWidth; c.classList.add('reveal'); }
     setTimeout(()=>ov.remove(),1500); step(); };
-  if(replay) ov.addEventListener('click',e=>{ e.stopPropagation(); finish(); });
-  requestAnimationFrame(()=>inkSpread(ink,1200,()=>{}));
-  T.push(setTimeout(()=>sfx('bell'),300));
-  T.push(setTimeout(()=>q.classList.add('on'),1300));
-  T.push(setTimeout(()=>q.classList.add('gone'),1300+k*70+1700));
-  T.push(setTimeout(()=>sub.classList.add('on'),1300+k*70+2500));
-  T.push(setTimeout(()=>{ sub.classList.add('gone'); },1300+k*70+3700));
-  T.push(setTimeout(finish,1300+k*70+4200));
+  ov.addEventListener('click',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on'); sfx('page');
+    if(phase===0){ phase=1; q.classList.add('gone'); await T(900); sub.classList.add('on'); await T(700); wait(); }
+    else { sub.classList.add('gone'); await T(500); finish(); } });
+  (async()=>{ requestAnimationFrame(()=>inkSpread(ink,1200,()=>{})); await T(300); sfx('bell'); await T(1000); q.classList.add('on'); await T(k*70+600); wait(); })();
 }
 function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
 
@@ -1934,6 +1937,7 @@ const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
 const EP_BGM={'1-1':3}; // 이 화는 처음부터 끝까지 한 곡으로 이어 간다
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
+  if(R.bgmOv) return R.bgmOv;
   if(EP_BGM[R.e.id]) return EP_BGM[R.e.id];
   if(R.ended) return 8;
   const M=R.mode;
