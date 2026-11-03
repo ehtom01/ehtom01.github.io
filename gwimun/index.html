@@ -223,6 +223,18 @@ h3{font-size:16px;font-weight:700;margin:0}
 .inkwipe{position:fixed;inset:0;z-index:90;pointer-events:all;transition:opacity 1.1s ease-out}
 .inkwipe canvas{width:100%;height:100%;display:block}
 .inkwipe.out{opacity:0}
+.cutsc{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:opacity 1.4s ease}
+.cutsc.done{opacity:0;pointer-events:none}
+.cutink{position:absolute;inset:0;width:100%;height:100%}
+.cutq{position:relative;font-family:var(--f-disp);font-size:clamp(30px,8.5vw,44px);line-height:1.35;color:#efe4cb;text-align:center;text-shadow:0 0 18px rgba(0,0,0,.9)}
+.cutq span{display:inline-block;opacity:0}
+.cutq.on span{animation:brushin .55s ease-out forwards}
+@keyframes brushin{from{opacity:0;filter:blur(6px);transform:translateY(4px) scale(1.15)}to{opacity:1;filter:blur(0);transform:none}}
+.cutq.gone{transition:opacity .8s ease,filter .8s ease,letter-spacing .8s ease;opacity:0;filter:blur(10px);letter-spacing:.25em}
+.cutsub{position:relative;margin-top:18px;font-size:15px;letter-spacing:.6em;color:#c9a24a;opacity:0;transition:opacity .6s ease}
+.cutsub.on{opacity:1} .cutsub.gone{opacity:0}
+#cv.reveal{animation:reveal 1.6s ease-out}
+@keyframes reveal{from{filter:blur(10px) brightness(.35) sepia(.4)}to{filter:none}}
 .sndhint{font-size:11.5px;letter-spacing:.15em;font-weight:400;color:#cfc3a8;opacity:.85}
 .ttap{margin-top:18px;font-size:15px;font-weight:700;letter-spacing:.3em;color:#f3ecdd;text-shadow:0 0 8px #000;animation:blink 1.6s ease-in-out infinite,tin 1s 1s backwards}
 .tcard{width:100%;margin-top:10px;background:linear-gradient(180deg,rgba(26,23,19,.92),rgba(14,12,10,.95));border:1px solid rgba(201,162,74,.45);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px #000c;cursor:default;animation:tin .5s ease-out backwards}
@@ -283,7 +295,7 @@ const IMG={}; Object.entries(SPR).forEach(([k,src])=>{ const im=new Image(); im.
 /* ===================== 대본 도구 ===================== */
 const N=t=>({k:'n',t}), Q=(w,t)=>({k:'s',w,t}), SH=(c,p='c')=>({k:'show',c,p}), HD=c=>({k:'hide',c}), CL={k:'clear'},
   BG=(b,m='day')=>({k:'bg',b,m}), CH=(...o)=>({k:'ch',o}), L=n=>({k:'lb',n}), G=n=>({k:'go',n}), IF=(f,n)=>({k:'if',f,n}),
-  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), REMEMBER=n=>({k:'remember',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
+  SET=f=>({k:'set',f}), FX=e=>({k:'fx',e}), CG=id=>({k:'cg',id}), ENDING=id=>({k:'ending',id}), END={k:'end'}, INV=o=>({k:'inv',...o}), FORGET=n=>({k:'forget',n}), CUT=o=>({k:'cut',...o}), REMEMBER=n=>({k:'remember',n}), RIT=(kind,win,lose)=>({k:'rit',kind,win,lose});
 
 const ENDINGS={
   A:{n:'A. 연꽃이 진 밤',d:'언니의 한을 풀어 저승으로 보냈다.'},
@@ -322,9 +334,7 @@ const E1=[
  Q('백련|슬픔','방금까지 불렀는데. 내 동생 이름이… 뭐였더라.'),
  Q('홍련|놀람','언니…?'),
  N('대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.'),
- FX('flash'), CL, REMEMBER('홍련'), BG('market','dusk'),
- N('「이름을 빼앗긴 자는, 그림자부터 사라진다.」'),
- N('모든 일의 시작은, 그 밤보다 보름 앞선 어느 저녁이었다.'),
+ CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전'}), REMEMBER('홍련'), BG('market','dusk'),
  N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
  N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
  Q('분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'),
@@ -1676,6 +1686,7 @@ function step(){
       case 'ending': if(!S.endings.includes(s.id)) S.endings.push(s.id); R.ending=s.id; S.F['end'+R.e.part.no]=s.id; break;
       case 'remember': S.F.forgot=(S.F.forgot||[]).filter(x=>x!==s.n); break;
       case 'forget': { S.F.forgot=[...(S.F.forgot||[]).filter(x=>x!==s.n),s.n]; R.log=R.log.map(l=>l.split('<b>'+s.n+'</b>').join('<b style="color:#8a7f6a">???</b>').split(s.n).join('<s style="opacity:.5">　　</s>')); R.fx.flash=1; toast('이름 하나가 지워졌다'); break; }
+      case 'cut': R.line=null; R.cut=1; drawUI(); playCut(s); return;
       case 'n': case 's': showLine(s); return;
       case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
@@ -1698,7 +1709,7 @@ function showLine(s){
   typer=setInterval(()=>{ R.shown+=1; const el=$('#txt'); if(el) el.textContent=R.full.slice(0,R.shown); if(R.shown>=R.full.length){ clearInterval(typer); typer=null; drawUI(); if(S.auto) autoT=setTimeout(advance,1200+R.full.length*35); } },28);
 }
 function advance(){
-  if(!R||R.choice||R.ended||R.mode) return;
+  if(!R||R.choice||R.ended||R.mode||R.cut) return;
   if(!typer) sfx('page');
   if(typer){ clearInterval(typer); typer=null; R.shown=R.full.length; drawUI(); if(S.auto){ clearTimeout(autoT); autoT=setTimeout(advance,1500); } return; }
   clearTimeout(autoT); step();
@@ -1761,6 +1772,32 @@ function drawUI(){
   if(!R.line){ ui.innerHTML=''; return; }
   const s=R.line, sp=s.k==='s', who=sp?baseName(s.w):'', ck=SPK[who], cls=ck?(CAST[ck].side==='ghost'?' ghost':CAST[ck].side==='foe'?' foe':''):'';
   const pk=sp&&porFor(s.w); const human=ck==='cheong'&&exprOf(s.w); ui.innerHTML=`<div class="box${sp?'':' narr'}${pk?' hasp':''}">${pk?`<span class="por${human?'':cls}" style="background-image:url(${pk})"></span>`:''}${sp?`<span class="nameplate${cls}">${dispName(s.w)}</span>`:''}<span id="txt">${R.full.slice(0,R.shown)}</span>${typer?'':'<span class="next">▼</span>'}</div>`;
+}
+/* 컷신: 먹물이 화면을 덮고 → 붓글씨 문구 → 흩어짐 → 「보름 전」 → 다음 배경이 흐린 기억처럼 또렷해짐 */
+function playCut(s){
+  const st=$('#stage'); if(!st){ R.cut=0; step(); return; }
+  const replay=S.cleared.includes(R.e.id);
+  const ov=document.createElement('div'); ov.className='cutsc'; ov.dataset.a='noop';
+  const ink=document.createElement('canvas'); ink.className='cutink'; ov.appendChild(ink);
+  const lines=s.q.split('|'); let k=0;
+  const qh=lines.map(l=>`<div>${[...l].map(ch=>`<span style="animation-delay:${(k++)*0.07}s">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>`).join('');
+  const q=document.createElement('div'); q.className='cutq'; q.innerHTML=qh; ov.appendChild(q);
+  const sub=document.createElement('div'); sub.className='cutsub'; sub.textContent=s.sub||''; ov.appendChild(sub);
+  st.appendChild(ov);
+  const o=AU.el; if(o&&AU.on) fadeTo(o,.06,900);
+  const T=[]; let fin=false;
+  const finish=()=>{ if(fin) return; fin=true; T.forEach(clearTimeout); R.cut=0; ov.classList.add('done');
+    if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2200);
+    const c=$('#cv'); if(c){ c.classList.remove('reveal'); void c.offsetWidth; c.classList.add('reveal'); }
+    setTimeout(()=>ov.remove(),1500); step(); };
+  if(replay) ov.addEventListener('click',e=>{ e.stopPropagation(); finish(); });
+  requestAnimationFrame(()=>inkSpread(ink,1200,()=>{}));
+  T.push(setTimeout(()=>sfx('bell'),300));
+  T.push(setTimeout(()=>q.classList.add('on'),1300));
+  T.push(setTimeout(()=>q.classList.add('gone'),1300+k*70+1700));
+  T.push(setTimeout(()=>sub.classList.add('on'),1300+k*70+2500));
+  T.push(setTimeout(()=>{ sub.classList.add('gone'); },1300+k*70+3700));
+  T.push(setTimeout(finish,1300+k*70+4200));
 }
 function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
 
@@ -1858,7 +1895,7 @@ function bgm(n){
 }
 /* 타이틀 → 이야기: 먹물이 번지며 화면이 잠기고, 타이틀 곡은 천천히 사라졌다가 이야기 곡이 새로 피어난다 */
 function inkSpread(cv,dur,done){
-  const dpr=Math.min(2,devicePixelRatio||1), w=innerWidth, h=innerHeight; cv.width=w*dpr; cv.height=h*dpr;
+  const dpr=Math.min(2,devicePixelRatio||1), w=cv.clientWidth||innerWidth, h=cv.clientHeight||innerHeight; cv.width=w*dpr; cv.height=h*dpr;
   const c=cv.getContext('2d'); c.scale(dpr,dpr);
   const diag=Math.hypot(w,h), rnd=(a,b)=>a+Math.random()*(b-a);
   // 먹방울: 가운데 큰 방울 하나와 주변 작은 방울들이 시간차로 번진다
