@@ -119,6 +119,7 @@ h3{font-size:16px;font-weight:700;margin:0}
 .mark{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:#fff6ea;text-shadow:0 1px 3px #000;pointer-events:none;white-space:nowrap}
 .mark i{width:22px;height:22px;border-radius:50%;border:2.5px solid #e0483a;box-shadow:0 0 8px #e0483a99}
 .cluecard{display:flex;gap:14px;align-items:center}.cluecard .ctx{flex:1;min-width:0}.cluepics{display:flex;gap:6px;flex-shrink:0;align-items:flex-end}.clueimg{height:104px;max-width:96px;object-fit:contain;filter:drop-shadow(0 4px 8px #000a);animation:optin .4s ease-out backwards}
+body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0%{transform:scale(1.045)}30%{transform:scale(.985) translateY(3px)}100%{transform:none}}
 .scare{position:absolute;left:10px;right:10px;bottom:10px;background:linear-gradient(180deg,rgba(40,10,8,.95),rgba(14,8,6,.97));border:1px solid rgba(224,72,58,.6);border-radius:8px;padding:16px 14px;color:#f1e9d6;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 30px rgba(160,20,10,.45),0 10px 26px #000c;animation:optin .35s ease-out backwards;cursor:default}
 .scare.link{border-color:rgba(201,162,74,.6);background:linear-gradient(180deg,rgba(32,26,14,.96),rgba(14,12,8,.97));box-shadow:0 10px 26px #000c}
 .sc-t{font-family:var(--f-disp);font-size:24px;color:#e0483a;line-height:1} .scare.link .sc-t{color:#f3d27a}
@@ -475,21 +476,22 @@ const E1=[
  N('흰 손이 문지방 위에 무언가를 내려놓고 사라졌다. 젖은 붉은 연꽃잎 한 장.'),
  HD('cheong'),
  Q('홍련|슬픔','…언니. 정말 언니야?'),
+ N('대답은 없었다. 홍련은 연꽃잎을 부적과 함께 품에 넣고, 날이 밝을 때까지 눈을 붙이지 못했다.'),
  G('e1dawn'),
  L('e1refnight'),
  N('문틈으로 젖은 머리카락이 스며들었다. 방바닥에 젖은 글씨가 번졌다. 「문이 열린다」.'),
  FX('shake'),
  N('호롱불이 꺼졌다. 어둠 속에서 누군가 아주 오래, 홍련을 내려다보고 있었다.'),
  HD('cheong'),
- N('날이 밝자마자, 홍련은 남문 주막으로 달려갔다.'),
- BG('market','day'), SH('hong','l'), SH('dol','r'),
+ N('동이 트기도 전에, 홍련은 남문 주막으로 달려갔다.'),
+ BG('market','dawn'), SH('hong','l'), SH('dol','r'),
  Q('돌쇠','마음이 바뀌었소?'),
  Q('홍련','귀신이 바꿔 줬습니다.'),
  Q('돌쇠','…농담이오?'),
  Q('홍련|결의','이제부터 제가 하는 말은 전부 농담이 아니에요. 익숙해지세요.'),
  L('e1dawn'),
- CL, BG('road','dawn'),
- N('이튿날 새벽, 두 사람은 소리개 마을로 가는 산길에 올랐다.'),
+ CL, CUT({sub:'이튿날 새벽',sub2:'소리개 마을 가는 산길'}), BG('road','dawn'),
+ N('두 사람은 소리개 마을로 가는 산길에 올랐다.'),
  N('하루 반나절 거리. 장승 몇 개를 지나면 고개가 나오고, 고개를 넘으면 마을이다.'),
  SH('hong','l'), SH('dol','r'),
  Q('돌쇠','묻고 싶은 게 있소. 왜 신을 버렸소? 무당 집안에서 신을 버린다는 게 쉬운 일은 아닐 텐데.'),
@@ -1678,7 +1680,7 @@ function startEp(id,resume){
   const e=epById(id);
   if(!resume){ S.snap[id]=JSON.parse(JSON.stringify(S.F)); if(S.cleared.includes(id)) S.F=JSON.parse(JSON.stringify(S.snap[id])); }
   R={e,i:resume?resume.i:0,bg:resume?resume.bg:{b:'paper',m:'day'},chars:resume?resume.chars.map(c=>({...c,x:posX(c.p),a:1,ta:1})):[],line:null,full:'',shown:0,choice:null,ended:null,log:[],fx:{shake:0,red:0,flash:0},speaker:null};
-  if(resume) e.s.forEach((x,i)=>{ if(x.k==='cut'&&x.bgm&&i<R.i) R.bgmOv=x.bgm; });
+  if(resume) e.s.forEach((x,i)=>{ if(i>=R.i) return; if(x.k==='cut'&&x.bgm) R.bgmOv=x.bgm; if(x.k==='bg'&&(x.m==='night'||x.m==='dream')) R.bgmOv=0; });
   UI.tab='read'; render(); step();
 }
 function posX(p){ return {l:92,c:180,r:268}[p]; }
@@ -1687,7 +1689,7 @@ function step(){
   while(R.i<st.length){
     const s=st[R.i++];
     switch(s.k){
-      case 'bg': R.bg={b:s.b,m:s.m}; if(s.b==='well'||s.b==='gwell') sfx('drip'); break;
+      case 'bg': R.bg={b:s.b,m:s.m}; if(s.m==='night'||s.m==='dream') R.bgmOv=0; if(s.b==='well'||s.b==='gwell') sfx('drip'); break;
       case 'show': { if(s.c==='cheong') R.cheongCalm=cheongAhead(R.i); let c=R.chars.find(x=>x.c===s.c); if(c){ c.p=s.p; c.ta=1; } else R.chars.push({c:s.c,p:s.p,x:posX(s.p)+(s.p==='l'?-30:s.p==='r'?30:0),a:0,ta:1}); break; }
       case 'hide': { const c=R.chars.find(x=>x.c===s.c); if(c) c.ta=0; break; }
       case 'clear': R.chars.forEach(c=>c.ta=0); break;
@@ -1792,7 +1794,7 @@ function playCut(s){
   const st=$('#stage'); if(!st){ R.cut=0; step(); return; }
   const ov=document.createElement('div'); ov.className='cutsc'; ov.dataset.a='noop';
   const ink=document.createElement('canvas'); ink.className='cutink'; ov.appendChild(ink);
-  const lines=s.q.split('|'); let k=0;
+  const lines=s.q?s.q.split('|'):[]; let k=0;
   const qh=lines.map(l=>`<div>${[...l].map(ch=>`<span style="animation-delay:${(k++)*0.07}s">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>`).join('');
   const q=document.createElement('div'); q.className='cutq'; q.innerHTML=qh; ov.appendChild(q);
   const sub=document.createElement('div'); sub.className='cutsub'; sub.innerHTML=`<div class="cs-main"><i></i><span>${s.sub||''}</span><i></i></div>${s.sub2?`<div class="cs-2">${s.sub2}</div>`:''}`; ov.appendChild(sub);
@@ -1809,6 +1811,7 @@ function playCut(s){
   ov.addEventListener('click',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on'); sfx('page');
     if(phase===0){ phase=1; q.classList.add('gone'); await T(900); sub.classList.add('on'); await T(700); wait(); }
     else { sub.classList.add('gone'); await T(500); finish(); } });
+  if(!s.q){ phase=1; (async()=>{ requestAnimationFrame(()=>inkSpread(ink,900,()=>{})); await T(250); sfx('brush'); await T(800); sub.classList.add('on'); await T(700); wait(); })(); return; }
   (async()=>{ requestAnimationFrame(()=>inkSpread(ink,1200,()=>{})); await T(300); sfx('bell'); await T(1000); q.classList.add('on'); await T(k*70+600); wait(); })();
 }
 function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
@@ -1878,6 +1881,17 @@ const SFXV={bell:.7,page:.75,pick:.55,clue:.6,scare:.9,whisper:.7,drip:.6,brush:
 const sfxPool={};
 function sfx(k){ if(!AU.on||typeof SFXDATA==='undefined'||!SFXDATA[k]) return; try{ const a=new Audio(SFXDATA[k]); a.volume=SFXV[k]??.6; a.play().catch(()=>{}); }catch(e){} }
 let brushT=0; function sfxBrush(){ const t=performance.now(); if(t-brushT>420){ brushT=t; sfx('brush'); } }
+/* 깜짝 이벤트: 음악을 뚝 끊고 「쿵」 → 잠깐 정적 → 공포곡 */
+let ACX=null;
+function thud(){ if(!AU.on) return; try{ ACX=ACX||new (window.AudioContext||window.webkitAudioContext)(); const c=ACX, t=c.currentTime; if(c.state==='suspended') c.resume();
+  const g=c.createGain(); g.connect(c.destination); g.gain.setValueAtTime(1.1,t); g.gain.exponentialRampToValueAtTime(.001,t+1.4);
+  const o=c.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(95,t); o.frequency.exponentialRampToValueAtTime(32,t+.5); o.connect(g); o.start(t); o.stop(t+1.5);
+  const n=c.createBuffer(1,c.sampleRate*.35,c.sampleRate), d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+  const ns=c.createBufferSource(); ns.buffer=n; const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=380; const ng=c.createGain(); ng.gain.value=.9; ns.connect(lp); lp.connect(ng); ng.connect(c.destination); ns.start(t);
+}catch(e){} }
+function scareHit(){ const o=AU.cur&&TRK[AU.cur]; if(o){ if(o._fade) cancelAnimationFrame(o._fade); o._fade=0; o.volume=0; o.pause(); }
+  AU.cur=null; AU.el=null; bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; AU.hush=performance.now()+1300;
+  thud(); setTimeout(()=>sfx('scare'),250); setTimeout(()=>{ AU.hush=0; updateBgm(); },1350); }
 function fadeTo(a,to,ms,done){ if(a._fade) cancelAnimationFrame(a._fade); const from=a.volume, t0=performance.now(); const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); a.volume=Math.max(0,Math.min(1,from+(to-from)*p)); if(p<1) a._fade=requestAnimationFrame(tick); else { a._fade=0; if(done) done(); } }; tick(); }
 /* 곡마다 Audio를 하나씩 두고, 바꿀 때는 이전 곡을 끝까지 줄인 뒤 멈추고(위치 기억) 다음 곡을 이어서 키운다 */
 const TRK={}, PRIO=[1,4,5,8];
@@ -1943,6 +1957,8 @@ const DAYBG=['market','village','shrineday','jumak','gwana','room','road'];
 const EP_BGM={'1-1':3}; // 이 화는 처음부터 끝까지 한 곡으로 이어 간다
 function bgmFor(){
   if(UI.tab!=='read'||!R) return 1;
+  if(R.mode&&R.mode.k==='inv'&&R.mode.scare) return 4; // 깜짝 이벤트는 화 고정곡보다 우선
+  { const on=R.chars.filter(c=>c.ta>0).map(c=>c.c); if((on.includes('cheong')&&!R.cheongCalm)||['yunjae','wisp','dok','gumi'].some(k=>on.includes(k))) return 4; } // 귀신이 나오면 공포곡
   if(R.bgmOv) return R.bgmOv;
   if(EP_BGM[R.e.id]) return EP_BGM[R.e.id];
   if(R.ended) return 8;
@@ -1956,7 +1972,7 @@ function bgmFor(){
   if(DAYBG.includes(R.bg.b)&&R.bg.m!=='night'&&R.bg.m!=='dream') return 2;
   return 3;
 }
-function updateBgm(){ if(!AU.unlocked) return; bgm(AU.on?bgmFor():null); }
+function updateBgm(){ if(!AU.unlocked||(AU.hush&&performance.now()<AU.hush)) return; bgm(AU.on?bgmFor():null); }
 
 function drawMode(){
   const ui=$('#ui'), M=R.mode;
@@ -1992,7 +2008,7 @@ function invTap(e){
     if(!M.found.includes(best.id)){ sfx('clue'); M.found.push(best.id); if(best.f) best.f(S.F); R.log.push(`<span style="color:#c9a24a">察 ${best.name}</span> ${best.txt}`); if(M.hint===best.id) M.hint=null; R.fx.flash=.35;
       if(M.found.length===M.spots.length){ if(M.all) M.all(S.F); toast('모든 단서를 찾았다'); } save(); }
     const ev=CLUE[R.e.id+':'+best.id];
-    if(ev&&ev.scare&&!M.scared){ M.scared=1; sfx('scare'); M.scare={...ev.scare,name:best.name,res:null,clue:`<b>${best.name}</b> ${best.txt}`}; R.fx[ev.scare.fx||'shake']=1; R.fx.red=1; drawMode(); return; }
+    if(ev&&ev.scare&&!M.scared){ M.scared=1; scareHit(); M.scare={...ev.scare,name:best.name,res:null,clue:`<b>${best.name}</b> ${best.txt}`}; R.fx[ev.scare.fx||'shake']=1; R.fx.shake=1.4; R.fx.flash=.55; R.fx.red=1; document.body.classList.remove('thump'); void document.body.offsetWidth; document.body.classList.add('thump'); drawMode(); return; }
     M.msg=(ev&&ev.say?clueSay(ev):'')+(()=>{ const ims=[].concat(best.img||[]).filter(k=>IMG[k]); const t=`<b>${best.name}</b> ${best.txt}`; return ims.length?`<div class="cluecard"><div class="cluepics">${ims.map(k=>`<img class="clueimg" src="${SPR[k]}" alt="${best.name}">`).join('')}</div><div class="ctx">${t}</div></div>`:t; })();
   } else { M.miss={x,y}; M.msg=MISS[Math.floor(Math.random()*MISS.length)]; }
   drawMode();
