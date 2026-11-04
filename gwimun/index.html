@@ -2236,8 +2236,10 @@ function drawChar(c,key,x,alpha,dim,t,scale=1){
   if(key==='wisp'){ w=330; h=w*im.naturalHeight/im.naturalWidth; }
   w*=scale; h*=scale;
   const hero=ca.side==='hero'; const flip=hero?x>200:x<150;
-  const hov=key==='cheong'?-14+Math.sin(t*2.2)*5:0;
+  const hov=key==='cheong'?-6+Math.sin(t*1.6)*3:0;
   const base=key==='mul'||key==='gumi'?H-110:key==='wisp'?H-150:H-4;
+  if(key!=='wisp'&&key!=='mul'&&key!=='gumi'){ c.save(); c.globalAlpha=alpha*(key==='cheong'?.55:.45); const gw=w*.42, gy=base-6; const gg=c.createRadialGradient(x,gy,2,x,gy,gw);
+    gg.addColorStop(0,key==='cheong'?'rgba(225,230,240,.55)':'rgba(10,8,6,.7)'); gg.addColorStop(1,'rgba(0,0,0,0)'); c.fillStyle=gg; c.translate(x,gy); c.scale(1,.22); c.translate(-x,-gy); c.beginPath(); c.arc(x,gy,gw,0,Math.PI*2); c.fill(); c.restore(); }
   c.save(); c.globalAlpha=alpha; c.translate(x,base+hov); if(flip) c.scale(-1,1);
   c.filter=dim?'brightness(.72) saturate(.7)':'none';
   c.drawImage(im,-w/2,-h,w,h); c.restore();
@@ -2258,7 +2260,10 @@ function frame(now){
   paintBG(c,R.bg.b,R.bg.m,t); c.filter='none';
   if(dv>.01){ const vg=c.createRadialGradient(180,230,60,180,230,300); vg.addColorStop(0,`rgba(15,12,10,${(.05*dv).toFixed(3)})`); vg.addColorStop(1,`rgba(15,12,10,${(.45*dv).toFixed(3)})`); c.fillStyle=vg; c.fillRect(0,0,W,H); }
   R.chars=R.chars.filter(ch=>ch.ta>0||ch.a>.02);
-  R.chars.forEach(ch=>{ if(CAST[ch.c].side==='hero') return; drawChar(c,ch.c,180,ch.a,false,t); });
+  { const hero=R.chars.find(ch=>ch.c==='hong'&&ch.ta>0), foes=R.chars.filter(ch=>CAST[ch.c].side!=='hero');
+    if(hero&&foes.length&&R.bg.m==='dream'){ // 꿈·미래 장면: 두 자매를 나란히 세워 마주 보게
+      drawChar(c,'hong',108,hero.a,false,t,.86); foes.forEach(ch=>drawChar(c,ch.c,252,ch.a,false,t,.86)); }
+    else foes.forEach(ch=>drawChar(c,ch.c,180,ch.a,false,t)); }
   c.restore();
   const vg=c.createRadialGradient(180,200,150,180,200,330); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(60,40,20,.45)'); c.fillStyle=vg; c.fillRect(0,0,W,H);
   if(fx.red>0){ c.fillStyle=`rgba(150,20,15,${.35*fx.red})`; c.fillRect(0,0,W,H); }
