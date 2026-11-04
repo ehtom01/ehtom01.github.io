@@ -238,6 +238,7 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 @keyframes tqhit{0%{transform:scale(calc(var(--s) + .25)) rotate(-8deg)}100%{transform:scale(var(--s))}}
 .tq-dots{display:flex;gap:8px}.tq-dots i{width:10px;height:10px;border-radius:50%;border:1px solid #f3d27a;background:transparent}.tq-dots i.on{background:#f3d27a;box-shadow:0 0 8px #f3d27a}
 .tq-h{font-size:13px;color:#e6dcc4;text-shadow:0 1px 6px #000}
+.ttag{position:absolute;left:10px;top:10px;z-index:3;padding:4px 10px;border-radius:12px;background:rgba(12,10,9,.62);border:1px solid rgba(216,205,182,.35);color:#e9dfc8;font-size:12px;letter-spacing:.08em;pointer-events:none}.ttag.past{color:#e8c890;border-color:rgba(232,200,144,.45)}.ttag.dream{color:#f0a49a;border-color:rgba(240,164,154,.45)}.ttag.future{color:#b9c6ff;border-color:rgba(185,198,255,.45)}
 .rprog{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:-2px 2px 20px;position:relative;overflow:visible}.rprog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8f1d22,#e0483a);border-radius:2px;transition:width .5s}
 .rprog span{position:absolute;right:0;top:5px;font-size:10.5px;color:#a99d84;letter-spacing:.05em}
 .guide h3{text-align:center;margin:0 0 12px}.guide .gi{display:flex;gap:12px;align-items:center;margin:8px 0}.guide .gi b{flex:0 0 40px;height:40px;border-radius:8px;display:grid;place-items:center;background:#8f1d22;color:#fbeee0;font-family:var(--f-disp);font-size:20px}
@@ -380,8 +381,8 @@ const CGS={
 
 /* ----- 1부 1화 ----- */
 const E1=[
- BG('prologue','night'),
- M(3), N('보름날 밤. 폐사찰의 귀문 앞.'),
+ CUT({sub:'보름 뒤의 밤',sub2:'이 이야기의 끝 · 폐사찰 귀문 앞'}), BG('prologue','night'),
+ M(3), N('먼저, 이 이야기의 끝. 보름 뒤의 밤, 폐사찰의 귀문 앞.'),
  N('검은 소용돌이 앞에 두 자매가 마주 서 있었다. 하나는 산 사람, 하나는 죽은 사람이었다.'),
  SH('hong','l'), SH('cheong','r'), FX('red'),
  Q('백련|슬픔','홍련아. 이제 문을 닫자.'),
@@ -397,7 +398,7 @@ const E1=[
  Q('백련|슬픔','방금까지 입에 있었는데. 아무리 떠올려도… 안 떠올라.'),
  Q('홍련|놀람','무슨 소리야, 언니. 나잖아… 나…'),
  N('대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.'),
- CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'보름 전',sub2:'도성 남문 밖 · 해 질 녘'}), REMEMBER('홍련'), BG('market','dusk'),
+ CL, CUT({q:'이름을 빼앗긴 자는,|그림자부터 사라진다.',sub:'다시, 보름 전',sub2:'모든 일이 시작된 저녁 · 도성 남문 밖'}), REMEMBER('홍련'), BG('market','dusk'),
  M(2), N('조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'),
  N('요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'),
  Q('분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'),
@@ -832,7 +833,7 @@ const E3=[
  N('오방색 천이 바람에 나부꼈다. 바래고 찢어졌지만 아직 색이 남아 있었다.'),
  Q('홍련|슬픔','(어머니는 언니에게 신을 물려주셨고, 나는 도망쳤지. 무당 딸이라 손가락질받는 게 싫어서.)'),
  N('마당 한쪽, 어릴 적 언니와 키를 재던 기둥이 아직 서 있었다. 칼로 그은 금 두 줄. 언니 것이 늘 한 뼘 더 높았다.'),
- CUT({sub:'열한 살의 여름',sub2:'기억 속 신당'}), BG('shrineday','day'), HD('hong'),
+ CUT({sub:'열한 살의 여름',sub2:'홍련의 기억 · 어린 날의 신당'}), BG('shrineday','day'), HD('hong'),
  M(6), N('— 기억이 밀려왔다. 열한 살의 여름. 마당에서 언니가 방울을 흔들며 굿 연습을 하고 있었다.'),
  Q('백련|미소','홍련아, 너도 해 봐. 방울은 손목으로 흔드는 게 아니라 마음으로 흔드는 거야.'),
  Q('어린 홍련','싫어. 난 무당 안 할 거야. 애들이 귀신 딸이라고 놀린단 말이야.'),
@@ -850,7 +851,7 @@ const E3=[
  Q('백련|슬픔','…그렇지. 언니니까.'),
  Q('홍련|슬픔','(그때 언니는 웃지 않았어. 알고 있었던 거야.)'),
  L('e3inv'),
- BG('shrine','dusk'), SH('hong','c'),
+ CL, CUT({sub:'다시 지금',sub2:'무너진 신당 · 해 질 녘'}), BG('shrine','dusk'), SH('hong','c'),
  M(3), Q('홍련|결의','…정신 차려. 언니가 남긴 걸 찾아야 해.'),
  INV({intro:'어머니의 신당을 살펴보자. 언니가 남긴 것이 있을지도 모른다.',spots:[
    {id:'altar',x:222,y:232,r:36,req:1,name:'돌제단',txt:'제단 아래, 기름 먹인 보자기에 싸인 책 한 권. 언니의 일기다.'},
@@ -925,7 +926,7 @@ const E3=[
  L('e3dream'),
  CL, CUT({sub:'그날 밤',sub2:'무너진 신당'}), BG('shrine','night'),
  M(6), N('그날 밤, 홍련은 신당 마루에서 잠이 들었다. 그리고 꿈을 꾸었다.'),
- FX('flash'),
+ FX('flash'), CUT({sub:'홍련의 꿈',sub2:'꿈속의 신당'}),
  BG('dreamshrine','night'),
  N('꿈속의 신당은 새것처럼 단청이 선명했다. 마당 한가운데 흰 옷의 여인이 서 있었다. 어머니였다.'),
  SH('mom','c'),
@@ -948,7 +949,7 @@ const E3=[
  L('e3wake'),
  N('어머니의 모습이 흐려지고, 마지막 목소리가 바람처럼 남았다.'),
  Q('어머니','문 아래의 것이 깨어나고 있다. 서둘러라.'),
- CL, BG('shrine','dawn'),
+ CL, CUT({sub:'꿈에서 깨어',sub2:'무너진 신당 · 새벽'}), BG('shrine','dawn'),
  M(3), N('홍련은 숨을 몰아쉬며 눈을 떴다. 손에는, 꿈속의 그 방울이 쥐어져 있었다.'),
  SH('hong','l'), SH('dol','r'),
  N('그때 태석이 숨을 몰아쉬며 신당으로 뛰어들었다.'),
@@ -1858,11 +1859,13 @@ function unlockEp(id,how){
 function vRead(){
   return `<div class="rtop"><button class="btn sm" data-a="exit">← 목록</button><span class="ti">${R.e.part.no}부 ${R.e.no}화 「${R.e.t}」</span><button class="chip" data-a="survey" style="color:#e0483a;border-color:#e0483a;cursor:pointer">베타 · 의견</button></div>
   <div class="rprog" aria-label="이번 화 진행도"><i id="rpi"></i><span id="rpt"></span></div>
-  <div class="stage" id="stage" data-a="adv"><canvas id="cv" aria-label="이야기 장면"></canvas><div id="ui"></div></div>
+  <div class="stage" id="stage" data-a="adv"><canvas id="cv" aria-label="이야기 장면"></canvas><div class="ttag" id="ttag" hidden></div><div id="ui"></div></div>
   <div class="rbar"><button class="btn sm" data-a="undo" id="undoBtn" hidden>↺ 선택 되돌리기</button><button class="btn sm" data-a="log">대사 기록</button><button class="btn sm${S.auto?' on':''}" data-a="auto">자동 넘김 ${S.auto?'켬':'끔'}</button><button class="btn sm${AU.on?' on':''}" data-a="snd" aria-label="소리">${AU.on?'소리 켬':'소리 끔'}</button></div>`;
 }
+const TTAG={prologue:['future','보름 뒤 · 이야기의 끝'],shrineday:['past','회상 · 열한 살의 여름'],dreamshrine:['dream','꿈']};
 function drawUI(){
   updateBgm();
+  { const tg=$('#ttag'); if(tg&&R&&R.bg){ const v=TTAG[R.bg.b]||(R.bg.m==='dream'?['dream','꿈']:null); tg.hidden=!v||!!R.ended; if(v){ tg.className='ttag '+v[0]; tg.textContent=v[1]; } } }
   { const pi=$('#rpi'), pt=$('#rpt'); if(pi&&R){ R.maxI=Math.max(R.maxI||0,R.i); const pc=R.ended?100:Math.min(99,Math.round(R.maxI/R.e.s.length*100)); pi.style.width=pc+'%'; if(pt) pt.textContent=`이번 화 ${pc}%`; } }
   const ui=$('#ui'); if(!ui) return;
   const ub=$('#undoBtn'); if(ub) ub.hidden=!(R&&R.snap&&R.picked&&!R.choice);
@@ -2279,6 +2282,7 @@ function paintBG(c,b,m,t){
     const nat={prologue:'night',market:'dusk',room:'night',road:'dawn',village:'dusk',well:'night',shrine:'dusk',mountain:'night',temple:'night',jumak:'night',foxpass:'dusk',dreamshrine:'night',shrineday:'day',camp:'night',gwana:'day',gwana_n:'night',gwell:'night'}[b];
     if(m!==nat){ const tint={night:'rgba(18,22,42,.42)',day:'rgba(255,250,236,.14)',dawn:'rgba(255,238,215,.18)',dusk:'rgba(205,110,55,.16)'}[m]; if(tint){ c.fillStyle=tint; c.fillRect(0,0,W,H); } }
     if(m==='dream'){ c.fillStyle='rgba(140,25,20,.22)'; c.fillRect(0,0,W,H); }
+    if(b==='shrineday'||b==='dreamshrine'){ c.fillStyle=b==='shrineday'?'rgba(150,115,60,.22)':'rgba(60,40,70,.18)'; c.fillRect(0,0,W,H); const vg=c.createRadialGradient(W/2,H/2,H*.28,W/2,H/2,H*.75); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(20,14,8,.55)'); c.fillStyle=vg; c.fillRect(0,0,W,H); }
     return;
   }
   let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#efe4cb'); g.addColorStop(1,'#dccaa5'); c.fillStyle=g; c.fillRect(0,0,W,H);
