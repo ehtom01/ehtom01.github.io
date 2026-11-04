@@ -1994,6 +1994,20 @@ function thud(){ if(!AU.on) return; try{ ACX=ACX||new (window.AudioContext||wind
   const n=c.createBuffer(1,c.sampleRate*.35,c.sampleRate), d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
   const ns=c.createBufferSource(); ns.buffer=n; const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=380; const ng=c.createGain(); ng.gain.value=.9; ns.connect(lp); lp.connect(ng); ng.connect(c.destination); ns.start(t);
 }catch(e){} }
+function sfxR(k,rate,vol){ if(!AU.on||typeof SFXDATA==='undefined'||!SFXDATA[k]) return; try{ const a=new Audio(SFXDATA[k]); a.preservesPitch=false; a.mozPreservesPitch=false; a.webkitPreservesPitch=false; a.playbackRate=rate; a.volume=Math.min(1,vol??(SFXV[k]??.6)); a.play().catch(()=>{}); }catch(e){} }
+function ac(){ ACX=ACX||new (window.AudioContext||window.webkitAudioContext)(); if(ACX.state==='suspended') ACX.resume(); return ACX; }
+/* 방울 흔들기: 칠 때마다 방울이 높아지고 귀문의 낮은 울림이 커짐 → 마지막엔 바람이 빨려 들어가며 문이 닫히는 「쿵」 */
+function gateHum(i,n){ if(!AU.on) return; try{ const c=ac(), t=c.currentTime, g=c.createGain(); g.connect(c.destination);
+  const v=.08+.1*i/n; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.15); g.gain.exponentialRampToValueAtTime(.0001,t+1.6);
+  [48,48*1.5+i*2].forEach((f,j)=>{ const o=c.createOscillator(); o.type=j?'triangle':'sine'; o.frequency.setValueAtTime(f,t); o.frequency.linearRampToValueAtTime(f*(1+.04*i),t+1.5); o.connect(g); o.start(t); o.stop(t+1.7); });
+}catch(e){} }
+function gateClose(){ if(!AU.on) return; try{ const c=ac(), t=c.currentTime, len=1.1;
+  const b=c.createBuffer(1,c.sampleRate*len,c.sampleRate), d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+  const ns=c.createBufferSource(); ns.buffer=b; const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2; bp.frequency.setValueAtTime(1800,t); bp.frequency.exponentialRampToValueAtTime(140,t+len);
+  const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.55,t+.75); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+  ns.connect(bp); bp.connect(g); g.connect(c.destination); ns.start(t);
+  setTimeout(()=>{ thud(); sfxR('bell',.72,.45); },len*1000-120);
+}catch(e){} }
 function scareHit(){ swTok++; stopAll(0);
   AU.cur=null; AU.el=null; bgmWant=null; clearTimeout(bgmTimer); bgmTimer=0; AU.hush=performance.now()+1300;
   thud(); setTimeout(()=>sfx('scare'),250); setTimeout(()=>{ AU.hush=0; updateBgm(); },1350); }
@@ -2423,7 +2437,7 @@ function act(a,v){
     case 'guideSnd': try{ localStorage.setItem('mukya-guide','1'); }catch(e){} closeModal(); if(!AU.on) setSound(true); unlockAudio(); return;
     case 'guideMute': try{ localStorage.setItem('mukya-guide','1'); }catch(e){} closeModal(); if(AU.on) setSound(false); return;
     case 'adv': advance(); return;
-    case 'tapBell': { const M=R&&R.mode; if(!M||M.k!=='tap') return; M.c++; sfx('bell'); R.fx.shake=.5+M.c*.15; R.fx.flash=.12*M.c; if(M.c>=M.n){ R.mode=null; R.fx.red=1; setTimeout(step,350); drawMode&&($('#ui').innerHTML=''); } else drawMode(); return; }
+    case 'tapBell': { const M=R&&R.mode; if(!M||M.k!=='tap') return; M.c++; sfxR('bell',1+(M.c-1)*.14,.6+M.c*.12); gateHum(M.c,M.n); R.fx.shake=.5+M.c*.15; R.fx.flash=.12*M.c; if(M.c>=M.n){ R.mode=null; gateClose(); if(AU.el&&AU.on) fadeTo(AU.el,.05,500); setTimeout(()=>{ R.fx.red=1; R.fx.shake=1.4; if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2500); },1000); setTimeout(step,1500); drawMode&&($('#ui').innerHTML=''); } else drawMode(); return; }
     case 'pick': pickChoice(+v); return;
     case 'play': closeModal(); startEp(v,null); return;
     case 'resume': startEp(S.resume.ep,S.resume); return;
