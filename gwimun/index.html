@@ -2491,7 +2491,7 @@ function act(a,v){
     case 'guideSnd': try{ localStorage.setItem('mukya-guide','1'); }catch(e){} closeModal(); if(!AU.on) setSound(true); unlockAudio(); return;
     case 'guideMute': try{ localStorage.setItem('mukya-guide','1'); }catch(e){} closeModal(); if(AU.on) setSound(false); return;
     case 'adv': advance(); return;
-    case 'tapBell': { const M=R&&R.mode; if(!M||M.k!=='tap') return; M.c++; sfxR('bell',1+(M.c-1)*.14,.6+M.c*.12); gateHum(M.c,M.n); R.fx.shake=.5+M.c*.15; R.fx.flash=.12*M.c; if(M.c>=M.n){ R.mode=null; gateClose(); if(AU.el&&AU.on) fadeTo(AU.el,.05,500); setTimeout(()=>{ R.fx.red=1; R.fx.shake=1.4; if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2500); },1000); setTimeout(step,1500); drawMode&&($('#ui').innerHTML=''); } else drawMode(); return; }
+    case 'tapBell': { const M=R&&R.mode; if(!M||M.k!=='tap') return; M.c++; sfxR('bell',1+(M.c-1)*.14,.6+M.c*.12); gateHum(M.c,M.n); R.fx.shake=.5+M.c*.15; R.fx.flash=.12*M.c; if(M.c>=M.n){ R.mode=null; sfx('gate'); if(AU.el&&AU.on) fadeTo(AU.el,.05,500); setTimeout(()=>{ R.fx.red=1; R.fx.shake=1.4; if(AU.el&&AU.on) fadeTo(AU.el,AU.vol,2500); },1000); setTimeout(step,1500); drawMode&&($('#ui').innerHTML=''); } else drawMode(); return; }
     case 'pick': pickChoice(+v); return;
     case 'play': closeModal(); startEp(v,null); return;
     case 'resume': startEp(S.resume.ep,S.resume); return;
