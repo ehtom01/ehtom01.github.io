@@ -2261,7 +2261,7 @@ function frame(now){
   if(dv>.01){ const vg=c.createRadialGradient(180,230,60,180,230,300); vg.addColorStop(0,`rgba(15,12,10,${(.05*dv).toFixed(3)})`); vg.addColorStop(1,`rgba(15,12,10,${(.45*dv).toFixed(3)})`); c.fillStyle=vg; c.fillRect(0,0,W,H); }
   R.chars=R.chars.filter(ch=>ch.ta>0||ch.a>.02);
   { const hero=R.chars.find(ch=>ch.c==='hong'&&ch.ta>0), foes=R.chars.filter(ch=>CAST[ch.c].side!=='hero');
-    if(hero&&foes.length&&R.bg.m==='dream'){ // 꿈·미래 장면: 두 자매를 나란히 세워 마주 보게
+    if(false&&hero&&foes.length&&R.bg.m==='dream'){ // 꿈·미래 장면: 두 자매를 나란히 세워 마주 보게
       drawChar(c,'hong',108,hero.a,false,t,.86); foes.forEach(ch=>drawChar(c,ch.c,252,ch.a,false,t,.86)); }
     else foes.forEach(ch=>drawChar(c,ch.c,180,ch.a,false,t)); }
   c.restore();
