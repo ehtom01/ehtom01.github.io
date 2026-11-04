@@ -240,6 +240,7 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 .tq-h{font-size:13px;color:#e6dcc4;text-shadow:0 1px 6px #000}
 .ttag{position:absolute;left:10px;top:10px;z-index:3;padding:4px 10px;border-radius:12px;background:rgba(12,10,9,.62);border:1px solid rgba(216,205,182,.35);color:#e9dfc8;font-size:12px;letter-spacing:.08em;pointer-events:none}.ttag.past{color:#e8c890;border-color:rgba(232,200,144,.45)}.ttag.dream{color:#f0a49a;border-color:rgba(240,164,154,.45)}.ttag.future{color:#b9c6ff;border-color:rgba(185,198,255,.45)}
 .box.eerie #txt{display:inline-block;color:#f3cfc4;text-shadow:0 0 7px rgba(210,30,20,.75),0 0 1px #000;animation:trem .16s steps(2) infinite;letter-spacing:.04em}.box.eerie{border-color:rgba(190,40,30,.6)}@keyframes trem{0%{transform:translate(0,0)}50%{transform:translate(.7px,-.5px)}100%{transform:translate(-.6px,.5px)}}
+.roombar{position:absolute;left:8px;right:8px;top:46px;display:flex;align-items:center;gap:8px;pointer-events:none}.roombar .shlab{font-size:11px;color:#d8cdb6;letter-spacing:.1em;text-shadow:0 1px 2px #000}.shbar{flex:1;max-width:120px;height:6px;border-radius:3px;background:rgba(0,0,0,.55);border:1px solid rgba(233,221,184,.3);overflow:hidden}.shbar i{display:block;height:100%;background:linear-gradient(90deg,#3a3550,#8d86b0);transition:width .4s}.yinbtn{margin-left:auto;pointer-events:auto;background:rgba(20,17,14,.85)!important;border-color:rgba(160,150,200,.6)!important;color:#d8d2f0!important}.yinbtn.on{background:rgba(70,20,24,.9)!important;color:#f3cfc4!important;border-color:rgba(224,72,58,.7)!important}
 .rprog{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:-2px 2px 20px;position:relative;overflow:visible}.rprog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8f1d22,#e0483a);border-radius:2px;transition:width .5s}
 .rprog span{position:absolute;right:0;top:5px;font-size:10.5px;color:#a99d84;letter-spacing:.05em}
 .guide h3{text-align:center;margin:0 0 12px}.guide .gi{display:flex;gap:12px;align-items:center;margin:8px 0}.guide .gi b{flex:0 0 40px;height:40px;border-radius:8px;display:grid;place-items:center;background:#8f1d22;color:#fbeee0;font-family:var(--f-disp);font-size:20px}
@@ -687,7 +688,8 @@ const E2=[
  Q('홍련','손목에 감은 거, 소리개 신당 부적 끈이죠. 저희 어머니가 엮던 매듭이에요.'),
  Q('주모','…! 그럼 당신이…'),
  Q('주모','백련 무당이 우리 딸 병을 고쳐 줬수. 돈 한 푼 안 받고. 그런 사람이 아이를 잡아간다니, 난 안 믿어.'),
- Q('주모','들어 보우. 아이들이 사라지기 전날 밤마다 관아에서 사람이 와서 촌장 어른 댁에 들렀다 갔다우.'),
+ Q('주모','막동이는 산에서, 순이는 빨래터에서, 복동이는 저 우물에서. 차례로 사라졌수.'),
+ Q('주모','그런데 들어 보우. 아이들이 사라지기 전날 밤마다 관아에서 사람이 와서 촌장 어른 댁에 들렀다 갔다우.'),
  Q('주모','그리고 여우 가면을 쓴 사내를 봤다는 애도 있고. …백련 무당을 봤다는 사람도 있다우. 아이들 근처에서 울고 있더래.'),
  SET(F=>{F.c_mask=1;F.innkeep=1}),
  L('e2mom'),
@@ -712,27 +714,37 @@ const E2=[
  CL, CUT({sub:'자정 무렵',sub2:'마을 우물'}), BG('well','night'),
  M(3), N('자정이 가까울 무렵. 두 사람은 결국 우물 앞에 서 있었다.'),
  SND('kid_hum'), N('어디선가 아이가 흥얼거렸다. 꼭꼭 숨어라… 머리카락 보일라…'),
- Q('홍련|놀람','…나리, 들려요?'),
- Q('태석','바람 소리요. …바람 소리일 거요.'),
- Q('태석','마지막 아이가 사라진 곳이오. 뭔가 남아 있을지 모르니 살펴봅시다.'),
- INV({intro:'우물가를 살펴보자. 수상한 곳을 눌러 보세요.',spots:[
-   {id:'well',x:185,y:212,r:42,req:1,name:'우물 속',txt:'칠흑같이 어둡다. 아주 깊은 곳에서… 누군가 훌쩍이는 소리가 들린다.'},
-   {id:'thread',x:72,y:108,r:30,name:'붉은 끈',txt:'버드나무 가지에 붉은 실이 걸려 있다. 연꽃 무늬… 언니 방울 끈의 실이다.',f:F=>{F.c_thread=1}},
-   {id:'pail',x:285,y:288,r:32,name:'두레박',txt:'두레박줄이 끊어져 있다. 닳아서가 아니라, 칼로 자른 자국이다.',f:F=>{F.c_rope=1}},
-   {id:'foot',x:62,y:200,r:28,name:'장승 발치',txt:'작은 맨발 자국이 장승 앞에서 우물 쪽으로 이어져 있다. 아이의 발이다.',f:F=>{F.c_foot=1}}],
+ Q('홍련|놀람','…우물 속이에요. 아이가 아직 살아 있어요.'),
+ Q('태석','줄도 없는 우물이오. 내려갈 방법부터 찾읍시다.'),
+ INV({intro:'우물 속에서 아이 소리가 난다. 아이에게 닿을 방법을 찾자.',goal:'pulled',goalShort:'우물 속 아이',goalTxt:'우물 속 아이에게 닿을 방법을 찾아야 해요',yin:1,bell:1,bellJump:'mul',spots:[
+   {id:'well',x:185,y:212,r:42,req:1,side:'yang',name:'우물 속',txt:'칠흑같이 어둡다. 깊은 곳에서 아이가 훌쩍인다. 도르래에 걸린 줄은 없다.',say:[['태석','','줄 없이는 못 내려가오. 두레박부터 살펴봅시다.']],
+     use:{pailrope:{txt:'밧줄 묶은 두레박을 천천히 내렸다. 한참 만에 줄이 팽팽해졌다. 그리고… 아래에서 누군가 줄을 잡아당겼다.',give:['pulled'],take:['pailrope'],scare:1,jump:'mul'}}},
+   {id:'pail',x:285,y:288,r:32,side:'yang',name:'두레박',txt:'두레박줄이 끊어져 있다. 닳아서가 아니라, 칼로 자른 자국이다.',f:F=>{F.c_rope=1},
+     say:[['태석','','칼자국이오. 누군가 아이가 못 올라오게 일부러 끊은 거요.']],
+     use:{rope:{txt:'두레박 손잡이에 새 밧줄을 단단히 묶었다. 이제 우물에 내릴 수 있다.',give:['pailrope'],take:['rope']}}},
+   {id:'thread',x:72,y:108,r:30,side:'yang',name:'붉은 끈',txt:'버드나무 가지에 붉은 실이 걸려 있다. 연꽃 무늬… 언니 방울 끈의 실이다.',f:F=>{F.c_thread=1}},
+   {id:'foot',x:112,y:252,r:26,side:'yang',name:'장승 발치',txt:'작은 맨발 자국이 장승 앞에서 우물 쪽으로 이어져 있다. 아이의 발이다.',f:F=>{F.c_foot=1}},
+   {id:'jang',x:80,y:172,r:30,side:'yang',req:1,name:'장승 뒤 궤짝',txt:'장승 뒤에 작은 궤짝이 숨겨져 있다. 뚜껑에 이름 패 넷이 박혀 있고, 「사라진 차례대로」라고 새겨져 있다.',
+    lock:{t:'이름 패 자물쇠',d:'이름 패 셋을 아이들이 사라진 차례대로 눌러야 열린다. 넷째 패의 이름은… 아무리 봐도 읽히지 않는다.',opts:[['막동','#56653f'],['순이','#7a4f62'],['복동','#45587a'],['???','#3a3632']],ans:['막동','순이','복동'],
+     hint:'주모가 말했다. 산, 빨래터, 그리고 우물. 거울로 우물 벽을 비춰 봐도 된다.',ok:'딸깍. 궤짝 안에 둘둘 감은 새 밧줄. 그리고 붉은 관아 인장이 찍힌 종잇조각 하나.',give:['rope'],f:F=>{F.c_seal=1}}},
+   {id:'wall',x:185,y:240,r:46,side:'yin',name:'우물 돌벽',txt:'거울 속 돌벽에 손톱으로 긁은 글씨. 「막동 · 순이 · 복동」 사라진 차례 그대로다. 그 위에 훨씬 오래된 글씨가 하나 더. 「달래 · 공물」.',f:F=>{F.mulname=1},
+     say:[['홍련','놀람','(아이들 이름 위에… 백 년은 묵은 이름이 있어. 달래.)']]},
+   {id:'whitefoot',x:140,y:305,r:28,side:'yin',name:'흰 발자국',txt:'아이 발자국 곁에, 거울 속에서만 보이는 흰 맨발 자국이 나란히 찍혀 있다. 아이를 끌고 간 걸음이 아니다. 감싸듯 함께 걸은 걸음이다.',f:F=>{F.c_white=1}},
+   {id:'jangyin',x:80,y:172,r:30,side:'yin',name:'장승 뒤',txt:'장승 뒤에 아이 손톱으로 긁은 글자 한 자. 「순」. 잊히지 않으려고 누군가 남긴 이름이다.',piece:'순'}],
+   hints:[[M=>!M.unlocked.jang,'jang','장승 뒤 궤짝. 아이들이 사라진 차례를 떠올려 보자. 막히면 거울로 우물 벽을 비춰 보자.'],
+          [M=>M.items.includes('rope'),'pail','새 밧줄을 고른 뒤 두레박을 눌러 보자.'],
+          [M=>M.items.includes('pailrope'),'well','밧줄 묶은 두레박을 우물에 내려 보자.']],
    all:F=>{F.allclue2=1}}),
- N('그때 등 뒤에서 낮은 염불 소리가 들렸다. 우물가엔 이미 누군가 있었다.'),
- SH('hong','l'), SH('mujin','r'),
- N('잿빛 장삼에 붉은 가사를 걸친 승려가 우물을 향해 낮게 염불하고 있었다.'),
+ N('줄이 손바닥을 태우며 아래로 끌려 내려갔다.'),
+ SH('hong','l'), SH('dol','r'),
+ Q('태석','놓지 마시오! 같이 당깁시다!'),
+ N('그때 등 뒤에서 낮은 염불 소리가 들렸다. 잿빛 장삼의 승려가 다가와 줄을 함께 움켜쥐었다.'),
+ HD('dol'), SH('mujin','r'),
  Q('무진','나무아미타불… 물러가시오. 여기는 산 자의 땅이오.'),
  Q('홍련','스님은 누구세요?'),
- Q('무진','지나가는 중이오. 이름은 무진. …그대는 신기가 짙구려. 숨긴다고 숨겨지는 기운이 아니오.'),
- Q('태석','지나가는 중이라면서 왜 한밤중에 남의 마을 우물에서 염불을 하시오?'),
- Q('무진','이 우물 아래로 물길이 산까지 이어져 있소. 그 물길 끝에 폐사찰이 있고.'),
- Q('무진','…소승은 그 절에서 자랐소.'),
- DREAD, N('바람이 멎었다. 풀벌레 소리도, 개 짖는 소리도 한꺼번에 끊겼다.'),
+ Q('무진','지나가는 중이오. 이름은 무진. …이 우물 물길 끝의 폐사찰에서 자랐소.'),
+ DREAD, N('줄이 뚝 멈췄다. 풀벌레 소리도, 개 짖는 소리도 한꺼번에 끊겼다.'),
  N('우물 속에서… 무언가 돌벽을 긁으며 올라오는 소리가 났다.'),
- N('그 순간, 우물 속에서 물이 끓어올랐다.'),
  HIT, HD('mujin'), SH('mul','r'), CG('well'),
  N('젖은 머리카락을 늘어뜨린 무언가가 우물 벽을 타고 기어 나왔다. 물귀신이었다.'),
  Q('무진|놀람','물러서시오!'),
@@ -740,7 +752,7 @@ const E2=[
  Q('홍련|놀람','우물 안에 아이가 있어요!'),
  CH({t:'부적을 꺼내 물귀신을 묶는다.',f:F=>{F.bell=1},go:'bell'},
     {t:'무진에게 맡기고 아이를 끌어올린다.',f:F=>{F.mujin++},go:'trust'},
-    {t:'물귀신의 한을 들어 본다.',secret:'우물 단서를 모두 찾았거나 도깨비불을 봉인함',show:F=>F.allclue2||F.sealwin1,f:F=>{F.truth2=1},go:'listen'}),
+    {t:'물귀신의 이름을 불러 준다. 「달래야.」',secret:'거울로 우물 벽의 오래된 이름을 찾음',show:F=>F.mulname,f:F=>{F.truth2=1},go:'listen'}),
  L('bell'),
  N('홍련은 품속에서 누런 부적 한 장을 꺼냈다. 어머니가 가르쳐 준 획이 손끝에 되살아났다.'),
  RIT('talisman','bellwin','belllose'),
@@ -766,7 +778,10 @@ const E2=[
  Q('무진','신기를 쓰지 않은 건 잘한 일이오. 그 힘은 한 번 열면 닫기 어렵소.'),
  G('save'),
  L('listen'),
- Q('홍련','잠깐만요, 스님. …이 귀신, 울고 있어요.'),
+ Q('홍련','…달래야.'),
+ N('물귀신이 멈췄다. 젖은 머리카락 사이로, 오래 잊혔던 눈이 홍련을 올려다보았다.'),
+ Q('물귀신','…내… 이름…'),
+ Q('물귀신','백 년 동안… 아무도… 안 불러 줬어…'),
  N('홍련이 무릎을 꿇고 물귀신의 젖은 손을 잡았다. 차가운 기억이 밀려들었다.'),
  FX('red'),
  Q('물귀신','나는… 아이를 데려가지 않았어… 하얀 여자가… 아이를 우물에 숨겼어… 여우가 오기 전에…'),
@@ -1827,7 +1842,7 @@ function step(){
       case 'ch': R.snap={i:R.i-1,F:JSON.parse(JSON.stringify(S.F)),bg:{...R.bg},chars:R.chars.filter(c=>c.ta>0).map(c=>({c:c.c,p:c.p})),log:R.log.length}; R.picked=null; R.choice=s.o.filter(o=>!o.show||o.show(S.F)); R.line=null; drawUI(); return;
       case 'end': finishEp(); return;
       case 'tap': R.mode={k:'tap',t:s.t,n:s.n,c:0}; R.line=null; drawUI(); return;
-      case 'inv': R.mode={k:'inv',...s,found:[],msg:null,hint:null,miss:null,items:[],isel:null,unlocked:{},lockOpen:null,lockIn:[],lockWrong:0}; R.line=null; R.chars.forEach(c=>c.ta=0); drawUI(); return;
+      case 'inv': R.mode={k:'inv',...s,found:[],msg:null,hint:null,miss:null,items:[],isel:null,unlocked:{},lockOpen:null,lockIn:[],lockWrong:0,yinOn:false,shadow:100,rings:0,t0:Date.now()}; roomStart(R.mode); R.line=null; R.chars.forEach(c=>c.ta=0); drawUI(); return;
       case 'rit': R.mode={k:'rit',kind:s.kind,win:s.win,lose:s.lose}; R.line=null; drawUI(); startRitual(); return;
     }
   }
@@ -1947,7 +1962,7 @@ function mountStage(){ cv=$('#cv'); ctx=cv.getContext('2d'); drawUI(); }
 
 /* ===================== 조사 · 퇴마 ===================== */
 const isBeta=()=>typeof BETA!=='undefined'&&BETA;
-const ITEMS={cord:{n:'방울 끈',ico:'끈'},mirror:{n:'청동 거울',img:'mirror'},tali:{n:'빈 종이',img:'tali_old'},talirev:{n:'언니의 부적',img:'tali_rev'}};
+const ITEMS={cord:{n:'방울 끈',ico:'끈'},mirror:{n:'청동 거울',img:'mirror'},tali:{n:'빈 종이',img:'tali_old'},talirev:{n:'언니의 부적',img:'tali_rev'},rope:{n:'새 밧줄',ico:'繩'},pailrope:{n:'밧줄 묶은 두레박',ico:'桶'},pulled:{n:'팽팽해진 두레박줄',ico:'!'}};
 const josa=(w,a,b)=>{ const c=w.charCodeAt(w.length-1)-0xac00; return w+(c>=0&&c<11172&&c%28?a:b); };
 const itemPic=k=>{ const it=ITEMS[k]||{n:k}; return it.img&&SPR[it.img]?`<img src="${SPR[it.img]}" alt="">`:`<i>${it.ico||it.n[0]}</i>`; };
 function cardOf(name,txt,img){ const ims=[].concat(img||[]).filter(k=>IMG[k]); const t=`<b>${name}</b> ${txt}`; return ims.length?`<div class="cluecard"><div class="cluepics">${ims.map(k=>`<img class="clueimg" src="${SPR[k]}" alt="${name}">`).join('')}</div><div class="ctx">${t}</div></div>`:t; }
@@ -1965,7 +1980,6 @@ const CLUE={
    opts:[{t:'뒤를 돌아본다.',res:'아무도 없다. 다시 보니 수면은 잔잔했다. …그런데 등 뒤 땅바닥에 젖은 발자국 두 개가 찍혀 있다.',f:F=>{F.grudge+=3}},
          {t:'눈을 떼지 않고 방울을 흔든다.',res:'짤랑. 머리카락이 물속으로 가라앉았다. 아주 작은 목소리가 남았다. 「…무서워.」',f:F=>{F.wellcalm=1}}]}},
  '1-2:thread':{say:['슬픔','(언니 방울 끈 실이야. 언니가 여기 왔었어.)']},
- '1-2:pail':{say:['결의','(칼자국… 누군가 일부러 끊었어.)']},
  '1-2:foot':{say:['슬픔','(이렇게 작은 발로… 혼자 우물까지 걸어간 거야?)']},
  '1-3:altar':{say:['슬픔','(언니 일기… 언니는 여기 다 적어 뒀구나.)']},
  '1-3:bell':{say:['슬픔','(어머니 방울… 아직 소리가 맑아.)']},
@@ -2143,6 +2157,7 @@ function drawMode(){
   const ui=$('#ui'), M=R.mode;
   if(M.k==='tap'){ ui.innerHTML=`<div class="tapq" data-a="tapBell"><div class="tq-t">${M.t}</div><div class="tq-bell${M.c?' hit':''}" style="--s:${1+M.c*.08}">鈴</div><div class="tq-dots">${Array.from({length:M.n},(_,i)=>`<i class="${i<M.c?'on':''}"></i>`).join('')}</div><div class="tq-h">화면을 빠르게 ${M.n}번 두드리세요</div></div>`; return; }
   if(M.k==='inv'){
+    if(M.fail){ ui.innerHTML=`<div class="inv"><div class="scare"><div class="sc-t">그림자가 지워졌다</div><div class="sc-x">발끝부터 번지던 그림자가 끝내 사라졌다. 태석이 무어라 부르는데… 그 이름이 누구 것인지 떠오르지 않는다.</div><div class="sc-r">정신을 차리자. 다시 처음부터 살펴본다.</div><button class="btn pri" data-a="roomRetry">다시 살펴본다</button></div></div>`; return; }
     if(M.scare){ const sc=M.scare;
       ui.innerHTML=`<div class="inv"><div class="scare"><div class="sc-t">${sc.name}</div><div class="sc-x">${sc.txt}</div>${sc.res?`<div class="sc-r">${sc.res}</div><button class="btn pri" data-a="scareDone">계속 살펴본다</button>`:sc.opts.map((o,i)=>`<button class="opt" data-a="scarePick" data-v="${i}" data-n="${'一二'[i]}">${o.t}</button>`).join('')}</div></div>`; return; }
     if(M.linking){ const L=LINK[R.e.id], sel=M.sel||[];
@@ -2156,9 +2171,10 @@ function drawMode(){
     const reqLeft=M.spots.some(s=>s.req&&!M.found.includes(s.id))||(M.goal&&!M.items.includes(M.goal)), all=M.found.length===M.spots.length;
     const pc=(v,d)=>(v/d*100).toFixed(2)+'%';
     const h=M.hint&&M.spots.find(s=>s.id===M.hint);
-    ui.innerHTML=`<div class="inv"><div class="inv-top">${M.items.length?`<span class="inv-t"><b>察</b></span><div class="inv-items"><span class="ii-l">소지품</span>${M.items.map(k=>`<button class="item${M.isel===k?' on':''}" data-a="itemSel" data-v="${k}" title="${ITEMS[k]?ITEMS[k].n:k}" aria-label="${ITEMS[k]?ITEMS[k].n:k}">${itemPic(k)}</button>`).join('')}</div>`:`<span class="inv-t"><b>察</b> 반짝이는 곳을 눌러 살펴보세요</span>`}<span class="inv-c">${M.goal?(M.items.includes(M.goal)?'목표 완료':'목표 · 언니가 남긴 것'):`단서 ${M.found.length}/${M.spots.length}`}</span></div>
-     ${M.spots.filter(s=>M.found.includes(s.id)).map(s=>`<span class="mark" style="left:${pc(s.x,W)};top:${pc(s.y,H)}"><i></i>${s.name}</span>`).join('')}
-     ${M.spots.filter(s=>!M.found.includes(s.id)).map((s,i,a)=>`<span class="glint" style="left:${pc(s.x+(s.r*.25),W)};top:${pc(s.y-(s.r*.2),H)};animation-delay:${(i*3.6/a.length).toFixed(2)}s"></span>`).join('')}
+    ui.innerHTML=`<div class="inv"><div class="inv-top">${M.items.length?`<span class="inv-t"><b>察</b></span><div class="inv-items"><span class="ii-l">소지품</span>${M.items.map(k=>`<button class="item${M.isel===k?' on':''}" data-a="itemSel" data-v="${k}" title="${ITEMS[k]?ITEMS[k].n:k}" aria-label="${ITEMS[k]?ITEMS[k].n:k}">${itemPic(k)}</button>`).join('')}</div>`:`<span class="inv-t"><b>察</b> 반짝이는 곳을 눌러 살펴보세요</span>`}<span class="inv-c">${M.goal?(M.items.includes(M.goal)?'목표 완료':'목표 · '+(M.goalShort||'언니가 남긴 것')):`단서 ${M.found.length}/${M.spots.length}`}</span></div>
+     ${M.yin||M.bell?`<div class="roombar">${M.bell?`<span class="shlab">그림자</span><span class="shbar"><i style="width:${M.shadow}%"></i></span>`:''}${M.yin?`<button class="btn sm yinbtn${M.yinOn?' on':''}" data-a="yinToggle">${M.yinOn?'거울을 내린다':'거울로 비춘다'}</button>`:''}</div>`:''}
+     ${M.spots.filter(s=>M.found.includes(s.id)&&vis(M,s)).map(s=>`<span class="mark" style="left:${pc(s.x,W)};top:${pc(s.y,H)}"><i></i>${s.name}</span>`).join('')}
+     ${M.spots.filter(s=>!M.found.includes(s.id)&&vis(M,s)).map((s,i,a)=>`<span class="glint" style="left:${pc(s.x+(s.r*.25),W)};top:${pc(s.y-(s.r*.2),H)};animation-delay:${(i*3.6/a.length).toFixed(2)}s"></span>`).join('')}
      ${h?`<span class="pulse" style="left:${pc(h.x,W)};top:${pc(h.y,H)};width:${pc(h.r*2,W)}"></span>`:''}
      ${M.miss?`<span class="miss" style="left:${pc(M.miss.x,W)};top:${pc(M.miss.y,H)}"></span>`:''}
      <div class="inv-msg"><div class="inv-txt">${(!M.msg&&M.goal&&!M.items.includes(M.goal)&&M.found.length===M.spots.length)?'모든 곳을 살펴봤다. 손에 넣은 물건을 어딘가에 써 봐야 할 것 같다. 위 소지품을 눌러 고른 뒤, 쓸 곳을 눌러 보자.':''}${M.isel?`<b>${ITEMS[M.isel].n}</b>${josa(ITEMS[M.isel].n,'을','를').slice(-1)} 쓸 곳을 눌러 보세요.`:(M.msg||M.intro)}</div><div class="row" style="justify-content:flex-end;gap:6px">
@@ -2171,23 +2187,40 @@ function drawMode(){
     ui.innerHTML=`<div class="rit" data-a="noop"><div class="inv-top"><span class="inv-t"><b>符</b> ${({talisman:'봉(封) 부적',seal:'봉인진',lotus:'천도 연꽃'})[M.kind]||'부적'} · 붉은 획을 따라 그리세요</span><span class="inv-c" id="ritT"></span></div><canvas id="ritc"></canvas><div class="ritres" id="ritRes"></div></div>`;
   }
 }
+/* 방탈출 장치: 저승 보기(거울) · 그림자(체력) · 다가오는 방울 · 이름 조각 */
+const vis=(M,sp)=>!sp.side||(sp.side==='yin')===!!M.yinOn;
+function roomStart(M){ clearInterval(M.tick); M.lastRing=Date.now(); M.lastDrain=Date.now();
+  if(M.yin&&!S.F.yinTip){ S.F.yinTip=1; setTimeout(()=>toast('청동 거울로 비추면 저승 쪽이 보여요. 대신 그림자가 닳아요.'),900); }
+  M.tick=setInterval(()=>{ if(!R||R.mode!==M){ clearInterval(M.tick); return; } if(M.fail||M.scare||M.lockOpen) { M.lastRing=Date.now(); return; }
+    const now=Date.now();
+    if(M.yinOn&&now-M.lastDrain>1500){ M.lastDrain=now; shadowHit(M,2,true); }
+    if(M.bell&&now-M.lastRing>(M.bellGap||22000)){ M.lastRing=now; M.rings++;
+      sfxR('bell',.9-M.rings*.06,.25+M.rings*.18); vib(20*M.rings);
+      if(M.rings>=4){ M.rings=0; jumpScare(M.bellJump||'won4'); R.fx.red=1; shadowHit(M,25); M.msg='<span style="color:#e0483a">무언가가 등 뒤를 스치고 지나갔다. 발끝의 그림자가 한 뼘 옅어졌다.</span>'; }
+      else { M.msg=['<i>짤랑…</i> 어딘가에서 방울 소리가 났다.','<i>짤랑…</i> 방울 소리가 가까워졌다.','<i>짤랑.</i> 바로 담 너머다. 서둘러야 한다.'][M.rings-1]; }
+      drawMode(); } },500); }
+function shadowHit(M,n,quiet){ M.shadow=Math.max(0,M.shadow-n); if(!quiet){ R.fx.shake=Math.max(R.fx.shake,.6); }
+  const b=document.querySelector('.shbar i'); if(b) b.style.width=M.shadow+'%';
+  if(M.shadow<=0&&!M.fail){ M.fail=1; M.yinOn=false; scareHit(); R.fx.red=1; R.fx.shake=1.3; vib([100,60,200]); drawMode(); } }
+function roomRetry(){ const M=R.mode; clearInterval(M.tick); R.i--; while(R.i>0&&R.e.s[R.i].k!=='inv') R.i--; R.mode=null; R.log.push('<span class="muted">↺ 그림자를 되찾고 다시 살펴본다</span>'); step(); }
+function spotSay(sp){ return (sp.say||[]).map(([who,ex,t])=>clueSay({who,say:[ex,t]})).join(''); }
 function invTap(e){
   const M=R&&R.mode; if(!M||M.k!=='inv') return;
   const r=$('#stage').getBoundingClientRect(), x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H;
-  let best=null,bd=1e9; M.spots.forEach(s=>{ const d=Math.hypot(s.x-x,s.y-y); if(d<s.r&&d<bd){bd=d;best=s;} });
+  let best=null,bd=1e9; M.spots.forEach(s=>{ if(!vis(M,s)) return; const d=Math.hypot(s.x-x,s.y-y); if(d<s.r&&d<bd){bd=d;best=s;} });
   M.miss=null;
-  if(M.lockOpen) return;
+  if(M.lockOpen||M.fail) return;
   if(best&&M.isel){ const k=M.isel; M.isel=null; useItem(M,best,k); return; }
   if(best&&best.use&&!(best.lock&&!M.unlocked[best.id])){ const can=Object.keys(best.use).filter(k=>M.items.includes(k)&&!(M.used&&M.used[best.id+k]));
     if(can.length){ if(!M.found.includes(best.id)){ M.found.push(best.id); sfx('clue'); if(best.f) best.f(S.F); R.log.push(`<span style="color:#c9a24a">察 ${best.name}</span> ${best.txt}`); } M.msg=cardOf(best.name,best.txt)+`<div class="ctxuse">${can.map(k=>`<button class="btn sm gold" data-a="useCtx" data-v="${best.id}|${k}">${itemPic(k)} ${josa(ITEMS[k].n,'을','를')} 써 본다</button>`).join('')}</div>`; drawMode(); return; } }
   if(best&&best.lock&&!M.unlocked[best.id]){ if(!M.found.includes(best.id)){ M.found.push(best.id); sfx('clue'); const ev=CLUE[R.e.id+':'+best.id]; M.msg=(ev&&ev.say?clueSay(ev):'')+cardOf(best.name,best.txt); }
     M.lockOpen=best.id; M.lockIn=[]; M.lockMsg=''; drawMode(); return; }
   if(best){ if(best.give&&!M.found.includes(best.id)) giveItems(M,best.give);
-    if(!M.found.includes(best.id)){ sfx('clue'); M.found.push(best.id); if(best.f) best.f(S.F); R.log.push(`<span style="color:#c9a24a">察 ${best.name}</span> ${best.txt}`); if(M.hint===best.id) M.hint=null; R.fx.flash=.35;
+    if(!M.found.includes(best.id)){ sfx('clue'); M.found.push(best.id); if(best.f) best.f(S.F); if(best.piece){ S.F.pieces=[...new Set([...(S.F.pieces||[]),best.piece])]; setTimeout(()=>toast('지워진 이름 조각 · 「'+best.piece+'」'),600); R.fx.flash=.6; } R.log.push(`<span style="color:#c9a24a">察 ${best.name}</span> ${best.txt}`); if(M.hint===best.id) M.hint=null; R.fx.flash=.35;
       if(M.found.length===M.spots.length){ if(M.all) M.all(S.F); toast('모든 단서를 찾았다'); } save(); }
     const ev=CLUE[R.e.id+':'+best.id];
     if(ev&&ev.scare&&!M.scared){ M.scared=1; scareHit(); M.scare={...ev.scare,name:best.name,res:null,clue:`<b>${best.name}</b> ${best.txt}`}; R.fx[ev.scare.fx||'shake']=1; R.fx.shake=1.4; R.fx.flash=.55; R.fx.red=1; document.body.classList.remove('thump'); void document.body.offsetWidth; document.body.classList.add('thump'); drawMode(); return; }
-    M.msg=(ev&&ev.say?clueSay(ev):'')+(best.lock&&M.unlocked[best.id]?cardOf(best.name,best.lock.ok,best.lock.img):cardOf(best.name,best.txt,best.img));
+    M.msg=(ev&&ev.say?clueSay(ev):'')+spotSay(best)+(best.lock&&M.unlocked[best.id]?cardOf(best.name,best.lock.ok,best.lock.img):cardOf(best.name,best.txt,best.img));
   } else { M.miss={x,y}; M.msg=MISS[Math.floor(Math.random()*MISS.length)]; }
   drawMode();
 }
@@ -2205,7 +2238,7 @@ function jumpScare(key){ const src=SPR[key]||SPR.won4; if(!src) return; const fa
   setTimeout(()=>{ d.classList.add('out'); },2500);
   setTimeout(()=>{ d.remove(); AU.hush=0; updateBgm(); },3100); }
 function useItem(M,best,k){ const u=best.use&&best.use[k];
-  if(!u){ M.msg=`<b>${ITEMS[k].n}</b>${josa(ITEMS[k].n,'은','는').slice(-1)} 여기에 쓸 수 없을 것 같다.`; drawMode(); return; }
+  if(!u){ M.msg=`<b>${ITEMS[k].n}</b>${josa(ITEMS[k].n,'은','는').slice(-1)} 여기에 쓸 수 없을 것 같다.`+(M.bell?' <span style="color:#e0483a">헛손질에 그림자가 조금 옅어졌다.</span>':''); if(M.bell) shadowHit(M,8); drawMode(); return; }
   if(!M.used) M.used={}; if(M.used[best.id+k]){ M.msg=cardOf(best.name,u.txt,u.img); drawMode(); return; }
   M.used[best.id+k]=1; M.hint=null; if(!M.found.includes(best.id)) M.found.push(best.id); if(u.f) u.f(S.F); giveItems(M,u.give,u.take); R.log.push(`<span style="color:#c9a24a">用 ${ITEMS[k].n} → ${best.name}</span> ${u.txt}`);
   if(u.scare){ jumpScare(u.jump||'won4'); R.fx.shake=1.2; R.fx.red=1; R.fx.flash=.4; } else { sfx('clue'); R.fx.flash=.4; }
@@ -2217,7 +2250,7 @@ function invHint(){
   if(!isBeta()){ if(S.stones<5){ toast('혼석이 5 필요해요'); return; } S.stones-=5; save(); }
   M.usedHint=1; M.hint=left[0].id; M.msg='희미한 기운이 느껴진다. 빛나는 곳을 눌러 보자.'; drawMode();
 }
-function invDone(){ const M=R.mode; S.F.items=[...new Set([...(S.F.items||[]),...(M.items||[])])]; if(M.found.length===M.spots.length&&!M.usedHint) st().invPerfect++; R.log.push(`▶ 조사 마침 · 단서 ${M.found.length}/${M.spots.length}`); R.mode=null; save(); step(); }
+function invDone(){ const M=R.mode; clearInterval(M.tick); S.F.items=[...new Set([...(S.F.items||[]),...(M.items||[])])]; if(M.found.length===M.spots.length&&!M.usedHint) st().invPerfect++; R.log.push(`▶ 조사 마침 · 단서 ${M.found.length}/${M.spots.length}`); R.mode=null; save(); step(); }
 
 const ring=(cx,cy,r,a0=0,a1=Math.PI*2,st=.25)=>{const p=[];for(let a=a0;a<=a1+.001;a+=st)p.push([cx+Math.cos(a-Math.PI/2)*r,cy+Math.sin(a-Math.PI/2)*r]);return p;};
 const TALI=[[[134,104],[226,104]],[[180,86],[180,330]],[[140,168],[220,196],[140,228],[220,262]],(()=>{const p=[];for(let a=0;a<=Math.PI*2+.01;a+=.3)p.push([180+Math.cos(a-Math.PI/2)*20,306+Math.sin(a-Math.PI/2)*20]);return p;})()];
@@ -2449,7 +2482,9 @@ function frame(now){
   const pres=R.bg.b==='prologue'?0:R.chars.reduce((m,ch)=>CAST[ch.c].side==='hero'?m:Math.max(m,ch.a),0);
   R.dimv=(R.dimv||0)+(pres-(R.dimv||0))*.12; const dv=R.dimv;
   if(dv>.01){ c.filter=`blur(${(dv*3).toFixed(2)}px) brightness(${(1-dv*.35).toFixed(3)}) saturate(${(1-dv*.4).toFixed(3)})`; }
+  const yin=R.mode&&R.mode.k==='inv'&&R.mode.yinOn; if(yin) c.filter='grayscale(.85) brightness(.6) contrast(1.4)';
   paintBG(c,R.bg.b,R.bg.m,t); c.filter='none';
+  if(yin){ c.fillStyle='rgba(90,10,14,.28)'; c.fillRect(0,0,W,H); const vg=c.createRadialGradient(180,210,60,180,210,260); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.75)'); c.fillStyle=vg; c.fillRect(0,0,W,H); }
   if(dv>.01){ const vg=c.createRadialGradient(180,230,60,180,230,300); vg.addColorStop(0,`rgba(15,12,10,${(.05*dv).toFixed(3)})`); vg.addColorStop(1,`rgba(15,12,10,${(.45*dv).toFixed(3)})`); c.fillStyle=vg; c.fillRect(0,0,W,H); }
   R.chars=R.chars.filter(ch=>ch.ta>0||ch.a>.02);
   { const hero=R.chars.find(ch=>ch.c==='hong'&&ch.ta>0), foes=R.chars.filter(ch=>CAST[ch.c].side!=='hero');
@@ -2501,13 +2536,15 @@ function act(a,v){
     case 'close': closeModal(); return;
     case 'noop': return;
     case 'hint': invHint(); return;
+    case 'roomRetry': roomRetry(); return;
+    case 'yinToggle': { const M=R.mode; M.yinOn=!M.yinOn; M.hint=null; M.lastDrain=Date.now(); sfx(M.yinOn?'whisper':'page'); R.fx.flash=.35; M.msg=M.yinOn?'거울 속 우물가는 색이 바래 있었다. 산 사람의 눈에는 보이지 않던 것들이 드러난다.':'거울을 내리자 다시 산 사람의 밤이다.'; drawMode(); return; }
     case 'useCtx': { const M=R.mode, [sid,k]=v.split('|'), sp=M.spots.find(s=>s.id===sid); useItem(M,sp,k); return; }
     case 'itemSel': { const M=R.mode; M.isel=M.isel===v?null:v; drawMode(); return; }
     case 'lockClose': { const M=R.mode; M.lockOpen=null; drawMode(); return; }
     case 'lockClear': { const M=R.mode; M.lockIn=[]; M.lockMsg=''; drawMode(); return; }
     case 'lockPick': { const M=R.mode, sp=M.spots.find(s=>s.id===M.lockOpen), L=sp.lock; sfx('pick'); M.lockIn.push(v); M.lockMsg='';
       if(M.lockIn.length>=L.ans.length){ if(M.lockIn.join()===L.ans.join()){ M.unlocked[sp.id]=1; M.lockOpen=null; M.hint=null; sfx('ritok'); R.fx.flash=.6; if(L.f) L.f(S.F); giveItems(M,L.give); R.log.push(`<span style="color:#c9a24a">鎖 ${L.t}</span> ${L.ok}`); M.msg=cardOf(sp.name,L.ok,L.img); save(); }
-        else { M.lockWrong++; M.lockIn=[]; sfx('ritfail'); R.fx.shake=.7; M.lockMsg='덜컥. 열리지 않는다.'; } }
+        else { M.lockWrong++; M.lockIn=[]; sfx('ritfail'); R.fx.shake=.7; M.lockMsg='덜컥. 열리지 않는다.'+(M.bell?' 그림자가 옅어졌다.':''); if(M.bell) shadowHit(M,15); } }
       drawMode(); return; }
     case 'undo': undoAsk(); return;
     case 'routes': clearInterval(typer); clearTimeout(autoT); R=null; UI.tab='book'; render(); setTimeout(()=>{ const el=document.getElementById('routes'); if(el) el.scrollIntoView({behavior:'smooth'}); },50); return;
