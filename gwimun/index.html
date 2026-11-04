@@ -2046,7 +2046,7 @@ function heartLoop(){ if(!R||!R.dread){ heartT=0; return; } heartN++; if(AU.on){
 function dreadOn(){ if(!R||R.dread) return; R.dread=1; heartN=0; if(AU.el&&AU.on) fadeTo(AU.el,0,1200); clearTimeout(heartT); heartT=setTimeout(heartLoop,700); setTimeout(updateBgm,1250); }
 function dreadOff(quiet){ if(!R||!R.dread) return; R.dread=0; clearTimeout(heartT); heartT=0; if(!quiet) updateBgm(); }
 /* 장소별 배경 소리: 음악 밑에 깔리는 바람·물·풀벌레·풍경. WebAudio로 이음매 없이 반복 */
-const AMBBG={room:'amb_room',well:'amb_well',gwell:'amb_well',mountain:'amb_night',camp:'amb_night',foxpass:'amb_night',temple:'amb_temple',shrine:'amb_temple',prologue:'amb_temple',dreamshrine:'amb_temple'};
+const AMBBG={well:'amb_well',gwell:'amb_well',mountain:'amb_night',camp:'amb_night',foxpass:'amb_night'}; // 셋방·폐사찰·신당의 바람 소리는 뺌
 const AMBCACHE={}; let ambCur=null, ambKey=null;
 function ambFor(){ if(!AU.on||!AU.unlocked||UI.tab!=='read'||!R||R.ended||!R.bg) return null; const b=R.bg.b, m=R.bg.m; if(AMBBG[b]) return AMBBG[b]; if((b==='village'||b==='road')&&m==='dusk') return 'amb_night'; if(b==='jumak'&&m==='night') return 'amb_night'; if(b==='gwana'&&m==='night') return 'amb_night'; return null; }
 async function ambBuf(k){ if(AMBCACHE[k]) return AMBCACHE[k]; const c=ac(); const ab=await (await fetch(AMBDATA[k])).arrayBuffer(); AMBCACHE[k]=await new Promise((ok,no)=>c.decodeAudioData(ab,ok,no)); return AMBCACHE[k]; }
