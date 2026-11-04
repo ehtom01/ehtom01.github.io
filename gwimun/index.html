@@ -1762,7 +1762,8 @@ function vShop(){
 let R=null, cv=null, ctx=null, typer=null, autoT=null;
 function startEp(id,resume){
   const e=epById(id);
-  if(!resume){ S.snap[id]=JSON.parse(JSON.stringify(S.F)); if(S.cleared.includes(id)) S.F=JSON.parse(JSON.stringify(S.snap[id])); }
+  if(!resume){ if(S.snap[id]&&S.cleared.includes(id)) S.F=JSON.parse(JSON.stringify(S.snap[id])); else S.snap[id]=JSON.parse(JSON.stringify(S.F)); // 다시 읽을 때는 그 화를 처음 시작했을 때의 상태로
+    if(id==='1-1'){ S.F.forgot=[]; S.F.items=[]; } }
   R={e,i:resume?resume.i:0,bg:resume?resume.bg:{b:'paper',m:'day'},chars:resume?resume.chars.map(c=>({...c,x:posX(c.p),a:1,ta:1})):[],line:null,full:'',shown:0,choice:null,ended:null,log:[],fx:{shake:0,red:0,flash:0,dip:0},speaker:null};
   if(resume) e.s.forEach((x,i)=>{ if(i<R.i&&x.k==='bgm') R.sceneBgm=x.n; });
   UI.tab='read'; render(); step();
