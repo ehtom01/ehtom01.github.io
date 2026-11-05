@@ -258,7 +258,7 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 .op-seal.on{opacity:1;filter:blur(0) drop-shadow(0 0 26px rgba(224,40,30,.55));transform:scale(1)}
 .op-wm{width:min(36vw,170px);margin-top:22px;opacity:0;transform:scaleX(1.25);transition:opacity 1.6s ease,transform 2.2s cubic-bezier(.2,.6,.2,1)}
 .op-wm.on{opacity:1;transform:none}
-.opening .lay.row{flex-direction:row;gap:min(5vw,26px)}.opening .lay.row .op-seal{width:min(29vw,145px)}.opening .lay.row .op-wm{width:min(34vw,170px);margin-top:0;transform-origin:left center;transform:translateX(-14px);}.opening .lay.row .op-wm.on{transform:none}
+.op-row{display:flex;align-items:center;gap:min(5vw,26px)}.op-row .op-seal{width:min(29vw,145px)}.op-row .op-wm{width:min(34vw,170px);margin-top:0;transform-origin:left center;transform:translateX(-14px)}.op-row .op-wm.on{transform:none}.op-by{margin-top:min(9vw,44px);font-family:system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;font-weight:700;font-size:clamp(10px,2.8vw,13px);letter-spacing:.38em;color:#a89a86;opacity:0;transition:opacity 1.4s ease;padding-left:.38em}.op-by.on{opacity:.85}
 .opening .gone{transition:opacity .8s ease!important;opacity:0!important}
 .op-skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(239,228,207,.3);z-index:2}
 .opening.out{opacity:0;transition:opacity .8s ease}
@@ -1723,7 +1723,7 @@ function opSwell(len,v){ if(!AU.on||!AU.unlocked) return; try{ const c=ac(),t=c.
   const s=c.createBufferSource(); s.buffer=b; const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(200,t); bp.frequency.exponentialRampToValueAtTime(1600,t+len); const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+len*.9); g.gain.exponentialRampToValueAtTime(.0001,t+len);
   s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t); }catch(e){} }
 function playOpening(){ if(typeof OPENIMG==='undefined') return;
-  const o=document.createElement('div'); o.className='opening'; o.innerHTML='<div class="op-skip"></div>'; document.body.appendChild(o); AU.hush=performance.now()+12000;
+  const o=document.createElement('div'); o.className='opening'; o.innerHTML='<div class="op-skip"></div>'; document.body.appendChild(o); AU.hush=performance.now()+8500;
   const T=[], RAF=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false;
   const add=h=>{ const d=document.createElement('div'); d.innerHTML=h.trim(); const e=d.firstChild; o.appendChild(e); return e; };
   const dust=(color,up,count,size)=>{ const c=document.createElement('canvas'); c.className='fx'; o.appendChild(c); const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); c.width=innerWidth*dpr; c.height=innerHeight*dpr;
@@ -1731,23 +1731,17 @@ function playOpening(){ if(typeof OPENIMG==='undefined') return;
     const f=t=>{ if(done&&!o.isConnected) return; x.clearRect(0,0,c.width,c.height); P.forEach(p=>{ p.y+=p.v*.0012; p.x+=Math.sin(t/1000+p.w)*.0003; if(p.y<-.05) p.y=1.05; if(p.y>1.05) p.y=-.05; x.globalAlpha=p.a*(.6+.4*Math.sin(t/400+p.w)); x.fillStyle=color; x.beginPath(); x.arc(p.x*c.width,p.y*c.height,p.s*dpr,0,7); x.fill(); }); RAF.push(requestAnimationFrame(f)); }; RAF.push(requestAnimationFrame(f)); return c; };
   const clearScene=()=>[...o.children].forEach(c=>{ if(!c.classList.contains('op-skip')) c.classList.add('gone'); });
   const end=()=>{ if(done) return; done=true; T.forEach(clearTimeout); o.classList.add('out'); setTimeout(()=>{ RAF.forEach(cancelAnimationFrame); o.remove(); AU.hush=0; updateBgm(); },800); };
-  // ① 뽀각스튜디오
-  const d1=dust('rgba(240,228,205,1)',false,60,1.1);
-  const s1=add(`<div class="lay"><div class="op-wrap"><img src="${OPENIMG.pg_txt}" alt="PPOGAK STUDIO"><div class="op-shine" style="-webkit-mask-image:url(${OPENIMG.pg_txt});mask-image:url(${OPENIMG.pg_txt})"></div></div></div>`);
-  at(400,()=>{ s1.firstChild.classList.add('on'); opBoom(.9,60,3); });
-  at(2400,()=>{ s1.querySelector('.op-shine').classList.add('go'); sfxR('bell',1.8,.25); });
-  at(4300,clearScene);
-  // ② 묵월
-  at(5200,()=>{ [...o.children].forEach(c=>{ if(!c.classList.contains('op-skip')) c.remove(); }); o.style.background='radial-gradient(ellipse at 50% 40%,#1a0f0d,#050404 70%)';
-    const moon=add('<div class="op-moon"></div>'); add('<div class="op-fog" style="top:55%"></div>'); add('<div class="op-fog" style="top:20%;animation-duration:20s;animation-direction:reverse;opacity:.7"></div>');
-    dust('rgba(230,70,40,1)',true,38,1.4);
-    const s2=add(`<div class="lay row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WML}" alt="묵월 MUKWOL"></div>`);
-    o.appendChild(o.querySelector('.op-skip'));
-    at(200,()=>{ moon.classList.add('on'); opSwell(2.4,.22); });
-    at(2400,()=>{ s2.querySelector('.op-seal').classList.add('on'); opBoom(1,55,3.2); sfxR('bell',.7,.5); });
-    at(4000,()=>s2.querySelector('.op-wm').classList.add('on'));
-  });
-  at(12000,end);
+  // 묵월 + by PPOGAK STUDIO (한 장면)
+  o.style.background='radial-gradient(ellipse at 50% 40%,#1a0f0d,#050404 70%)';
+  const moon=add('<div class="op-moon"></div>'); add('<div class="op-fog" style="top:55%"></div>'); add('<div class="op-fog" style="top:20%;animation-duration:20s;animation-direction:reverse;opacity:.7"></div>');
+  dust('rgba(230,70,40,1)',true,38,1.4);
+  const s2=add(`<div class="lay"><div class="op-row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WML}" alt="묵월 MUKWOL"></div><div class="op-by">by&nbsp;&nbsp;PPOGAK STUDIO</div></div>`);
+  o.appendChild(o.querySelector('.op-skip'));
+  at(200,()=>{ moon.classList.add('on'); opSwell(2.4,.22); });
+  at(1600,()=>{ s2.querySelector('.op-seal').classList.add('on'); opBoom(1,55,3.2); sfxR('bell',.7,.5); });
+  at(3000,()=>s2.querySelector('.op-wm').classList.add('on'));
+  at(4300,()=>s2.querySelector('.op-by').classList.add('on'));
+  at(8000,end);
   ['click','touchstart','touchend','mousedown','keydown'].forEach(ev=>o.addEventListener(ev,e=>{ e.stopPropagation(); if(ev!=='touchstart'&&ev!=='touchend') e.preventDefault(); },{capture:true}));
 }
 function render(){ setTimeout(()=>{ try{updateAmb()}catch(e){} },0);
