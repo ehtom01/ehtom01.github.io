@@ -241,23 +241,26 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 .ttag{position:absolute;left:10px;top:10px;z-index:3;padding:4px 10px;border-radius:12px;background:rgba(12,10,9,.62);border:1px solid rgba(216,205,182,.35);color:#e9dfc8;font-size:12px;letter-spacing:.08em;pointer-events:none}.ttag.past{color:#e8c890;border-color:rgba(232,200,144,.45)}.ttag.dream{color:#f0a49a;border-color:rgba(240,164,154,.45)}.ttag.future{color:#b9c6ff;border-color:rgba(185,198,255,.45)}
 .box.eerie #txt{display:inline-block;color:#f3cfc4;text-shadow:0 0 7px rgba(210,30,20,.75),0 0 1px #000;animation:trem .16s steps(2) infinite;letter-spacing:.04em}.box.eerie{border-color:rgba(190,40,30,.6)}@keyframes trem{0%{transform:translate(0,0)}50%{transform:translate(.7px,-.5px)}100%{transform:translate(-.6px,.5px)}}
 .roombar{position:absolute;left:8px;right:8px;top:46px;display:flex;align-items:center;gap:8px;pointer-events:none}.roombar .shlab{font-size:11px;color:#d8cdb6;letter-spacing:.1em;text-shadow:0 1px 2px #000}.shbar{flex:1;max-width:120px;height:6px;border-radius:3px;background:rgba(0,0,0,.55);border:1px solid rgba(233,221,184,.3);overflow:hidden}.shbar i{display:block;height:100%;background:linear-gradient(90deg,#3a3550,#8d86b0);transition:width .4s}.yinbtn{margin-left:auto;pointer-events:auto;background:rgba(20,17,14,.85)!important;border-color:rgba(160,150,200,.6)!important;color:#d8d2f0!important}.yinbtn.on{background:rgba(70,20,24,.9)!important;color:#f3cfc4!important;border-color:rgba(224,72,58,.7)!important}
-.opening{position:fixed;inset:0;z-index:9999;background:#000;display:grid;place-items:center;overflow:hidden;cursor:pointer;transition:background-color 1s ease}
-.opening.warm{background:#3a2418}.opening.paper{background:#0f0c0a;transition:background-color .6s}
-.opening .op{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;transition:opacity .7s ease}
-.opening .op.on{opacity:1}
-.op-pg{position:relative;width:min(72vw,440px)}.op-pg img{width:100%;display:block}
-.op-pg .dk{filter:brightness(.26) sepia(.6)}.op-pg .lt{position:absolute;left:0;top:0;opacity:0;transition:opacity 1s ease}.opening.warm .op-pg .lt{opacity:1}
-.op-seal{width:min(38vw,190px);aspect-ratio:600/600;filter:url(#opInk);clip-path:circle(0% at 50% 52%);transform:scale(1.18) rotate(-4deg)}
-.op-seal img{width:100%;display:block}
-.opening.stamp .op-seal{animation:opStamp .32s cubic-bezier(.3,1.6,.5,1) forwards,opBleed 1.3s .18s ease-out forwards}
-@keyframes opStamp{to{transform:scale(1) rotate(-4deg)}}
-@keyframes opBleed{0%{clip-path:circle(4% at 50% 52%)}60%{clip-path:circle(52% at 50% 52%)}100%{clip-path:circle(80% at 50% 52%)}}
-.op-wm{width:min(40vw,190px);-webkit-mask-image:linear-gradient(90deg,#000 45%,transparent 55%);mask-image:linear-gradient(90deg,#000 45%,transparent 55%);-webkit-mask-size:240% 100%;mask-size:240% 100%;-webkit-mask-position:100% 0;mask-position:100% 0}
-.opening.write .op-wm{animation:opWrite 1.2s ease-in-out forwards}
-@keyframes opWrite{to{-webkit-mask-position:0 0;mask-position:0 0}}
-.op-wm img{width:100%;display:block}
-.op-skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(239,228,207,.32)}
-.opening.out{opacity:0;transition:opacity .7s ease}
+.opening{position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;cursor:pointer}
+.opening .lay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.opening canvas.fx{position:absolute;inset:0;width:100%;height:100%}
+.op-wrap{position:relative;width:min(72vw,430px);opacity:0;filter:blur(6px);transform:scale(1.14);transition:opacity 2s ease,filter 2s ease,transform 4.5s cubic-bezier(.2,.6,.2,1)}
+.op-wrap.on{opacity:1;filter:blur(0);transform:scale(1)}
+.op-wrap img{width:100%;display:block}
+.op-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,250,235,.95) 48%,rgba(255,220,170,.6) 52%,transparent 65%);background-size:300% 100%;background-position:120% 0;-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.op-shine.go{animation:opSweep 1.4s ease-in-out forwards}
+@keyframes opSweep{to{background-position:-60% 0}}
+.op-moon{position:absolute;left:50%;top:38%;width:min(80vw,420px);aspect-ratio:1;transform:translate(-50%,-30%);border-radius:50%;background:radial-gradient(circle,rgba(240,232,214,.22) 0%,rgba(240,232,214,.1) 35%,rgba(240,232,214,.03) 55%,transparent 70%);opacity:0;transition:opacity 3s ease,transform 6s ease}
+.op-moon.on{opacity:1;transform:translate(-50%,-45%)}
+.op-fog{position:absolute;left:-50%;right:-50%;height:40%;background:radial-gradient(ellipse at 30% 50%,rgba(200,190,175,.10),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(200,190,175,.08),transparent 60%);animation:opDrift 14s linear infinite}
+@keyframes opDrift{from{transform:translateX(-12%)}to{transform:translateX(12%)}}
+.op-seal{width:min(34vw,170px);opacity:0;filter:blur(8px);transform:scale(1.12);transition:opacity 2s ease,filter 2.4s ease,transform 5s cubic-bezier(.2,.6,.2,1)}
+.op-seal.on{opacity:1;filter:blur(0) drop-shadow(0 0 26px rgba(224,40,30,.55));transform:scale(1)}
+.op-wm{width:min(36vw,170px);margin-top:22px;opacity:0;transform:scaleX(1.25);transition:opacity 1.6s ease,transform 2.2s cubic-bezier(.2,.6,.2,1)}
+.op-wm.on{opacity:1;transform:none}
+.opening .gone{transition:opacity .8s ease!important;opacity:0!important}
+.op-skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(239,228,207,.3);z-index:2}
+.opening.out{opacity:0;transition:opacity .8s ease}
 .tlabel{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:calc(16px + env(safe-area-inset-top,0px));z-index:3;width:104px;opacity:.82;pointer-events:none;filter:drop-shadow(0 1px 3px #000)}
 .rprog{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:-2px 2px 20px;position:relative;overflow:visible}.rprog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8f1d22,#e0483a);border-radius:2px;transition:width .5s}
 .rprog span{position:absolute;right:0;top:5px;font-size:10.5px;color:#a99d84;letter-spacing:.05em}
@@ -1710,23 +1713,40 @@ function left(ms){ ms=Math.max(0,ms); const h=Math.floor(ms/3600000), m=Math.flo
 
 /* ===================== 화면 ===================== */
 const TABS=[['home','門','처음'],['list','卷','이야기'],['book','錄','도감'],['ach','功','업적']];
-/* 게임 오프닝: 뽀각스튜디오 → 묵월 낙관이 먹처럼 번지며 찍히고 글씨가 붓으로 써짐 */
+/* 게임 오프닝(영화사 인트로): 먼지 속 PPOGAK STUDIO가 다가오며 빛줄기 → 달빛·안개·불티 속 묵월 낙관이 붉게 떠오름 */
+function opBoom(v,f0,len){ if(!AU.on||!AU.unlocked) return; try{ const c=ac(),t=c.currentTime,g=c.createGain(); g.connect(c.destination); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.04); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+  const o=c.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f0*.42,t+len*.7); o.connect(g); o.start(t); o.stop(t+len);
+  const n=c.createBuffer(1,c.sampleRate*.5,c.sampleRate),d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5);
+  const s=c.createBufferSource(); s.buffer=n; const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=300; const ng=c.createGain(); ng.gain.value=v*.7; s.connect(lp); lp.connect(ng); ng.connect(c.destination); s.start(t); }catch(e){} }
+function opSwell(len,v){ if(!AU.on||!AU.unlocked) return; try{ const c=ac(),t=c.currentTime,b=c.createBuffer(1,c.sampleRate*len,c.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  const s=c.createBufferSource(); s.buffer=b; const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(200,t); bp.frequency.exponentialRampToValueAtTime(1600,t+len); const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+len*.9); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+  s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t); }catch(e){} }
 function playOpening(){ if(typeof OPENIMG==='undefined') return;
-  const o=document.createElement('div'); o.className='opening'; o.innerHTML=`<svg width="0" height="0" style="position:absolute"><filter id="opInk"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
-   <div class="op op1"><div class="op-pg"><img class="dk" src="${OPENIMG.pg_txt}" alt="PPOGAK STUDIO"><img class="lt" src="${OPENIMG.pg_txt}" alt=""></div></div>
-   <div class="op op2"><div class="op-seal"><img src="${OPENIMG.lg_AO}" alt="묵월 墨月"></div><div class="op-wm"><img src="${OPENIMG.lg_WM}" alt="묵월 MUKWOL"></div></div>
-   <div class="op-skip">화면을 누르면 건너뜁니다</div>`;
-  document.body.appendChild(o); AU.hush=performance.now()+9000;
-  const T=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false;
-  const end=()=>{ if(done) return; done=true; T.forEach(clearTimeout); o.classList.add('out'); setTimeout(()=>{ o.remove(); AU.hush=0; updateBgm(); },700); };
-  const p1=o.querySelector('.op1'), p2=o.querySelector('.op2');
-  at(300,()=>p1.classList.add('on'));
-  at(1500,()=>o.classList.add('warm'));
-  at(3300,()=>p1.classList.remove('on'));
-  at(3700,()=>{ o.classList.remove('warm'); o.classList.add('paper'); });
-  at(4300,()=>{ p2.classList.add('on'); o.classList.add('stamp'); if(AU.on&&AU.unlocked) thud(); });
-  at(5500,()=>{ o.classList.add('write'); sfx('brush'); });
-  at(8200,end);
+  const o=document.createElement('div'); o.className='opening'; o.innerHTML='<div class="op-skip">화면을 누르면 건너뜁니다</div>'; document.body.appendChild(o); AU.hush=performance.now()+12000;
+  const T=[], RAF=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false;
+  const add=h=>{ const d=document.createElement('div'); d.innerHTML=h.trim(); const e=d.firstChild; o.appendChild(e); return e; };
+  const dust=(color,up,count,size)=>{ const c=document.createElement('canvas'); c.className='fx'; o.appendChild(c); const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); c.width=innerWidth*dpr; c.height=innerHeight*dpr;
+    const P=[...Array(count)].map(()=>({x:Math.random(),y:Math.random(),v:(.15+Math.random()*.5)*(up?-1:.3),s:(.5+Math.random())*size,a:Math.random()*.7,w:Math.random()*6}));
+    const f=t=>{ if(done&&!o.isConnected) return; x.clearRect(0,0,c.width,c.height); P.forEach(p=>{ p.y+=p.v*.0012; p.x+=Math.sin(t/1000+p.w)*.0003; if(p.y<-.05) p.y=1.05; if(p.y>1.05) p.y=-.05; x.globalAlpha=p.a*(.6+.4*Math.sin(t/400+p.w)); x.fillStyle=color; x.beginPath(); x.arc(p.x*c.width,p.y*c.height,p.s*dpr,0,7); x.fill(); }); RAF.push(requestAnimationFrame(f)); }; RAF.push(requestAnimationFrame(f)); return c; };
+  const clearScene=()=>[...o.children].forEach(c=>{ if(!c.classList.contains('op-skip')) c.classList.add('gone'); });
+  const end=()=>{ if(done) return; done=true; T.forEach(clearTimeout); o.classList.add('out'); setTimeout(()=>{ RAF.forEach(cancelAnimationFrame); o.remove(); AU.hush=0; updateBgm(); },800); };
+  // ① 뽀각스튜디오
+  const d1=dust('rgba(240,228,205,1)',false,60,1.1);
+  const s1=add(`<div class="lay"><div class="op-wrap"><img src="${OPENIMG.pg_txt}" alt="PPOGAK STUDIO"><div class="op-shine" style="-webkit-mask-image:url(${OPENIMG.pg_txt});mask-image:url(${OPENIMG.pg_txt})"></div></div></div>`);
+  at(400,()=>{ s1.firstChild.classList.add('on'); opBoom(.9,60,3); });
+  at(2400,()=>{ s1.querySelector('.op-shine').classList.add('go'); sfxR('bell',1.8,.25); });
+  at(4300,clearScene);
+  // ② 묵월
+  at(5200,()=>{ [...o.children].forEach(c=>{ if(!c.classList.contains('op-skip')) c.remove(); }); o.style.background='radial-gradient(ellipse at 50% 40%,#1a0f0d,#050404 70%)';
+    const moon=add('<div class="op-moon"></div>'); add('<div class="op-fog" style="top:55%"></div>'); add('<div class="op-fog" style="top:20%;animation-duration:20s;animation-direction:reverse;opacity:.7"></div>');
+    dust('rgba(230,70,40,1)',true,38,1.4);
+    const s2=add(`<div class="lay"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WM}" alt="묵월 MUKWOL"></div>`);
+    o.appendChild(o.querySelector('.op-skip'));
+    at(200,()=>{ moon.classList.add('on'); opSwell(2.4,.22); });
+    at(2400,()=>{ s2.querySelector('.op-seal').classList.add('on'); opBoom(1,55,3.2); sfxR('bell',.7,.5); });
+    at(4000,()=>s2.querySelector('.op-wm').classList.add('on'));
+  });
+  at(12000,end);
   o.addEventListener('click',e=>{ e.stopPropagation(); end(); });
 }
 function render(){ setTimeout(()=>{ try{updateAmb()}catch(e){} },0);
