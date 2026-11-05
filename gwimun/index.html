@@ -55,6 +55,9 @@ h3{font-size:16px;font-weight:700;margin:0}
 .cover .t{position:absolute;left:16px;right:16px;bottom:16px;display:flex;flex-direction:column;gap:6px;text-shadow:0 2px 10px #000}
 .cover h1{font-family:var(--f-disp);font-weight:400;font-size:54px;line-height:.95;margin:0;color:#f4ecd8}
 .cover h1 b{color:#e0483a;font-weight:400}
+.cover h1{display:flex;align-items:flex-end;gap:12px;line-height:1}.cttl{height:66px;width:auto;display:block;filter:drop-shadow(0 2px 10px #000)}.cover h1 b{font-size:40px;padding-bottom:4px}
+.cname{font-family:'Noto Serif KR',serif;font-weight:900;font-size:16px;letter-spacing:.4em;color:#c9332b;text-shadow:0 2px 8px #000;margin-top:2px}.cname span{font-size:.7em;font-weight:700;letter-spacing:.25em;color:#e9dcc2;margin-left:4px}
+.logo{display:flex;align-items:center;gap:8px}.lttl{height:32px;width:auto;display:block}
 /* 화 목록 */
 .part{display:flex;flex-direction:column;gap:8px}
 .part-h{display:flex;gap:12px;align-items:center}
@@ -1752,7 +1755,7 @@ function render(){ setTimeout(()=>{ try{updateAmb()}catch(e){} },0);
   if(UI.tab==='title'){ app.innerHTML=vTitle(); $('#nav').hidden=true; updateBgm(); return; }
   const reading=UI.tab==='read';
   app.classList.toggle('reading',reading);
-  const top=reading?'':`<div class="top"><div class="row" style="gap:10px;flex-wrap:nowrap"><div class="logo">墨夜 <b>묵야</b></div><button class="acc${ACC&&ACC.mode==='google'?' on':''}" data-a="account"><i></i>${ACC&&ACC.mode==='google'?(ACC.name||'구글'):'게스트'}</button></div><div class="cur"><button class="chip" data-a="snd" style="cursor:pointer">${AU.on?'소리 켬':'소리 끔'}</button><span class="chip" style="color:#e0483a;border-color:#e0483a">베타</span></div></div>`;
+  const top=reading?'':`<div class="top"><div class="row" style="gap:10px;flex-wrap:nowrap"><div class="logo">${typeof OPENIMG!=='undefined'&&OPENIMG.ttl?`<img class="lttl" src="${OPENIMG.ttl}" alt="墨夜">`:'墨夜'} <b>묵야</b></div><button class="acc${ACC&&ACC.mode==='google'?' on':''}" data-a="account"><i></i>${ACC&&ACC.mode==='google'?(ACC.name||'구글'):'게스트'}</button></div><div class="cur"><button class="chip" data-a="snd" style="cursor:pointer">${AU.on?'소리 켬':'소리 끔'}</button><span class="chip" style="color:#e0483a;border-color:#e0483a">베타</span></div></div>`;
   updateBgm();
   app.innerHTML=top+({home:vHome,list:vList,book:vBook,ach:vAch,shop:vShop,read:vRead})[UI.tab]();
   $('#nav').hidden=reading;
@@ -1810,7 +1813,8 @@ async function gLogin(reuse){
 function vHome(){
   const r=S.resume&&epById(S.resume.ep);
   return `<div class="sec"><div class="cover" style="background-image:linear-gradient(180deg,transparent 38%,rgba(10,8,6,.82) 66%,rgba(10,8,6,.96)),url(${SPR.key})"><div class="t">
-   <div class="small" style="color:#e9ddb8">베타 테스트 · 1부 1~3화 무료 공개</div><h1>墨夜 <b>묵야</b></h1>
+   <h1>${typeof OPENIMG!=='undefined'&&OPENIMG.ttl?`<img class="cttl" src="${OPENIMG.ttl}" alt="墨夜">`:'墨夜'}<b>묵야</b></h1><div class="cname">鬼名錄 <span>귀명록</span></div>
+   <div class="small" style="color:#e9ddb8">베타 테스트 · 1부 1~3화 무료 공개</div>
    <div class="small" style="color:#d8cdb6">이름을 빼앗긴 자는, 그림자부터 사라진다. 조선 말, 귀문이 열린 도성에서 신을 버린 무당과 귀신을 믿지 않는 포졸이 사라진 이름들을 쫓는다.</div></div></div>
   ${r?`<button class="btn pri" data-a="resume">이어 읽기 · ${r.part.no}부 ${r.no}화 「${r.t}」</button>`:`<button class="btn pri" data-a="play" data-v="1-1">처음부터 읽기</button>`}
   <div class="panel"><h3>이렇게 즐겨요</h3><div class="small muted" style="line-height:1.7">대사를 누르면 이야기가 넘어가요. 선택지에 따라 인물의 마음, 쌓이는 원한, 알게 되는 진실이 달라지고, 부마다 여러 엔딩으로 갈라져요. 모든 선택지는 무료예요. 조사와 퇴마를 잘해 내거나 인물에게 마음을 쓰면, 금빛 숨은 선택지가 열려요. 베타에서는 선택 되돌리기까지 모두 무료예요. 조사와 퇴마를 잘해 내면 금빛 숨은 선택지가 열려요. 한 화에 10분 남짓, 세 화를 이어서 읽으면 30분쯤 걸려요.${FORM_URL?' 다 읽으신 뒤 짧은 설문에 답해 주시면 정식판에 큰 도움이 돼요.':''}</div></div>
