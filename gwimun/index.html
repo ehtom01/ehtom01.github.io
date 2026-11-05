@@ -277,6 +277,15 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 .op-bar.t{top:0;transform:translateY(-100%)}.op-bar.b{bottom:0;transform:translateY(100%)}
 .opening.cine .op-bar{transform:none}
 .op-skip{display:none}
+.op-studio{position:absolute;inset:0;z-index:4;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity 1s ease}
+.op-studio.gone{opacity:0;pointer-events:none}
+.op-studio canvas{position:absolute;inset:0;width:100%;height:100%}
+.op-pg{position:relative;width:min(72vw,430px);opacity:0;filter:blur(6px);transform:scale(1.14);transition:opacity 2s ease,filter 2s ease,transform 4.5s cubic-bezier(.2,.6,.2,1)}
+.op-pg.on{opacity:1;filter:blur(0);transform:scale(1)}
+.op-pg img{width:100%;display:block}
+.op-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,250,235,.95) 48%,rgba(255,220,170,.6) 52%,transparent 65%);background-size:300% 100%;background-position:120% 0;-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.op-shine.go{animation:opSweep 1.4s ease-in-out forwards}
+@keyframes opSweep{to{background-position:-60% 0}}
 .tlabel{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:calc(16px + env(safe-area-inset-top,0px));z-index:3;width:104px;opacity:.82;pointer-events:none;filter:drop-shadow(0 1px 3px #000)}
 .rprog{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:-2px 2px 20px;position:relative;overflow:visible}.rprog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8f1d22,#e0483a);border-radius:2px;transition:width .5s}
 .rprog span{position:absolute;right:0;top:5px;font-size:10.5px;color:#a99d84;letter-spacing:.05em}
@@ -1740,9 +1749,9 @@ function opSwell(len,v){ if(!AU.on||!AU.unlocked) return; try{ const c=ac(),t=c.
 function playOpening(){ if(typeof OPENIMG==='undefined') return;
   const o=document.createElement('div'); o.className='opening';
   o.innerHTML=`<div class="op-cam"><div class="op-bg"></div><div class="op-moon"></div><div class="op-rays"></div><div class="op-fog" style="top:58%"></div><div class="op-fog" style="top:18%;animation-duration:22s;animation-direction:reverse;opacity:.7"></div><canvas class="fx"></canvas>
-    <div class="op-lay"><div class="op-row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WML}" alt="묵월 MUKWOL"></div><div class="op-by">by&nbsp;&nbsp;PPOGAK STUDIO</div></div>
-    <div class="op-flare"></div><div class="op-flash"></div></div><div class="op-vig"></div><div class="op-grain"></div><div class="op-bar t"></div><div class="op-bar b"></div>`;
-  document.body.appendChild(o); AU.hush=performance.now()+9500;
+    <div class="op-lay"><div class="op-row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WML}" alt="묵월 MUKWOL"></div></div>
+    <div class="op-flare"></div><div class="op-flash"></div></div><div class="op-vig"></div><div class="op-grain"></div><div class="op-studio"><canvas></canvas><div class="op-pg"><img src="${OPENIMG.pg_txt}" alt="PPOGAK STUDIO"><div class="op-shine" style="-webkit-mask-image:url(${OPENIMG.pg_txt});mask-image:url(${OPENIMG.pg_txt})"></div></div></div><div class="op-bar t"></div><div class="op-bar b"></div>`;
+  document.body.appendChild(o); AU.hush=performance.now()+14000;
   const T=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false, raf=0; const q=k=>o.querySelector(k);
   // 불티: 천천히 오르는 불씨 + 낙관이 켜질 때 사방으로 터지는 불꽃
   const cv=q('canvas.fx'), cx=cv.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); cv.width=innerWidth*dpr; cv.height=innerHeight*dpr;
@@ -1753,14 +1762,24 @@ function playOpening(){ if(typeof OPENIMG==='undefined') return;
       cx.globalAlpha=p.a*(p.b?1:(.55+.45*Math.sin(t/350+p.w))); cx.fillStyle=p.b?'rgba(255,170,110,1)':'rgba(230,80,45,1)'; cx.beginPath(); cx.arc(p.x,p.y,p.s,0,7); cx.fill(); }
     raf=requestAnimationFrame(tick); }; raf=requestAnimationFrame(tick);
   const end=()=>{ if(done) return; done=true; T.forEach(clearTimeout); o.classList.add('out'); setTimeout(()=>{ cancelAnimationFrame(raf); o.remove(); AU.hush=0; updateBgm(); },1000); };
-  at(50,()=>{ o.classList.add('cine'); q('.op-cam').classList.add('push'); });
-  at(500,()=>{ q('.op-bg').classList.add('on'); q('.op-moon').classList.add('on'); opSwell(2.1,.26); });
-  at(2400,()=>{ q('.op-flare').classList.add('go'); q('.op-flash').classList.add('go'); q('.op-seal').classList.add('on'); burst(); opBoom(1.1,52,3.6); sfxR('bell',.62,.55); vib(40); });
-  at(3000,()=>q('.op-rays').classList.add('on'));
-  at(3300,()=>q('.op-wm').classList.add('on'));
-  at(4700,()=>q('.op-by').classList.add('on'));
-  at(7400,()=>{ o.classList.remove('cine'); opBoom(.5,45,2); });
-  at(7900,end);
+  // ① 뽀각스튜디오 (검은 배경 · 먼지 · 다가오는 로고 · 빛줄기)
+  const sc=q('.op-studio canvas'), sx=sc.getContext('2d'); sc.width=innerWidth*dpr; sc.height=innerHeight*dpr;
+  const D=[...Array(60)].map(()=>({x:Math.random(),y:Math.random(),v:(.05+Math.random()*.15),s:(.5+Math.random())*1.1*dpr,a:Math.random()*.7,w:Math.random()*6}));
+  let sraf=0; const stick=t=>{ if(!o.isConnected) return; sx.clearRect(0,0,sc.width,sc.height); D.forEach(p=>{ p.y+=p.v*.0012; p.x+=Math.sin(t/1000+p.w)*.0003; if(p.y>1.05) p.y=-.05; sx.globalAlpha=p.a*(.6+.4*Math.sin(t/400+p.w)); sx.fillStyle='rgba(240,228,205,1)'; sx.beginPath(); sx.arc(p.x*sc.width,p.y*sc.height,p.s,0,7); sx.fill(); }); sraf=requestAnimationFrame(stick); }; sraf=requestAnimationFrame(stick);
+  at(50,()=>o.classList.add('cine'));
+  at(450,()=>{ q('.op-pg').classList.add('on'); opBoom(.9,60,3); });
+  at(2450,()=>{ q('.op-shine').classList.add('go'); sfxR('bell',1.8,.25); });
+  at(3900,()=>q('.op-studio').classList.add('gone'));
+  at(4900,()=>cancelAnimationFrame(sraf));
+  // ② 묵월
+  const B=4400;
+  at(B+50,()=>q('.op-cam').classList.add('push'));
+  at(B+300,()=>{ q('.op-bg').classList.add('on'); q('.op-moon').classList.add('on'); opSwell(2.1,.26); });
+  at(B+2200,()=>{ q('.op-flare').classList.add('go'); q('.op-flash').classList.add('go'); q('.op-seal').classList.add('on'); burst(); opBoom(1.1,52,3.6); sfxR('bell',.62,.55); vib(40); });
+  at(B+2800,()=>q('.op-rays').classList.add('on'));
+  at(B+3100,()=>q('.op-wm').classList.add('on'));
+  at(B+6200,()=>{ o.classList.remove('cine'); opBoom(.5,45,2); });
+  at(B+6700,end);
   ['click','touchstart','touchend','mousedown'].forEach(ev=>o.addEventListener(ev,e=>{ e.stopPropagation(); if(ev!=='touchstart'&&ev!=='touchend') e.preventDefault(); },{capture:true}));
 }
 function render(){ setTimeout(()=>{ try{updateAmb()}catch(e){} },0);
