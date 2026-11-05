@@ -1722,7 +1722,7 @@ function opSwell(len,v){ if(!AU.on||!AU.unlocked) return; try{ const c=ac(),t=c.
   const s=c.createBufferSource(); s.buffer=b; const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(200,t); bp.frequency.exponentialRampToValueAtTime(1600,t+len); const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+len*.9); g.gain.exponentialRampToValueAtTime(.0001,t+len);
   s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t); }catch(e){} }
 function playOpening(){ if(typeof OPENIMG==='undefined') return;
-  const o=document.createElement('div'); o.className='opening'; o.innerHTML='<div class="op-skip">화면을 누르면 건너뜁니다</div>'; document.body.appendChild(o); AU.hush=performance.now()+12000;
+  const o=document.createElement('div'); o.className='opening'; o.innerHTML='<div class="op-skip"></div>'; document.body.appendChild(o); AU.hush=performance.now()+12000;
   const T=[], RAF=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false;
   const add=h=>{ const d=document.createElement('div'); d.innerHTML=h.trim(); const e=d.firstChild; o.appendChild(e); return e; };
   const dust=(color,up,count,size)=>{ const c=document.createElement('canvas'); c.className='fx'; o.appendChild(c); const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); c.width=innerWidth*dpr; c.height=innerHeight*dpr;
@@ -1747,7 +1747,7 @@ function playOpening(){ if(typeof OPENIMG==='undefined') return;
     at(4000,()=>s2.querySelector('.op-wm').classList.add('on'));
   });
   at(12000,end);
-  o.addEventListener('click',e=>{ e.stopPropagation(); end(); });
+  ['click','touchstart','touchend','mousedown','keydown'].forEach(ev=>o.addEventListener(ev,e=>{ e.stopPropagation(); if(ev!=='touchstart'&&ev!=='touchend') e.preventDefault(); },{capture:true}));
 }
 function render(){ setTimeout(()=>{ try{updateAmb()}catch(e){} },0);
   const app=$('#app');
