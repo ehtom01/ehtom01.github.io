@@ -241,42 +241,27 @@ body.thump #app{animation:thump .45s cubic-bezier(.2,.9,.3,1)}@keyframes thump{0
 .ttag{position:absolute;left:10px;top:10px;z-index:3;padding:4px 10px;border-radius:12px;background:rgba(12,10,9,.62);border:1px solid rgba(216,205,182,.35);color:#e9dfc8;font-size:12px;letter-spacing:.08em;pointer-events:none}.ttag.past{color:#e8c890;border-color:rgba(232,200,144,.45)}.ttag.dream{color:#f0a49a;border-color:rgba(240,164,154,.45)}.ttag.future{color:#b9c6ff;border-color:rgba(185,198,255,.45)}
 .box.eerie #txt{display:inline-block;color:#f3cfc4;text-shadow:0 0 7px rgba(210,30,20,.75),0 0 1px #000;animation:trem .16s steps(2) infinite;letter-spacing:.04em}.box.eerie{border-color:rgba(190,40,30,.6)}@keyframes trem{0%{transform:translate(0,0)}50%{transform:translate(.7px,-.5px)}100%{transform:translate(-.6px,.5px)}}
 .roombar{position:absolute;left:8px;right:8px;top:46px;display:flex;align-items:center;gap:8px;pointer-events:none}.roombar .shlab{font-size:11px;color:#d8cdb6;letter-spacing:.1em;text-shadow:0 1px 2px #000}.shbar{flex:1;max-width:120px;height:6px;border-radius:3px;background:rgba(0,0,0,.55);border:1px solid rgba(233,221,184,.3);overflow:hidden}.shbar i{display:block;height:100%;background:linear-gradient(90deg,#3a3550,#8d86b0);transition:width .4s}.yinbtn{margin-left:auto;pointer-events:auto;background:rgba(20,17,14,.85)!important;border-color:rgba(160,150,200,.6)!important;color:#d8d2f0!important}.yinbtn.on{background:rgba(70,20,24,.9)!important;color:#f3cfc4!important;border-color:rgba(224,72,58,.7)!important}
-.opening{position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;cursor:default}
-.opening.out{opacity:0;transition:opacity 1s ease}
-.op-cam{position:absolute;inset:0;transform:scale(1);transition:transform 9s cubic-bezier(.25,.1,.25,1)}
-.op-cam.push{transform:scale(1.08)}
-.op-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#1d1110 0%,#0a0605 45%,#000 75%);opacity:0;transition:opacity 2.5s ease}
-.op-bg.on{opacity:1}
-.op-moon{position:absolute;left:50%;top:44%;width:min(110vw,620px);aspect-ratio:1;transform:translate(-50%,-50%) scale(.85);border-radius:50%;background:radial-gradient(circle,rgba(240,226,206,.16) 0%,rgba(200,120,100,.07) 30%,rgba(120,40,30,.03) 50%,transparent 68%);opacity:0;transition:opacity 3s ease,transform 8s ease}
-.op-moon.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
-.op-rays{position:absolute;left:50%;top:46%;width:min(160vw,900px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,200,170,.07) 0deg 4deg,transparent 4deg 14deg);-webkit-mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.6) 25%,transparent 60%);mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.6) 25%,transparent 60%);filter:blur(3px);opacity:0;transition:opacity 2.5s ease;animation:opSpin 40s linear infinite}
-.op-rays.on{opacity:1}
-@keyframes opSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-.op-fog{position:absolute;left:-50%;right:-50%;height:45%;background:radial-gradient(ellipse at 30% 50%,rgba(200,185,170,.09),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(200,185,170,.07),transparent 60%);animation:opDrift 16s linear infinite}
-@keyframes opDrift{from{transform:translateX(-14%)}to{transform:translateX(14%)}}
+.opening{position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;cursor:pointer}
+.opening .lay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .opening canvas.fx{position:absolute;inset:0;width:100%;height:100%}
-.op-lay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.op-row{display:flex;align-items:center;gap:min(5vw,26px)}
-.op-seal{width:min(29vw,145px);opacity:0;filter:brightness(0);transition:opacity .25s ease,filter 1.8s ease}
-.op-seal.on{opacity:1;filter:brightness(1) drop-shadow(0 0 28px rgba(230,45,30,.6))}
-.op-wm{width:min(34vw,170px);-webkit-mask-image:linear-gradient(90deg,#000 40%,transparent 60%);mask-image:linear-gradient(90deg,#000 40%,transparent 60%);-webkit-mask-size:260% 100%;mask-size:260% 100%;-webkit-mask-position:100% 0;mask-position:100% 0;filter:drop-shadow(0 0 0 rgba(255,230,200,0))}
-.op-wm.on{animation:opWipe 1.6s cubic-bezier(.5,0,.2,1) forwards}
-@keyframes opWipe{0%{-webkit-mask-position:100% 0;mask-position:100% 0;filter:drop-shadow(0 0 14px rgba(255,230,200,.8))}100%{-webkit-mask-position:0 0;mask-position:0 0;filter:drop-shadow(0 0 2px rgba(255,230,200,.15))}}
-.op-by{margin-top:min(9vw,44px);font-family:system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;font-weight:700;font-size:clamp(10px,2.8vw,13px);letter-spacing:.9em;padding-left:.9em;color:#a89a86;opacity:0;transition:opacity 1.8s ease,letter-spacing 3s cubic-bezier(.2,.6,.2,1),padding 3s cubic-bezier(.2,.6,.2,1)}
-.op-by.on{opacity:.85;letter-spacing:.38em;padding-left:.38em}
-.op-flare{position:absolute;left:-30%;right:-30%;top:46%;height:3px;margin-top:-1.5px;background:linear-gradient(90deg,transparent,rgba(255,170,140,.0) 20%,rgba(255,215,190,.9) 48%,#fff 50%,rgba(255,215,190,.9) 52%,rgba(255,170,140,0) 80%,transparent);box-shadow:0 0 18px 6px rgba(255,120,90,.35);opacity:0;transform:scaleX(.2) translateX(-60%)}
-.op-flare.go{animation:opFlare 1.3s cubic-bezier(.3,.1,.2,1) forwards}
-@keyframes opFlare{0%{opacity:0;transform:scaleX(.2) translateX(-60%)}25%{opacity:1}100%{opacity:0;transform:scaleX(1.2) translateX(40%)}}
-.op-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,rgba(255,225,200,.55),transparent 55%);opacity:0;pointer-events:none}
-.op-flash.go{animation:opFlash 1.1s ease-out}
-@keyframes opFlash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
-.op-grain{position:absolute;inset:-50%;opacity:.07;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");animation:opGrain .5s steps(4) infinite}
-@keyframes opGrain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}}
-.op-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75) 100%)}
-.op-bar{position:absolute;left:0;right:0;height:13vh;background:#000;z-index:5;transition:transform 1.1s cubic-bezier(.6,0,.2,1)}
-.op-bar.t{top:0;transform:translateY(-100%)}.op-bar.b{bottom:0;transform:translateY(100%)}
-.opening.cine .op-bar{transform:none}
-.op-skip{display:none}
+.op-wrap{position:relative;width:min(72vw,430px);opacity:0;filter:blur(6px);transform:scale(1.14);transition:opacity 2s ease,filter 2s ease,transform 4.5s cubic-bezier(.2,.6,.2,1)}
+.op-wrap.on{opacity:1;filter:blur(0);transform:scale(1)}
+.op-wrap img{width:100%;display:block}
+.op-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,250,235,.95) 48%,rgba(255,220,170,.6) 52%,transparent 65%);background-size:300% 100%;background-position:120% 0;-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.op-shine.go{animation:opSweep 1.4s ease-in-out forwards}
+@keyframes opSweep{to{background-position:-60% 0}}
+.op-moon{position:absolute;left:50%;top:38%;width:min(80vw,420px);aspect-ratio:1;transform:translate(-50%,-30%);border-radius:50%;background:radial-gradient(circle,rgba(240,232,214,.22) 0%,rgba(240,232,214,.1) 35%,rgba(240,232,214,.03) 55%,transparent 70%);opacity:0;transition:opacity 3s ease,transform 6s ease}
+.op-moon.on{opacity:1;transform:translate(-50%,-45%)}
+.op-fog{position:absolute;left:-50%;right:-50%;height:40%;background:radial-gradient(ellipse at 30% 50%,rgba(200,190,175,.10),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(200,190,175,.08),transparent 60%);animation:opDrift 14s linear infinite}
+@keyframes opDrift{from{transform:translateX(-12%)}to{transform:translateX(12%)}}
+.op-seal{width:min(34vw,170px);opacity:0;filter:blur(8px);transform:scale(1.12);transition:opacity 2s ease,filter 2.4s ease,transform 5s cubic-bezier(.2,.6,.2,1)}
+.op-seal.on{opacity:1;filter:blur(0) drop-shadow(0 0 26px rgba(224,40,30,.55));transform:scale(1)}
+.op-wm{width:min(36vw,170px);margin-top:22px;opacity:0;transform:scaleX(1.25);transition:opacity 1.6s ease,transform 2.2s cubic-bezier(.2,.6,.2,1)}
+.op-wm.on{opacity:1;transform:none}
+.op-row{display:flex;align-items:center;gap:min(5vw,26px)}.op-row .op-seal{width:min(29vw,145px)}.op-row .op-wm{width:min(34vw,170px);margin-top:0;transform-origin:left center;transform:translateX(-14px)}.op-row .op-wm.on{transform:none}.op-by{margin-top:min(9vw,44px);font-family:system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;font-weight:700;font-size:clamp(10px,2.8vw,13px);letter-spacing:.38em;color:#a89a86;opacity:0;transition:opacity 1.4s ease;padding-left:.38em}.op-by.on{opacity:.85}
+.opening .gone{transition:opacity .8s ease!important;opacity:0!important}
+.op-skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(239,228,207,.3);z-index:2}
+.opening.out{opacity:0;transition:opacity .8s ease}
 .tlabel{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:calc(16px + env(safe-area-inset-top,0px));z-index:3;width:104px;opacity:.82;pointer-events:none;filter:drop-shadow(0 1px 3px #000)}
 .rprog{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:-2px 2px 20px;position:relative;overflow:visible}.rprog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8f1d22,#e0483a);border-radius:2px;transition:width .5s}
 .rprog span{position:absolute;right:0;top:5px;font-size:10.5px;color:#a99d84;letter-spacing:.05em}
@@ -1738,29 +1723,26 @@ function opSwell(len,v){ if(!AU.on||!AU.unlocked) return; try{ const c=ac(),t=c.
   const s=c.createBufferSource(); s.buffer=b; const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(200,t); bp.frequency.exponentialRampToValueAtTime(1600,t+len); const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+len*.9); g.gain.exponentialRampToValueAtTime(.0001,t+len);
   s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t); }catch(e){} }
 function playOpening(){ if(typeof OPENIMG==='undefined') return;
-  const o=document.createElement('div'); o.className='opening';
-  o.innerHTML=`<div class="op-cam"><div class="op-bg"></div><div class="op-moon"></div><div class="op-fog" style="top:58%"></div><div class="op-fog" style="top:18%;animation-duration:22s;animation-direction:reverse;opacity:.7"></div><canvas class="fx"></canvas>
-    <div class="op-lay"><div class="op-row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WML}" alt="묵월 MUKWOL"></div><div class="op-by">by&nbsp;&nbsp;PPOGAK STUDIO</div></div>
-    <div class="op-flare"></div><div class="op-flash"></div></div><div class="op-vig"></div><div class="op-grain"></div><div class="op-bar t"></div><div class="op-bar b"></div>`;
-  document.body.appendChild(o); AU.hush=performance.now()+9500;
-  const T=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false, raf=0; const q=k=>o.querySelector(k);
-  // 불티: 천천히 오르는 불씨 + 낙관이 켜질 때 사방으로 터지는 불꽃
-  const cv=q('canvas.fx'), cx=cv.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); cv.width=innerWidth*dpr; cv.height=innerHeight*dpr;
-  const P=[...Array(34)].map(()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,vx:0,vy:-(.15+Math.random()*.45)*dpr,s:(.6+Math.random())*1.3*dpr,a:Math.random()*.6,life:1e9,w:Math.random()*6}));
-  const burst=()=>{ const sx=cv.width*.33, sy=cv.height*.46; for(let i=0;i<70;i++){ const ang=Math.random()*Math.PI*2, sp=(1+Math.random()*4.5)*dpr; P.push({x:sx,y:sy,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp-1*dpr,s:(.5+Math.random()*1.4)*dpr,a:1,life:60+Math.random()*70,w:0,b:1}); } };
-  const tick=t=>{ if(!o.isConnected) return; cx.clearRect(0,0,cv.width,cv.height);
-    for(let i=P.length-1;i>=0;i--){ const p=P[i]; p.x+=p.vx+Math.sin(t/900+p.w)*.25*dpr; p.y+=p.vy; if(p.b){ p.vx*=.96; p.vy=p.vy*.96-.03*dpr; p.life--; p.a=Math.max(0,p.life/120); if(p.life<=0){ P.splice(i,1); continue; } } else if(p.y<-10){ p.y=cv.height+10; p.x=Math.random()*cv.width; }
-      cx.globalAlpha=p.a*(p.b?1:(.55+.45*Math.sin(t/350+p.w))); cx.fillStyle=p.b?'rgba(255,170,110,1)':'rgba(230,80,45,1)'; cx.beginPath(); cx.arc(p.x,p.y,p.s,0,7); cx.fill(); }
-    raf=requestAnimationFrame(tick); }; raf=requestAnimationFrame(tick);
-  const end=()=>{ if(done) return; done=true; T.forEach(clearTimeout); o.classList.add('out'); setTimeout(()=>{ cancelAnimationFrame(raf); o.remove(); AU.hush=0; updateBgm(); },1000); };
-  at(50,()=>{ o.classList.add('cine'); q('.op-cam').classList.add('push'); });
-  at(500,()=>{ q('.op-bg').classList.add('on'); q('.op-moon').classList.add('on'); opSwell(2.1,.26); });
-  at(2400,()=>{ q('.op-flare').classList.add('go'); q('.op-flash').classList.add('go'); q('.op-seal').classList.add('on'); burst(); opBoom(1.1,52,3.6); sfxR('bell',.62,.55); vib(40); });
-  at(3300,()=>q('.op-wm').classList.add('on'));
-  at(4700,()=>q('.op-by').classList.add('on'));
-  at(7400,()=>{ o.classList.remove('cine'); opBoom(.5,45,2); });
-  at(7900,end);
-  ['click','touchstart','touchend','mousedown'].forEach(ev=>o.addEventListener(ev,e=>{ e.stopPropagation(); if(ev!=='touchstart'&&ev!=='touchend') e.preventDefault(); },{capture:true}));
+  const o=document.createElement('div'); o.className='opening'; o.innerHTML='<div class="op-skip"></div>'; document.body.appendChild(o); AU.hush=performance.now()+8500;
+  const T=[], RAF=[], at=(ms,f)=>T.push(setTimeout(f,ms)); let done=false;
+  const add=h=>{ const d=document.createElement('div'); d.innerHTML=h.trim(); const e=d.firstChild; o.appendChild(e); return e; };
+  const dust=(color,up,count,size)=>{ const c=document.createElement('canvas'); c.className='fx'; o.appendChild(c); const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); c.width=innerWidth*dpr; c.height=innerHeight*dpr;
+    const P=[...Array(count)].map(()=>({x:Math.random(),y:Math.random(),v:(.15+Math.random()*.5)*(up?-1:.3),s:(.5+Math.random())*size,a:Math.random()*.7,w:Math.random()*6}));
+    const f=t=>{ if(done&&!o.isConnected) return; x.clearRect(0,0,c.width,c.height); P.forEach(p=>{ p.y+=p.v*.0012; p.x+=Math.sin(t/1000+p.w)*.0003; if(p.y<-.05) p.y=1.05; if(p.y>1.05) p.y=-.05; x.globalAlpha=p.a*(.6+.4*Math.sin(t/400+p.w)); x.fillStyle=color; x.beginPath(); x.arc(p.x*c.width,p.y*c.height,p.s*dpr,0,7); x.fill(); }); RAF.push(requestAnimationFrame(f)); }; RAF.push(requestAnimationFrame(f)); return c; };
+  const clearScene=()=>[...o.children].forEach(c=>{ if(!c.classList.contains('op-skip')) c.classList.add('gone'); });
+  const end=()=>{ if(done) return; done=true; T.forEach(clearTimeout); o.classList.add('out'); setTimeout(()=>{ RAF.forEach(cancelAnimationFrame); o.remove(); AU.hush=0; updateBgm(); },800); };
+  // 묵월 + by PPOGAK STUDIO (한 장면)
+  o.style.background='radial-gradient(ellipse at 50% 40%,#1a0f0d,#050404 70%)';
+  const moon=add('<div class="op-moon"></div>'); add('<div class="op-fog" style="top:55%"></div>'); add('<div class="op-fog" style="top:20%;animation-duration:20s;animation-direction:reverse;opacity:.7"></div>');
+  dust('rgba(230,70,40,1)',true,38,1.4);
+  const s2=add(`<div class="lay"><div class="op-row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="墨月"><img class="op-wm" src="${OPENIMG.lg_WML}" alt="묵월 MUKWOL"></div><div class="op-by">by&nbsp;&nbsp;PPOGAK STUDIO</div></div>`);
+  o.appendChild(o.querySelector('.op-skip'));
+  at(200,()=>{ moon.classList.add('on'); opSwell(2.4,.22); });
+  at(1600,()=>{ s2.querySelector('.op-seal').classList.add('on'); opBoom(1,55,3.2); sfxR('bell',.7,.5); });
+  at(3000,()=>s2.querySelector('.op-wm').classList.add('on'));
+  at(4300,()=>s2.querySelector('.op-by').classList.add('on'));
+  at(8000,end);
+  ['click','touchstart','touchend','mousedown','keydown'].forEach(ev=>o.addEventListener(ev,e=>{ e.stopPropagation(); if(ev!=='touchstart'&&ev!=='touchend') e.preventDefault(); },{capture:true}));
 }
 function render(){ setTimeout(()=>{ try{updateAmb()}catch(e){} },0);
   const app=$('#app');
