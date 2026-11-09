@@ -161,9 +161,9 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 #vnblood{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 0 0,rgba(140,10,20,.85) 0,rgba(140,10,20,.5) 9%,transparent 22%),radial-gradient(circle at 100% 0,rgba(110,8,16,.8) 0,transparent 18%),radial-gradient(circle at 0 100%,rgba(120,8,16,.85) 0,transparent 24%),radial-gradient(circle at 100% 100%,rgba(140,10,20,.9) 0,rgba(90,6,12,.5) 12%,transparent 26%),radial-gradient(circle at 8% 70%,rgba(160,20,24,.7) 0,transparent 4%),radial-gradient(circle at 92% 30%,rgba(160,20,24,.7) 0,transparent 3%),radial-gradient(circle at 86% 82%,rgba(20,6,8,.7) 0,transparent 6%)}
 #vnblood.on{animation:vbl 3.2s ease-out forwards}@keyframes vbl{0%{opacity:0;transform:scale(1.15)}10%{opacity:1;transform:none}70%{opacity:.85}100%{opacity:.35}}
 .cutsc{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:opacity 1.4s ease}
-.cutsc.done{opacity:0;pointer-events:none}.cutink{position:absolute;inset:0;width:100%;height:100%}
+.cutsc.done{opacity:0;pointer-events:none}.cutink{position:absolute;inset:0;width:100%;height:100%;filter:blur(1.5px);transform:scale(1.04)}
 .cutq{position:relative;font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(20px,calc(var(--u)*12),34px);line-height:1.7;letter-spacing:.06em;color:#efe4cb;text-align:center;text-shadow:0 0 18px rgba(0,0,0,.9)}
-.cutq span{display:inline-block;opacity:0}.cutq.on span{animation:brushin .55s ease-out forwards}
+.cutq span{display:inline-block;opacity:0}.cutq.on span{animation:brushin .55s ease-out forwards;will-change:opacity,transform}
 .cutq.gone{transition:opacity .8s ease,filter .8s ease,letter-spacing .8s ease;opacity:0;filter:blur(10px);letter-spacing:.25em}
 @keyframes brushin{from{opacity:0;filter:blur(6px);transform:translateY(4px) scale(1.15)}to{opacity:1;filter:blur(0);transform:none}}
 .cuttitle,.cutsub{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;transition:opacity .9s ease,filter .9s ease}
@@ -622,7 +622,7 @@ function layout(){ const app=$('#app'), cs=getComputedStyle(app), aw=app.clientW
   let vw=Math.min(aw,ah*16/9); if(!matchMedia('(pointer:coarse)').matches){ const sc=Math.floor(vw/W); if(sc>=2) vw=sc*W; } vw=Math.max(200,Math.floor(vw)); const v=$('#view'); v.style.width=vw+'px'; v.style.height=Math.round(vw*9/16)+'px'; document.documentElement.style.setProperty('--u',(vw/320)+'px');
   document.body.classList.toggle('portrait',ah>aw); }
 let last=performance.now(), acc=0;
-function frame(t){ requestAnimationFrame(frame); const dt=Math.min(.05,(t-last)/1000); last=t; acc+=dt; let n=0; while(acc>=1/60&&n<5){ update(1/60); acc-=1/60; n++; } try{ render(); }catch(e){ console.error(e); } const pr=$('#prompt'); pr.hidden=!(NEAR&&!GAME.lock&&!GAME.busy&&!GAME.story); if(NEAR&&pr.dataset.n!==NEAR.name){ pr.dataset.n=NEAR.name; pr.textContent=NEAR.name+' 살펴보기'; } }
+function frame(t){ requestAnimationFrame(frame); const dt=Math.min(.05,(t-last)/1000); last=t; acc+=dt; let n=0; while(acc>=1/60&&n<5){ update(1/60); acc-=1/60; n++; } try{ if(!GAME.story&&!GAME.cutFull) render(); }catch(e){ console.error(e); } const pr=$('#prompt'); pr.hidden=!(NEAR&&!GAME.lock&&!GAME.busy&&!GAME.story); if(NEAR&&pr.dataset.n!==NEAR.name){ pr.dataset.n=NEAR.name; pr.textContent=NEAR.name+' 살펴보기'; } }
 
 /* 튜토리얼: 누를 곳 표시 (반짝이는 고리 + 통통 튀는 화살표, 화면 밖이면 가장자리 화살표) */
 function drawPointer(cx,T){ const pt=SCN&&SCN.pointer; const off=!pt||GAME.lock||GAME.busy||GAME.story; document.querySelectorAll('.pointme').forEach(e=>{ if(off||pt.dom!=='#'+e.id) e.classList.remove('pointme'); });
@@ -1004,17 +1004,20 @@ function boot(){ FR=PFX.createFrame(W,H); FIMG=new ImageData(W,H); [FXC,FXX]=mk(
 loadImages(()=>loadFar(boot));
 
 /* 방탈출판 컷신: 먹물이 화면을 덮고 → 붓 문구 → (제목) → 「보름 전」 */
-function inkSpread(cv,dur){ const dpr=Math.min(2,devicePixelRatio||1), w=cv.clientWidth||innerWidth, h=cv.clientHeight||innerHeight; cv.width=w*dpr; cv.height=h*dpr;
-  const c=cv.getContext('2d'); c.scale(dpr,dpr); const diag=Math.hypot(w,h), R=(a,b)=>a+Math.random()*(b-a);
-  const drops=[{x:w*.5,y:h*.52,t0:0,R:diag*.62}]; for(let i=0;i<9;i++){ const a=R(0,Math.PI*2), d=R(.18,.48)*diag; drops.push({x:w*.5+Math.cos(a)*d,y:h*.52+Math.sin(a)*d,t0:R(.08,.45),R:R(.18,.36)*diag}); }
-  drops.forEach(d=>{ d.k=[]; for(let f=2;f<=56;f++) if(Math.random()<.55) d.k.push({f,a:R(.5,1)*.34/Math.pow(f,1.05),p:R(0,7),s:R(-1,1)}); });
-  const specks=Array.from({length:40},()=>({x:R(0,w),y:R(0,h),r:R(1,5),t:R(.05,.6)})), N=260, t0=performance.now();
-  (function fr(now){ const p=Math.min(1,(now-t0)/dur); c.clearRect(0,0,w,h);
-    drops.forEach(d=>{ const q=Math.max(0,(p-d.t0)/(1-d.t0)); if(q<=0) return; const r=d.R*(1-Math.pow(1-q,2.4));
-      [[1.16,.22,18],[1.06,.5,7],[1,.97,1.5]].forEach(([sc,al,bl])=>{ c.save(); c.filter=`blur(${bl}px)`; c.fillStyle=`rgba(6,5,4,${al})`; c.beginPath();
-        for(let i=0;i<=N;i++){ const a=i/N*Math.PI*2; let m=1; d.k.forEach(k=>m+=k.a*Math.sin(k.f*a+k.p+k.s*q*2.2)); const x=d.x+Math.cos(a)*r*sc*m, y=d.y+Math.sin(a)*r*sc*m; i?c.lineTo(x,y):c.moveTo(x,y); } c.closePath(); c.fill(); c.restore(); }); });
-    specks.forEach(sp=>{ if(p>sp.t){ c.fillStyle='rgba(6,5,4,.9)'; c.beginPath(); c.arc(sp.x,sp.y,sp.r*Math.min(1,(p-sp.t)*8),0,7); c.fill(); } });
-    if(p>.82){ c.fillStyle=`rgba(5,4,4,${(p-.82)/.18})`; c.fillRect(0,0,w,h); } if(p<1) requestAnimationFrame(fr); })(t0); }
+function inkSpread(cv,dur){ /* 저해상도로 그려 CSS로 늘린다(번진 먹 느낌 + 가벼움) */
+  const SC=.32, w=cv.clientWidth||innerWidth, h=cv.clientHeight||innerHeight, cw=Math.max(80,Math.round(w*SC)), ch=Math.max(45,Math.round(h*SC)); cv.width=cw; cv.height=ch;
+  const c=cv.getContext('2d'); const diag=Math.hypot(cw,ch), R=(a,b)=>a+Math.random()*(b-a), N=120;
+  const COS=new Float32Array(N+1), SIN=new Float32Array(N+1); for(let i=0;i<=N;i++){ const a=i/N*Math.PI*2; COS[i]=Math.cos(a); SIN[i]=Math.sin(a); }
+  const drops=[{x:cw*.5,y:ch*.52,t0:0,R:diag*.62}]; for(let i=0;i<9;i++){ const a=R(0,Math.PI*2), d=R(.18,.48)*diag; drops.push({x:cw*.5+Math.cos(a)*d,y:ch*.52+Math.sin(a)*d,t0:R(.08,.45),R:R(.18,.36)*diag}); }
+  drops.forEach(d=>{ d.k=[]; for(let f=2;f<=40;f++) if(Math.random()<.5) d.k.push({f,a:R(.5,1)*.34/Math.pow(f,1.05),p:R(0,7),s:R(-1,1)}); d.m=new Float32Array(N+1); });
+  const specks=Array.from({length:30},()=>({x:R(0,cw),y:R(0,ch),r:R(.4,1.8),t:R(.05,.6)})), t0=performance.now(); let full=false;
+  (function fr(now){ if(full) return; const p=Math.min(1,(now-t0)/dur); c.clearRect(0,0,cw,ch);
+    for(const d of drops){ const q=Math.max(0,(p-d.t0)/(1-d.t0)); if(q<=0) continue; const r=d.R*(1-Math.pow(1-q,2.4)), m=d.m;
+      for(let i=0;i<=N;i++){ let v=1; const a=i/N*Math.PI*2; for(const k of d.k) v+=k.a*Math.sin(k.f*a+k.p+k.s*q*2.2); m[i]=v; }
+      for(const [sc,al] of [[1.16,.22],[1.06,.5],[1,.97]]){ c.fillStyle=`rgba(6,5,4,${al})`; c.beginPath(); for(let i=0;i<=N;i++){ const rr=r*sc*m[i], x=d.x+COS[i]*rr, y=d.y+SIN[i]*rr; i?c.lineTo(x,y):c.moveTo(x,y); } c.fill(); } }
+    c.fillStyle='rgba(6,5,4,.9)'; for(const sp of specks) if(p>sp.t){ c.beginPath(); c.arc(sp.x,sp.y,sp.r*Math.min(1,(p-sp.t)*8),0,7); c.fill(); }
+    if(p>.82){ c.fillStyle=`rgba(5,4,4,${(p-.82)/.18})`; c.fillRect(0,0,cw,ch); }
+    if(p<1) requestAnimationFrame(fr); else { full=true; c.fillStyle='#050404'; c.fillRect(0,0,cw,ch); GAME.cutFull=1; } })(t0); }
 function inkCut(quote,sub,sub2,title){ return new Promise(done=>{ GAME.lock++;
   const ov=document.createElement('div'); ov.className='cutsc'; const ink=document.createElement('canvas'); ink.className='cutink'; ov.appendChild(ink);
   let k=0; const q=document.createElement('div'); q.className='cutq'; q.innerHTML=quote.split('|').map(l=>`<div>${[...l].map(ch=>`<span style="animation-delay:${(k++)*.07}s">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>`).join(''); ov.appendChild(q);
@@ -1023,7 +1026,7 @@ function inkCut(quote,sub,sub2,title){ return new Promise(done=>{ GAME.lock++;
   const nx=document.createElement('div'); nx.className='cutnext'; nx.textContent='▼'; ov.appendChild(nx);
   (document.querySelector('#view')||document.body).appendChild(ov);
   const T=t=>new Promise(r=>setTimeout(r,t)); let ready=false, phase=0, fin=false; const wt=()=>{ ready=true; nx.classList.add('on'); };
-  const finish=async()=>{ if(fin) return; fin=true; await fade(true,60); ov.classList.add('done'); setTimeout(()=>ov.remove(),1500); GAME.lock--; done(); };
+  const finish=async()=>{ if(fin) return; fin=true; GAME.cutFull=0; await fade(true,60); ov.classList.add('done'); setTimeout(()=>ov.remove(),1500); GAME.lock--; done(); };
   ov.addEventListener('pointerup',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on'); snd('page',1,.9);
     if(phase===0){ q.classList.add('gone'); await T(900); if(title){ phase=1; tt.classList.add('on'); snd('bell',.7,.5); await T(1800); wt(); return; } phase=2; sb.classList.add('on'); await T(700); wt(); }
     else if(phase===1){ phase=2; tt.classList.add('gone'); await T(900); sb.classList.add('on'); await T(700); wt(); }
