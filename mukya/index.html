@@ -436,7 +436,7 @@ function showLine(){ const d=$('#dialog'), [who,txt]=DLG.lines[DLG.i], k=WHO[who
   const pi=d.querySelector('.por'); if(k&&PORSRC[k]){ pi.src=PORSRC[k]; pi.hidden=false; } else pi.hidden=true;
   if(/짤랑/.test(txt)&&performance.now()-(AU.lastBell||0)>700) snd('bell',1,.5); d.querySelector('.who').textContent=who||''; d.querySelector('.who').hidden=!who; const t=d.querySelector('.txt'); t.textContent=''; let i=0; clearInterval(TYPE);
   TYPE=setInterval(()=>{ i++; t.textContent=txt.slice(0,i); if(i>=txt.length){ clearInterval(TYPE); TYPE=null; } },24); DLG.full=txt; }
-function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++; snd('page',1,.9);
+function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++;
   if(DLG.i>=DLG.lines.length){ $('#dialog').hidden=true; GAME.lock--; const r=DLG.res; DLG=null; r(); } else showLine(); }
 function choose(title,opts){ return new Promise(res=>{ GAME.lock++; const m=$('#modal'); m.hidden=false; m.className='choice';
   const vis=opts.filter(o=>!o.show||o.show()); m.querySelector('.box').innerHTML=`<h2>${title}</h2>${vis.map((o,i)=>`<button data-m="${i}" class="opt${o.secret?' secret':''}"><b>${'一二三四'[i]}</b><span>${o.t}${o.secret?`<small>숨은 선택 · ${o.secret}</small>`:''}</span></button>`).join('')}`;
@@ -1027,7 +1027,7 @@ function inkCut(quote,sub,sub2,title){ return new Promise(done=>{ GAME.lock++;
   (document.querySelector('#view')||document.body).appendChild(ov);
   const T=t=>new Promise(r=>setTimeout(r,t)); let ready=false, phase=0, fin=false; const wt=()=>{ ready=true; nx.classList.add('on'); };
   const finish=async()=>{ if(fin) return; fin=true; GAME.cutFull=0; await fade(true,60); ov.classList.add('done'); setTimeout(()=>ov.remove(),1500); GAME.lock--; done(); };
-  ov.addEventListener('pointerup',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on'); snd('page',1,.9);
+  ov.addEventListener('pointerup',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on');
     if(phase===0){ q.classList.add('gone'); await T(900); if(title){ phase=1; tt.classList.add('on'); snd('bell',.7,.5); await T(1800); wt(); return; } phase=2; sb.classList.add('on'); await T(700); wt(); }
     else if(phase===1){ phase=2; tt.classList.add('gone'); await T(900); sb.classList.add('on'); await T(700); wt(); }
     else { sb.classList.add('gone'); await T(500); finish(); } });
