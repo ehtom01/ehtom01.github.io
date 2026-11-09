@@ -266,7 +266,7 @@ function rows(img,o){ const w=img.width,h=img.height, keep=[]; const a=Math.floo
 function walkFrame(img,ph,o){ const w=img.width,h=img.height,[c,x]=mk(w+PAD*2,h+PAD); const hip=Math.floor(h*(o.hip??.6)), mid=Math.floor(w/2)+(o.mid||0), st=o.stride??3, lean=o.lean??2;
   const s=Math.sin(ph), sway=Math.cos(ph)*(o.sway??1);
   const ft=o.feet; for(let y=0;y<h;y++){ if(ft&&y>=ft.y) break; const top=lean*Math.pow(1-y/h,1.3); if(y<hip){ x.drawImage(img,0,y,w,1,PAD+Math.round(top+sway*(y/hip)*.5),PAD+y,w,1); continue; }
-    const k=(y-hip)/(h-hip), L=Math.round(top+s*st*k+sway*.5), R=Math.round(top-s*st*k+sway*.5);
+    const k=(y-hip)/(h-hip), hs=(o.hemSwing||0)*Math.cos(ph)*k*k, L=Math.round(top+s*st*k+sway*.5+hs), R=Math.round(top-s*st*k+sway*.5+hs);
     x.drawImage(img,0,y,mid,1,PAD+L,PAD+y,mid,1); x.drawImage(img,mid,y,w-mid,1,PAD+mid+R,PAD+y,w-mid,1); if(R>L&&o.fill!==false) x.drawImage(img,mid-1,y,1,1,PAD+mid+L,PAD+y,R-L,1); }
   if(ft){ /* 치마 밑으로 두 발이 번갈아 나온다 */ const cxF=PAD+ft.cx, fy=PAD+ft.y, sp=ft.stride, v=Math.cos(ph);
     const foot=(off,lift,back)=>{ const fx=Math.round(cxF+off), yy=fy-lift, ol='#1a0f0c', sock=back?'#a89c88':'#efe4cc', shoe=back?'#3a2618':'#6b4630', hi=back?'#4a3020':'#8a5c3c';
@@ -275,9 +275,25 @@ function walkFrame(img,ph,o){ const w=img.width,h=img.height,[c,x]=mk(w+PAD*2,h+
     const a=s*sp, la=v>0?Math.round(2.4*(1-Math.abs(s))):0, lb=v<0?Math.round(2.4*(1-Math.abs(s))):0;
     const order=[[a,la,s<0],[-a,lb,s>=0]].sort((p,q)=>q[2]-p[2]); order.forEach(([off,l,bk])=>foot(off,l,bk)); }
   c.bob=Math.round(Math.abs(Math.sin(ph))*(o.bob??2)); c.contact=Math.abs(s)<.25; return c; }
+/* 옆모습 걷기: 몸 오르내림 + 팔 흔들기 + 치맛자락 + 두 발(버선·신)이 실제로 번갈아 디딘다 */
+function sideWalk(img,ph,o){ const w=img.width,h=img.height,[c,x]=mk(w+PAD*2,h+PAD); const cut=o.cut, s=Math.sin(ph), v=Math.cos(ph);
+  const up=Math.round((1-Math.abs(s))*2), arm=Math.round(-s*2), hipY=o.hip;
+  for(let y=0;y<cut;y++){ const k=y<hipY?0:(y-hipY)/(cut-hipY), hs=Math.round(v*o.hem*k*k), lean=Math.round(Math.abs(s)*.8*(1-y/cut));
+    const dy=PAD+y-up;
+    if(y>=o.armY0&&y<o.armY1){ x.drawImage(img,0,y,o.armX,1,PAD+arm+lean,dy,o.armX,1); x.drawImage(img,o.armX,y,w-o.armX,1,PAD+o.armX+lean+hs,dy,w-o.armX,1); const g0=PAD+o.armX+arm+lean, g1=PAD+o.armX+lean+hs; if(g1>g0) x.drawImage(img,o.armX,y,1,1,g0,dy,g1-g0,1); }
+    else x.drawImage(img,0,y,w,1,PAD+lean+hs,dy,w,1); }
+  const gy=PAD+h-2, cx=PAD+o.cx, st=o.stride, hem=PAD+cut-up-1;
+  const leg=(fx,top,bot,back)=>{ x.fillStyle=back?'#8a8070':'#e8dcc4'; x.fillRect(fx-1,top,2,Math.max(0,bot-top)); x.fillStyle='#1a0f0c'; x.fillRect(fx-2,top,1,Math.max(0,bot-top)); x.fillRect(fx+1,top,1,Math.max(0,bot-top)); };
+  const shoe=(fx,yy,back,lift)=>{ const ol='#140c0a', sh=back?'#3a2618':'#6b4630', hi=back?'#4a3020':'#9a6a44';
+    x.fillStyle=ol; x.fillRect(fx-3,yy-1,9,4); x.fillRect(fx+5,yy-2-(lift?1:0),2,2);
+    x.fillStyle=sh; x.fillRect(fx-2,yy,7,2); x.fillRect(fx+5,yy-1-(lift?1:0),1,1); x.fillStyle=hi; x.fillRect(fx-2,yy,5,1); };
+  const feet=[[s*st, v>0?Math.round(3*(1-Math.abs(s))):0],[-s*st, v<0?Math.round(3*(1-Math.abs(s))):0]];
+  feet.sort((a,b)=>a[0]-b[0]); /* 뒤쪽 발 먼저(어둡게) */
+  feet.forEach(([off,lift],i)=>{ const fx=Math.round(cx+off), yy=gy-1-lift, back=i===0; leg(fx,hem,yy-1,back); shoe(fx,yy,back,lift); });
+  c.bob=0; c.contact=Math.abs(s)>.9; return c; }
 function buildAnims(){ const A=(k,v)=>ANIM[k]=v, cyc=(img,n,f)=>Array.from({length:n},(_,i)=>deform(img,f(i/n*Math.PI*2,i)));
   const h=IMG.hong, hs=IMG.hong_side; /* 멈춤 = 정면, 걷기·점프 = 옆모습 */
-  A('hong',{idle:cyc(h,8,ph=>({sway:.6,ph,hem:.5})),walk:Array.from({length:8},(_,i)=>walkFrame(hs,i/8*Math.PI*2,{hip:.68,stride:3,lean:1,bob:2,sway:.8})),
+  A('hong',{idle:cyc(h,8,ph=>({sway:.6,ph,hem:.5})),walk:Array.from({length:8},(_,i)=>sideWalk(hs,i/8*Math.PI*2,{cut:60,hip:40,hem:2.5,armX:14,armY0:22,armY1:50,cx:28,stride:11})),
     squash:[deform(rows(hs,{drop:4}),{lean:1,sway:1.5,ph:1})],air:[deform(rows(hs,{dup:6,from:.5,to:.95}),{lean:2,sway:-3,ph:2,hem:.4})],fall:[deform(hs,{lean:1,sway:3,ph:4,hem:.4})],
     crouch:[deform(rows(h,{drop:3,from:.35,to:.9}),{lean:4,sway:1,ph:1,hem:.5})],reach:[deform(rows(h,{dup:8,from:.1,to:.6}),{lean:3,sway:.5,ph:2})],
     scared:cyc(h,4,ph=>({lean:-5,sway:2.5,ph:ph*3,hem:.4})),mirror:cyc(h,4,ph=>({sway:.6,ph,lean:1}))});
