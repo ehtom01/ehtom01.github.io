@@ -369,6 +369,18 @@ body,#dialog,#modal,#coach,#menu,#goal,#prompt,#toast{word-break:keep-all;overfl
 body.standalone #app{padding-top:max(4px,env(safe-area-inset-top,0px))}
 html,body,#app,#view,#view *{touch-action:none;-webkit-touch-callout:none}
 button{touch-action:manipulation}
+
+/* 대사 일러스트 */
+#bust{position:absolute;left:1%;bottom:17%;height:66%;z-index:3;pointer-events:none;display:flex;align-items:flex-end}
+#bust img{height:100%;width:auto;filter:drop-shadow(0 8px 20px rgba(0,0,0,.7));transform-origin:50% 100%;animation:bin .42s cubic-bezier(.2,.9,.3,1)}
+#bust.sq{height:54%;bottom:22%}
+#bust.swap img{animation:bin .32s cubic-bezier(.2,.9,.3,1)}
+@keyframes bin{from{opacity:0;transform:translate(-26px,14px) scale(.97)}to{opacity:1;transform:none}}
+#bust.shock img{animation:bsh .5s cubic-bezier(.3,1.6,.4,1)}@keyframes bsh{0%{opacity:0;transform:scale(1.18) translateX(-10px)}30%{opacity:1;transform:scale(1.04) translateX(6px)}50%{transform:translateX(-5px)}70%{transform:translateX(3px)}100%{transform:none}}
+#bust.ghost img{filter:drop-shadow(0 0 18px rgba(170,20,30,.6)) saturate(.6) contrast(1.15)}
+#bust.angry img{filter:drop-shadow(0 0 16px rgba(200,40,30,.55)) drop-shadow(0 8px 20px rgba(0,0,0,.7))}
+#dialog.bust{grid-template-columns:1fr!important;padding-left:max(30%,calc(var(--u)*86))!important}
+#dialog.bust .por{display:none!important}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -387,7 +399,7 @@ button{touch-action:manipulation}
     <div id="banner"><b></b><span></span></div>
     <div id="scare"><img alt=""></div>
     <div id="vn" hidden><img class="bg" alt=""><div id="vnblood"></div><div class="chars"></div><div class="tag"></div><div id="vncard"><b></b><span></span></div></div>
-    <div id="dialog" hidden><img class="por" alt=""><div class="who"></div><div class="txt"></div><div class="next">▼</div></div>
+    <div id="bust" hidden><img alt=""></div><div id="dialog" hidden><img class="por" alt=""><div class="who"></div><div class="txt"></div><div class="next">▼</div></div>
     <div id="modal" hidden><div class="box"></div></div>
     <div id="mini" hidden><div class="mt"></div><canvas></canvas></div>
     <div id="fade"></div>
@@ -653,12 +665,17 @@ const WHO={'홍련':'hong','태석':'dol','무진':'mujin','물귀신':'mul','�
 let DLG=null, TYPE=null, MODAL=null; const $=s=>document.querySelector(s);
 function say(lines){ return new Promise(res=>{ GAME.lock++; DLG={lines,i:0,res}; showLine(); }); }
 function showLine(){ const d=$('#dialog'), [who,txt]=DLG.lines[DLG.i], k=WHO[who]; d.hidden=false; d.classList.toggle('nar',!who);
+  { const bu=$('#bust'), img=bu.querySelector('img'), big=typeof BUST!=='undefined'&&k&&BUST[k]&&(GAME.story||who==='???'||who==='백련'||/[!！]$|…!|!$/.test(txt));
+    if(big){ const changed=bu.dataset.k!==k; bu.dataset.k=k; bu.classList.toggle('sq',['chon','chongs','sunimo','buni','makrye','bunmo','kid'].includes(k));
+      const shock=/!|\?!|…\?/.test(txt)&&!GAME.story||/오지 마|이놈|뛰시오/.test(txt), ghost=(who==='???'), angry=/이놈|물러서/.test(txt);
+      if(changed){ img.src=BUST[k]; } bu.hidden=false; bu.classList.remove('shock','swap','ghost','angry'); void bu.offsetWidth; bu.classList.add(shock?'shock':(changed?'swap':'_')); if(ghost) bu.classList.add('ghost'); if(angry) bu.classList.add('angry'); d.classList.add('bust'); }
+    else { bu.hidden=true; bu.dataset.k=''; d.classList.remove('bust'); } }
   if(GAME.story) vn().querySelectorAll('.ch').forEach(el=>el.classList.toggle('dim',!!k&&el.dataset.k!==k));
   const pi=d.querySelector('.por'); if(k&&PORSRC[k]){ pi.src=PORSRC[k]; pi.hidden=false; } else pi.hidden=true;
   if(/짤랑/.test(txt)&&performance.now()-(AU.lastBell||0)>700) snd('bell',1,.5); d.querySelector('.who').textContent=who||''; d.querySelector('.who').hidden=!who; const t=d.querySelector('.txt'); t.textContent=''; let i=0; clearInterval(TYPE);
   TYPE=setInterval(()=>{ i++; t.textContent=txt.slice(0,i); if(i>=txt.length){ clearInterval(TYPE); TYPE=null; } },24); DLG.full=txt; }
 function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++;
-  if(DLG.i>=DLG.lines.length){ $('#dialog').hidden=true; GAME.lock--; const r=DLG.res; DLG=null; r(); } else showLine(); }
+  if(DLG.i>=DLG.lines.length){ $('#dialog').hidden=true; $('#bust').hidden=true; $('#bust').dataset.k=''; $('#dialog').classList.remove('bust'); GAME.lock--; const r=DLG.res; DLG=null; r(); } else showLine(); }
 function choose(title,opts){ return new Promise(res=>{ GAME.lock++; const m=$('#modal'); m.hidden=false; m.className='choice';
   const vis=opts.filter(o=>!o.show||o.show()); m.querySelector('.box').innerHTML=`<h2>${title}</h2>${vis.map((o,i)=>`<button data-m="${i}" class="opt${o.secret?' secret':''}"><b>${'一二三四'[i]}</b><span>${o.t}${o.secret?`<small>숨은 선택 · ${o.secret}</small>`:''}</span></button>`).join('')}`;
   MODAL=v=>{ m.hidden=true; MODAL=null; GAME.lock--; res(vis[+v].v); }; }); }
@@ -848,7 +865,7 @@ function render(){ const c=ctx; c.setTransform(1,0,0,1,0,0); c.globalAlpha=1; c.
   if(SCN.drawBack) SCN.drawBack(cx,T);
   for(const h of SCN.hots){ if(h.done&&!h.ev) continue; if(h.yin||(h.hidden&&h.hidden())) continue; glint(h,cx,T); }
   if(SCN.drawBack) SCN.drawBack(cx,T);
-  fxPass('back',cx);
+  if(SCN.backClip){ const q=SCN.backClip; c.save(); c.beginPath(); c.rect(q.x0-cx,q.y0,q.x1-q.x0,q.y1-q.y0); c.clip(); fxPass('back',cx); c.restore(); } else fxPass('back',cx);
   for(const n of NPCS) if(!n.front) drawActor(n,cx);
   if(TS) drawActor(TS,cx); drawActor(P,cx);
   for(const n of NPCS) if(n.front) drawActor(n,cx);
@@ -1112,15 +1129,17 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       const ok=await lockGame('석등 돌함','언니 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 덜컥 제자리로 돌아갔다.']]); return; }
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
-      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-52); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
-      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; SCN.closeT=GAME.t; if(SCN.portal){ SCN.portal.kill=1; fx('poof',{x:700,y:GY-44,palette:FXP.void}); } snd('ritok',.8,.7); await wait(900); GAME.cine=0; SCN.finish(); }}];
+      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-25); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
+      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.shake=6; snd('ritok',.8,.7); await fade(true,1400); GAME.cine=0; SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{pano:FARIMG.gate_pano,gr:mk(w,40)[0],fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
     props:[{k:'pillar',x:226},{k:'hmirror',x:226,y:GY-72,hide:()=>S.items.includes('mirror')||H_[0].done},{k:'pillar',x:430},{k:'lantern2',x:520,light:{r:60,c:'#ffcf7a',y:GY-32}},{k:'pillar_s',x:776},{k:'pillar_s',x:624},{k:'roof',x:700,y:GY-108,light:{r:50,c:'#7a5aa0',y:GY-120}}],
     hots:H_, clueTotal:0,
-    build(d){ NPCS=[sis]; { const g=fx('portal',{x:700,y:GY-44,palette:FXP.void,width:30,height:52},'behind'); g.keep=1; d.portal=g; }  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
-    drawBack(cx,T){ const k=SCN.closing?Math.max(0,1-(GAME.t-SCN.closeT)*.9):1;  },
-    lights(L,cx,T){ L.push({x:700-cx,y:GY-44,r:70,c:'#9a5ad0',g:.7}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
+    build(d){ NPCS=[sis]; { const g=fx('portal',{x:700,y:GY+16,palette:FXP.void,width:84,height:70},'behind'); g.keep=1; d.portal=g; }  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
+    backClip:{x0:636,x1:764,y0:GY-104,y1:GY+1},
+    drawBack(cx,T){ const c=ctx, x0=636-cx, y0=GY-104, w=128, h=105; const g=c.createLinearGradient(0,y0,0,y0+h); g.addColorStop(0,'#08040e'); g.addColorStop(.6,'#140a22'); g.addColorStop(1,'#241238'); c.fillStyle=g; c.fillRect(x0,y0,w,h);
+      c.fillStyle='rgba(120,70,170,.18)'; for(let i=0;i<5;i++){ const yy=Math.round(GY-6-((T*14+i*21)%90)); c.fillRect(x0+4+((i*37)%110),yy,1,3); } },
+    lights(L,cx,T){ L.push({x:700-cx,y:GY-55,r:90,c:'#9a5ad0',g:.8}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
     tick(){ const has=k=>S.items.includes(k), dn=id=>H_.find(h=>h.id===id).done;
       if(S.flags.reach&&!dn('pillar')&&P.air&&P.y>14&&Math.abs(P.x-226)<20&&!GAME.lock&&!GAME.busy){ grab(H_[0]); return; }
       let t=''; if(!S.flags.reach) t='화면을 누르면 걸어가요. 반짝이는 곳(붉은 기둥)을 누르면 살펴봐요.'; else if(!dn('pillar')) t=Math.abs(P.x-226)<22?'화면을 위로 쓸어 올리면 뛰어올라요. 뛰어서 거울을 잡으세요!':'기둥 아래로 가서 뛰어 보세요.';
