@@ -1,11 +1,11 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><meta property="og:title" content="묵야: 귀명록 · 탐색판 시험"><meta property="og:image" content="https://ehtom01.github.io/gwimun/og5.jpg"></head><body style="margin:0"><title>묵야 탐색판</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@700;900&family=Ma+Shan+Zheng&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;500;600;700;900&family=Ma+Shan+Zheng&display=swap">
 <style>
 /* 먹 바탕 한 화면: 가운데 16:9 도트 화면, 그 위에 본편과 같은 사진 대화창 */
 :root{ --ink:#07060a; --paper:#efe4cf; --dim:#9a8f86; --cinnabar:#c8372d; --gold:#e2b84a; --line:rgba(226,184,74,.32);
-  --serif:"Gowun Batang","Nanum Myeongjo","Batang",serif; --brush:"Ma Shan Zheng","Gowun Batang",serif; color-scheme:dark; --u:3px; }
+  --serif:"Noto Serif KR","Gowun Batang","Nanum Myeongjo",serif; --brush:"Ma Shan Zheng","Gowun Batang",serif; color-scheme:dark; --u:3px; }
 html,body{height:100%}
 [hidden]{display:none!important}
 body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -160,7 +160,7 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 #spot.sq{border-radius:2px;outline:2px dashed rgba(255,210,90,.9);outline-offset:5px}@keyframes spt{50%{box-shadow:0 0 0 3px #fff3c0,0 0 30px 10px rgba(255,210,90,.75),0 0 0 2000px rgba(4,3,8,.6)}}
 #tr{z-index:2}#coach{z-index:3}
 #vnblood{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 0 0,rgba(140,10,20,.85) 0,rgba(140,10,20,.5) 9%,transparent 22%),radial-gradient(circle at 100% 0,rgba(110,8,16,.8) 0,transparent 18%),radial-gradient(circle at 0 100%,rgba(120,8,16,.85) 0,transparent 24%),radial-gradient(circle at 100% 100%,rgba(140,10,20,.9) 0,rgba(90,6,12,.5) 12%,transparent 26%),radial-gradient(circle at 8% 70%,rgba(160,20,24,.7) 0,transparent 4%),radial-gradient(circle at 92% 30%,rgba(160,20,24,.7) 0,transparent 3%),radial-gradient(circle at 86% 82%,rgba(20,6,8,.7) 0,transparent 6%)}
-#vnblood.on{animation:vbl 3.2s ease-out forwards}@keyframes vbl{0%{opacity:0;transform:scale(1.15)}10%{opacity:1;transform:none}70%{opacity:.85}100%{opacity:.35}}
+#vnblood.on{animation:vbl 3.2s ease-out forwards}@keyframes vbl{0%{opacity:0;transform:scale(1.15)}10%{opacity:1;transform:none}60%{opacity:.8}100%{opacity:0}}
 .cutsc{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:opacity 1.4s ease}
 .cutsc.done{opacity:0;pointer-events:none}.cutink{position:absolute;inset:0;width:100%;height:100%;filter:blur(1.5px);transform:scale(1.04)}
 .cutq{position:relative;font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(20px,calc(var(--u)*12),34px);line-height:1.7;letter-spacing:.06em;color:#efe4cb;text-align:center;text-shadow:0 0 18px rgba(0,0,0,.9)}
@@ -346,6 +346,24 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 .ig-img span{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);font-family:var(--brush);font-size:calc(var(--u)*20);line-height:1;opacity:.92;mix-blend-mode:multiply}
 #itemget.on .ig-img{opacity:1;transform:none;filter:none;animation:igf 3.2s ease-in-out 1s infinite}@keyframes igf{50%{transform:translateY(-3px)}}
 #itemget{background:rgba(3,2,5,.86)!important}
+
+/* ===== 글자 정리 ===== */
+body,#dialog,#modal,#coach,#menu,#goal,#prompt,#toast{word-break:keep-all;overflow-wrap:break-word}
+#dialog .txt{font-weight:500;letter-spacing:-.005em;line-height:1.75}
+#dialog .who{font-weight:700}
+#coach{align-items:center!important;gap:.8em!important;padding:.6em 1.2em .6em .7em!important;line-height:1.55;font-weight:500;max-width:min(88%,620px)!important}
+#coach b{flex:none;align-self:center;margin:0!important;font-size:.76em!important;letter-spacing:.12em;padding:.28em .6em!important}
+#coach span{text-wrap:balance}
+#menu button{font-weight:500}
+#menu button b{font-size:.82em;letter-spacing:.06em;padding:.18em .7em;border-radius:2px;background:linear-gradient(180deg,#f2d07c,#b88a34);color:#2a1a08;box-shadow:inset 0 1px 0 rgba(255,250,220,.6),0 1px 0 #000}
+#menu button.off b{background:#2a2228;color:#9a8e86;box-shadow:inset 0 0 0 1px #4a3e48}
+#modal p{line-height:1.7;text-wrap:balance;text-align:center}
+.slots{gap:.7em!important;margin:.2em 0 .1em}
+.slots span{min-width:3.2em!important;height:2.4em!important;border-radius:2px;font-family:var(--brush);font-size:1.15em;color:#1a1410!important;text-shadow:0 1px 0 rgba(255,255,255,.35);box-shadow:inset 0 2px 4px rgba(0,0,0,.45)}
+.slots span:empty{color:transparent!important;box-shadow:none}
+.plates button{min-width:3.6em!important;display:flex!important;flex-direction:column;align-items:center;gap:.25em;padding:.45em .6em!important;background:linear-gradient(180deg,#2c2329,#110d11) padding-box,linear-gradient(180deg,rgba(214,176,96,.55),rgba(90,70,40,.35)) border-box!important}
+.plates button::before{content:"";width:1.3em;height:1.3em;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 45%),var(--c);box-shadow:0 0 0 1px #000,0 2px 4px rgba(0,0,0,.6)}
+#modal .ghostbtn{align-self:center;min-width:8em;text-align:center!important}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -823,6 +841,7 @@ function render(){ const c=ctx; c.setTransform(1,0,0,1,0,0); c.globalAlpha=1; c.
   for(const p of SCN.props){ if(p.hide&&p.hide()) continue; const x=p.x-cx; const img=typeof p.k==='string'?PROP[p.k]:p.k; if(x<-img.width||x>W+img.width) continue; if(p.shadow) shadowAt(x,img.width*.8); if(p.a0!=null){ ctx.globalAlpha=Math.min(p.amax||1,(GAME.t-p.a0)/.4*(p.amax||1)); } blitC(img,x,(p.y??GY+1),p.flip); ctx.globalAlpha=1; }
   if(SCN.drawBack) SCN.drawBack(cx,T);
   for(const h of SCN.hots){ if(h.done&&!h.ev) continue; if(h.yin||(h.hidden&&h.hidden())) continue; glint(h,cx,T); }
+  if(SCN.drawBack) SCN.drawBack(cx,T);
   fxPass('back',cx);
   for(const n of NPCS) if(!n.front) drawActor(n,cx);
   if(TS) drawActor(TS,cx); drawActor(P,cx);
@@ -970,6 +989,22 @@ const AGAIN_POOL=h=>[[['홍련',`(${h.name}… 아까 본 그대로야.)`]],[[''
 function againLine(h){ h.seen=(h.seen||0)+1; const own=h.again||[], pool=AGAIN_POOL(h); const all=own.length?own.concat(pool.slice(0,2)):pool; return all[(h.seen-1)%all.length]; }
 setTimeout(()=>{ if(!TALIIMG&&typeof ITEMIMG!=='undefined'){ TALIIMG=new Image(); TALIIMG.src=ITEMIMG.tali_e; TALIFULL=new Image(); TALIFULL.src=ITEMIMG.tali_f; } },0);
 
+/* ===== 귀문: 무너진 문 안에서 먹물이 휘몰아치는 소용돌이 ===== */
+const [VXc,VXx]=mk(120,150); const VXARMS=Array.from({length:9},(_,i)=>({a:i/9*Math.PI*2,w:2+Math.random()*3,l:.55+Math.random()*.4,c:['#0c0a0d','#1c181c','#2e2a2c','#4a4446','#6a6264','#8a8284'][i%6]}));
+function drawVortex(x,y,T,k=1,close=0){ const c=VXx, W2=120,H2=150, cx2=60, cy2=78; c.clearRect(0,0,W2,H2);
+  const g=c.createRadialGradient(cx2,cy2,2,cx2,cy2,62*k); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(.55,'rgba(14,10,14,.92)'); g.addColorStop(1,'rgba(30,24,30,0)'); c.fillStyle=g; c.beginPath(); c.ellipse(cx2,cy2,56*k,70*k,0,0,7); c.fill();
+  const spin=T*(1.6+close*6);
+  for(let ring=0;ring<3;ring++) for(const A of VXARMS){ c.strokeStyle=A.c; c.globalAlpha=.55+ring*.12; c.lineWidth=A.w*(1-ring*.25); c.beginPath();
+    for(let t=0;t<=1;t+=.04){ const r=(8+t*54*A.l)*k*(1-ring*.18), a=A.a+spin+ring*.7-t*3.4; const px=cx2+Math.cos(a)*r, py=cy2+Math.sin(a)*r*1.25; t?c.lineTo(px,py):c.moveTo(px,py); } c.stroke(); }
+  c.globalAlpha=1; c.fillStyle='rgba(150,20,24,.18)'; c.beginPath(); c.ellipse(cx2,cy2,26*k,32*k,0,0,7); c.fill();
+  const img=c.getImageData(0,0,W2,H2), d=img.data; for(let i=0;i<d.length;i+=4){ if(d[i+3]<70){ d[i+3]=0; continue; } d[i+3]=d[i+3]>180?255:200; d[i]=d[i]>>4<<4; d[i+1]=d[i+1]>>4<<4; d[i+2]=d[i+2]>>4<<4; } c.putImageData(img,0,0);
+  ctx.drawImage(VXc,Math.round(x-cx2),Math.round(y-cy2)); }
+function drawGateFrame(x,cx){ const c=ctx, X=Math.round(x-cx), top=GY-150; /* 쓰러질 듯한 나무 문틀 + 부서진 지붕 */
+  c.fillStyle='#120c0c'; c.fillRect(X-60,top+16,9,150-16); c.fillRect(X+51,top+20,9,150-20);
+  c.fillStyle='#3a2420'; c.fillRect(X-58,top+16,5,150-16); c.fillRect(X+53,top+20,5,150-20); c.fillStyle='#5a2a24'; for(let y=top+30;y<GY;y+=13){ c.fillRect(X-58,y,3,6); c.fillRect(X+54,y+5,3,5); }
+  c.fillStyle='#120c0c'; c.fillRect(X-70,top+6,140,8); c.fillRect(X-64,top+18,128,5); c.fillStyle='#2e1e1a'; c.fillRect(X-68,top+7,136,4);
+  c.fillStyle='#0c0808'; for(let i=0;i<10;i++){ c.fillRect(X-74+i*15,top-2+(i%3),12,6); } c.fillRect(X+20,top-14,30,6); c.fillRect(X+34,top-20,6,12); }
+
 /* ================= 장면 소품 ================= */
 function buildProps2(){
   PROP.pillar=sprite(14,150,(p,r)=>{ r(2,6,10,144,'#7a1e1a'); r(2,6,2,144,'#4a1010'); r(10,6,1,144,'#a83a2a'); r(0,0,14,6,'#3a2a20'); r(0,0,14,1,'#5a4230'); for(let y=20;y<150;y+=37) r(2,y,10,1,'#5a1414'); for(let y=10;y<150;y+=3) if((y*7)%11<3) p(5+(y%4),y,'#9a3226'); });
@@ -1064,13 +1099,14 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
       h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-52); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
-      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); GAME.cine=0; SCN.finish(); }}];
+      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; SCN.closeT=GAME.t; snd('ritok',.8,.7); await wait(900); GAME.cine=0; SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{pano:FARIMG.gate_pano,gr:mk(w,40)[0],fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
     props:[{k:'pillar',x:226},{k:'hmirror',x:226,y:GY-72,hide:()=>S.items.includes('mirror')||H_[0].done},{k:'pillar',x:430},{k:'lantern2',x:520,light:{r:60,c:'#ffcf7a',y:GY-32}},{k:'pillar',x:760}],
     hots:H_, clueTotal:0,
-    build(d){ NPCS=[sis]; const g=fx('portal',{x:700,y:GY-44,palette:FXP.void,width:30,height:52},'behind'); g.keep=1; d.portal=g; goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
-    lights(L,cx,T){ L.push({x:700-cx,y:GY-44,r:70,c:'#9a5ad0',g:.7}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
+    build(d){ NPCS=[sis];  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
+    drawBack(cx,T){ const k=SCN.closing?Math.max(0,1-(GAME.t-SCN.closeT)*.9):1; drawGateFrame(700,cx); if(k>0) drawVortex(700-cx,GY-70,T,k,SCN.closing?1:0); },
+    lights(L,cx,T){ L.push({x:700-cx,y:GY-60,r:70,c:'#8a2a30',g:.45}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
     tick(){ const has=k=>S.items.includes(k), dn=id=>H_.find(h=>h.id===id).done;
       if(S.flags.reach&&!dn('pillar')&&P.air&&P.y>14&&Math.abs(P.x-226)<20&&!GAME.lock&&!GAME.busy){ grab(H_[0]); return; }
       let t=''; if(!S.flags.reach) t='화면을 누르면 걸어가요. 반짝이는 곳(붉은 기둥)을 누르면 살펴봐요.'; else if(!dn('pillar')) t=Math.abs(P.x-226)<22?'화면을 위로 쓸어 올리면 뛰어올라요. 뛰어서 거울을 잡으세요!':'기둥 아래로 가서 뛰어 보세요.';
