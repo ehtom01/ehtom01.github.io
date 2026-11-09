@@ -214,6 +214,28 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 #coach b{border-radius:1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
 #toast{background:var(--grain),linear-gradient(#1e1714,#0e0b0c);border:1px solid var(--gl);box-shadow:0 0 0 1px #000;border-radius:2px}
 #vn .tag{background:var(--grain),linear-gradient(90deg,rgba(14,10,12,.9),rgba(14,10,12,.6));border:none;border-left:2px solid var(--gold);padding:.25em 1.2em .25em .7em}
+
+/* ===== UI 3: 입체감 (금박 테두리 + 윗면 빛 + 아랫면 그림자 + 바닥 그림자) ===== */
+:root{--bev:inset 0 1px 0 rgba(255,236,190,.16),inset 0 -2px 0 rgba(0,0,0,.55),inset 0 0 0 1px rgba(0,0,0,.35);
+ --lift:0 2px 0 #040305,0 3px 0 rgba(226,184,74,.12),0 12px 26px rgba(0,0,0,.62);
+ --face:var(--grain),linear-gradient(180deg,#2c231c 0%,#1a1416 38%,#0f0c0e 100%)}
+#dialog,#modal .box,#coach,#prompt,#toast,#tr button,#items span,#clues,#goal,#vn .tag{border-radius:3px}
+#dialog{background:var(--crn),var(--face);border:1px solid rgba(226,184,74,.5);box-shadow:var(--bev),var(--lift);outline:1px solid rgba(226,184,74,.14);outline-offset:-5px}
+#modal .box{background:var(--crn),var(--face);border:1px solid rgba(226,184,74,.55);box-shadow:var(--bev),0 3px 0 #040305,0 4px 0 rgba(226,184,74,.14),0 24px 60px rgba(0,0,0,.8);outline:1px solid rgba(226,184,74,.16);outline-offset:-6px}
+#modal button{background:linear-gradient(180deg,#2a2128 0%,#1a1519 55%,#120f13 100%);border:1px solid rgba(120,98,120,.55);box-shadow:inset 0 1px 0 rgba(255,236,200,.1),inset 0 -2px 0 rgba(0,0,0,.5),0 2px 0 #050406,0 5px 10px rgba(0,0,0,.45)}
+#modal button:hover,#modal button:focus-visible{background:linear-gradient(180deg,#3e2f22 0%,#251c18 60%,#17110f 100%);box-shadow:inset 0 1px 0 rgba(255,226,160,.22),inset 0 -2px 0 rgba(0,0,0,.5),0 2px 0 #050406,0 0 0 1px rgba(226,184,74,.25),0 8px 18px rgba(0,0,0,.5),0 0 22px rgba(226,184,74,.14);transform:translateY(-1px)}
+#modal button:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(0,0,0,.6),0 1px 0 #050406}
+.opt b{box-shadow:inset 0 1px 0 rgba(255,210,180,.35),inset 0 -2px 0 rgba(60,0,0,.5),0 1px 0 #1a0404,0 2px 4px rgba(0,0,0,.5)!important}
+#coach{background:var(--face);border:1px solid rgba(226,184,74,.6);box-shadow:var(--bev),var(--lift);outline:1px solid rgba(226,184,74,.14);outline-offset:-4px;padding:.5em .95em .5em .6em;align-items:center;max-width:90%;text-wrap:pretty}
+#coach span{display:flex;flex-direction:column;gap:.1em}#coach small{font-size:.82em;color:#cdbf9f}
+#coach b,#tr button.pointme::after{background:linear-gradient(180deg,#f6dc8e 0%,#d9a948 55%,#b08128 100%);color:#2a1a08;text-shadow:0 1px 0 rgba(255,240,200,.5);box-shadow:inset 0 1px 0 rgba(255,250,220,.7),inset 0 -1px 0 rgba(90,60,10,.6),0 1px 0 #3a2806,0 2px 4px rgba(0,0,0,.5);border-radius:2px;padding:.15em .5em}
+#tr button,#prompt,#toast{background:var(--face);box-shadow:var(--bev),0 2px 0 #040305,0 6px 14px rgba(0,0,0,.55)}
+#tr button:active,#prompt:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(0,0,0,.6),0 1px 0 #040305}
+#items span{background:var(--grain),linear-gradient(180deg,#2a2118,#0f0c0e);box-shadow:inset 0 1px 0 rgba(255,236,190,.18),inset 0 -2px 0 rgba(0,0,0,.55),0 2px 0 #040305,0 4px 8px rgba(0,0,0,.5)}
+#goal{box-shadow:none;text-shadow:0 1px 0 #000,0 2px 6px rgba(0,0,0,.8)}
+#clues{background:var(--face);box-shadow:var(--bev),0 2px 0 #040305}
+#vn .tag{box-shadow:inset 0 1px 0 rgba(255,236,190,.1),0 2px 0 #040305,0 6px 12px rgba(0,0,0,.5)}
+#dialog .por{border-radius:2px}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -451,7 +473,7 @@ function tone(f0,f1,dur,vol=.2,type='sine',delay=0){ const a=AU.ac; if(!a||!AU.o
 let NB=null; function noise(dur,vol=.2,f0=1000,f1=400,type='lowpass',q=1){ const a=AU.ac; if(!a||!AU.on) return; if(!NB){ NB=a.createBuffer(1,a.sampleRate,a.sampleRate); const d=NB.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
   const t=a.currentTime, s=a.createBufferSource(); s.buffer=NB; const f=a.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(f0,t); f.frequency.exponentialRampToValueAtTime(f1,t+dur); const g=a.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f); f.connect(g); g.connect(AU.master); s.start(t,Math.random()*.5); s.stop(t+dur+.02); }
 function ambient(k){ AU.want=k; const a=AU.ac; if(!a) return; if(AU.amb&&AU.amb.k===k) return; if(AU.amb){ const o=AU.amb; o.g.gain.setValueAtTime(o.g.gain.value,a.currentTime); o.g.gain.linearRampToValueAtTime(0,a.currentTime+1.5); setTimeout(()=>{ try{o.s.stop()}catch(e){} },1700); AU.amb=null; }
-  if(!k||!AU.buf[k]) return; const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.loop=true; const g=a.createGain(); g.gain.value=0; g.gain.linearRampToValueAtTime(.32,a.currentTime+2.5); s.connect(g); g.connect(AU.master); s.start(); AU.amb={s,g,k}; }
+  if(!k||!AU.buf[k]) return; const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.loop=true; const g=a.createGain(); g.gain.value=0; g.gain.linearRampToValueAtTime(.2,a.currentTime+2.5); s.connect(g); g.connect(AU.master); s.start(); AU.amb={s,g,k}; }
 const SFXP={ step:()=>noise(.05,.03,900,300), jump:()=>noise(.18,.08,400,1600,'bandpass',.8), land:()=>{ noise(.12,.1,600,120); tone(110,60,.12,.12); }, thud:()=>{ tone(90,30,.45,.5); noise(.3,.22,400,80); },
   ui:()=>snd('pick',1,.4), deny:()=>tone(200,120,.12,.08,'square'), sting:()=>{ tone(1800,600,.6,.12,'sawtooth'); noise(.5,.3,3000,400); } };
 
@@ -501,15 +523,15 @@ function choose(title,opts){ return new Promise(res=>{ GAME.lock++; const m=$('#
 function modalHTML(html,cls,onPick){ GAME.lock++; const m=$('#modal'); m.hidden=false; m.className=cls||''; m.querySelector('.box').innerHTML=html; MODAL=v=>onPick(v,()=>{ m.hidden=true; MODAL=null; GAME.lock--; }); }
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(t){ const el=$('#toast'); el.textContent=t; el.className=''; void el.offsetWidth; el.className='show'; }
-let COACH=''; function coach(t){ if(t===COACH) return; COACH=t; const el=$('#coach'); el.innerHTML=t?`<b>배우기</b>${t}`:''; el.hidden=!t; }
+let COACH=''; function coach(t){ if(t===COACH) return; COACH=t; const el=$('#coach'); el.innerHTML=t?`<b>배우기</b><span>${t}</span>`:''; el.hidden=!t; }
 function gainItem(k){ if(!S.items.includes(k)) S.items.push(k); toast(`얻음 · ${ITEMS[k].n}`); snd('pick',1,.5); syncHUD(); }
 function takeItem(k){ S.items=S.items.filter(x=>x!==k); syncHUD(); }
 function clue(id){ if(S.clues[id]) return; S.clues[id]=1; snd('clue',1,.45); syncHUD(); }
 function goal(t){ S.goal=t; syncHUD(); }
-function scare(k){ GAME.blood=1.2; const el=$('#scare'); el.querySelector('img').src=SCARESRC[k]; el.className=''; void el.offsetWidth; el.className='show '+k; snd('scare',1,.8); SFXP.sting(); GAME.shake=7; GAME.red=.6; try{ navigator.vibrate&&navigator.vibrate([60,40,120]); }catch(e){} }
+function scare(k){ GAME.blood=1.2; tempMusic(4,7000); const el=$('#scare'); el.querySelector('img').src=SCARESRC[k]; el.className=''; void el.offsetWidth; el.className='show '+k; snd('scare',1,.8); SFXP.sting(); GAME.shake=7; GAME.red=.6; try{ navigator.vibrate&&navigator.vibrate([60,40,120]); }catch(e){} }
 
 /* ================= 장면 실행 ================= */
-function playScene(def){ SEALS=[]; return new Promise(res=>{ SCN=def; S.mirror=false; PARTS=[]; FXL.length=0; NPCS=[]; PASS=null; TARGET=null; NEAR=null;
+function playScene(def){ SEALS=[]; GAME.cine=0; GAME.busy=0; P&&(P.pose=null,P.dashT=0,P.trail=[]); TARGET=null; if(AMB2M[def.amb]) sceneMusic(AMB2M[def.amb]); return new Promise(res=>{ SCN=def; S.mirror=false; PARTS=[]; FXL.length=0; NPCS=[]; PASS=null; TARGET=null; NEAR=null;
   P=newActor('hong',def.start||60); TS=def.taeseok?newActor('taeseok',(def.start||60)-44):null;
   CAM.x=clamp(P.x-W/2,0,def.w-W); def.finish=()=>{ SCN.done=true; res(); }; def.build&&def.build(def); ambient(def.amb); syncHUD(); $('#hud').hidden=false;
   if(def.onEnter) setTimeout(()=>def.onEnter(def),400); }); }
@@ -748,6 +770,21 @@ function drawSeals(cx,T){ const c=ctx;
       c.globalAlpha=a; for(const [px,py,n,v] of m.pts){ c.fillStyle=v>=9?'#ffffff':(v>=6?'#dcd8f0':'#8a84a8'); const s2=Math.ceil(sc); c.fillRect(Math.round(x+px*sc),Math.round(y+py*sc),s2,s2); } c.globalAlpha=1;
       if(lt>.2&&lt<3){ /* 마른 먹이 바스러지듯 글자 가장자리에서 붉은 재가 떨어진다 */ if(Math.random()<.5){ const pp=pick(m.pts); part(q.x+pp[0],q.y-30+pp[1],rnd(-6,6),rnd(-30,-10),rnd(.6,1.2),pick(['#ffffff','#e8e4ff','#a8a0c8']),'ember'); } } } } }
 
+/* ===== 배경음악: 방탈출판 곡 그대로 (1 타이틀 · 2 낮 장면 · 3 밤 장면 · 4 귀신 · 5 퇴마 · 6 긴장 · 7 굿 · 8 엔딩) ===== */
+const BGM_BASE='../gwimun/bgm/', MU={cur:0,el:null,want:0,base:0,vol:.32,tr:{},tempT:0,blocked:0};
+function fadeEl(a,to,ms,cb){ if(a._f) cancelAnimationFrame(a._f); const v0=a.volume, t0=performance.now(); const st=t=>{ const k=Math.min(1,(t-t0)/ms); try{ a.volume=Math.max(0,Math.min(1,v0+(to-v0)*k)); }catch(e){} if(k<1) a._f=requestAnimationFrame(st); else { a._f=0; cb&&cb(); } }; a._f=requestAnimationFrame(st); }
+function music(n){ MU.want=n; if(!AU.on){ return; } if(MU.cur===n&&MU.el&&!MU.el.paused) return; const old=MU.el; MU.cur=n;
+  if(old&&old!==MU.tr[n]) fadeEl(old,0,900,()=>old.pause()); if(!n){ MU.el=null; return; }
+  const a=MU.tr[n]||(MU.tr[n]=new Audio(BGM_BASE+n+'.mp3')); a.loop=true; a.preload='auto'; if(a.paused){ a.volume=0; try{ a.currentTime=0; }catch(e){} }
+  MU.el=a; const pr=a.play(); if(pr&&pr.then) pr.then(()=>{ if(MU.el===a) fadeEl(a,MU.vol,n===4?600:1500); }).catch(()=>{ MU.blocked=1; MU.cur=0; }); }
+function sceneMusic(n){ MU.base=n; if(!MU.tempT) music(n); }
+function tempMusic(n,ms=60000){ clearTimeout(MU.tempT); MU.tempT=setTimeout(endTemp,ms); music(n); }
+function endTemp(){ clearTimeout(MU.tempT); MU.tempT=0; music(MU.base); }
+function musicOn(on){ if(!on){ if(MU.el) fadeEl(MU.el,0,300,()=>MU.el&&MU.el.pause()); MU.cur=0; } else { const w=MU.tempT?MU.want:MU.base||MU.want; MU.cur=0; music(w); } }
+addEventListener('pointerdown',()=>{ if(MU.blocked&&MU.want){ MU.blocked=0; MU.cur=0; music(MU.want); } },true);
+const BG2M={prologue:3,market:2,room:3,road:6,foxpass:6,village:2,jumak:6,well:6,gwell:6,shrine:6,temple:7}, AMB2M={amb_temple:3,amb_room:3,amb_night:6,amb_well:6};
+{ const wrap=f=>(...a)=>{ tempMusic(5); return f(...a).then(r=>{ endTemp(); return r; }); }; taliGame=wrap(taliGame); bellGame=wrap(bellGame); tapGame=wrap(tapGame); }
+
 /* ================= 장면 소품 ================= */
 function buildProps2(){
   PROP.pillar=sprite(14,150,(p,r)=>{ r(2,6,10,144,'#7a1e1a'); r(2,6,2,144,'#4a1010'); r(10,6,1,144,'#a83a2a'); r(0,0,14,6,'#3a2a20'); r(0,0,14,1,'#5a4230'); for(let y=20;y<150;y+=37) r(2,y,10,1,'#5a1414'); for(let y=10;y<150;y+=3) if((y*7)%11<3) p(5+(y%4),y,'#9a3226'); });
@@ -803,13 +840,13 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
     await say([['','휙. 뛰어오른 홍련의 손끝에 끈이 걸렸다. 툭, 청동 거울이 손바닥 위로 떨어졌다.'],['홍련','(엄마 거울… 이걸로 비추면 저승 쪽이 보인다고 했지.)']]); gainItem('mirror'); S.mirrorOK=true; syncHUD(); };
   const H_=[{id:'pillar',x:226,top:GY-82,name:'붉은 기둥',ev:async h=>{ if(!S.flags.reach){ S.flags.reach=1; await say([['','칠이 벗겨진 기둥 높은 곳에 붉은 끈이 감겨 있다. 끈 끝에 손바닥만 한 청동 거울이 매달려 있다.'],['홍련','(엄마 거울… 손이 안 닿아. 뛰어올라야 잡겠어.)']]); }
       else await say([['홍련','(까치발로는 어림없어. 힘껏 뛰어 보자.)']]); }},
-    {id:'sis',x:612,yin:1,top:GY-44,name:'거울 속 언니',ev:async h=>{ h.done=1; S.flags.order=1; await say([['','거울 속에서 보니 언니의 발밑에는 그림자가 없다. 대신 소매 끝에 오방색 실 세 가닥이 묶여 있다. 위에서부터 청, 백, 적.'],['백련','석등… 그 안에 엄마가 부적을 넣어 뒀어. 실 순서대로야.']]); }},
+    {id:'sis',x:612,yin:1,top:GY-44,name:'거울 속 언니',ev:async h=>{ h.done=1; S.flags.order=1; await say([['','거울 속에서 보니 언니의 발밑에는 그림자가 없다. 그림자 대신, 언니가 선 자리 땅바닥에 빛나는 글자 세 개가 떠올라 있다. 왼쪽부터 靑, 白, 赤.'],['백련','석등… 그 안에 엄마가 부적을 넣어 뒀어. 실 순서대로야.']]); }},
     {id:'lantern',x:520,name:'석등',ev:async h=>{ if(!S.flags.order){ await say([['','석등 안에 작은 돌함이 있다. 오방색 구슬 자물쇠가 걸려 있다. 순서를 모르겠다.'],['백련','…거울로 나를 봐, 홍련아.']]); return; }
-      const ok=await lockGame('석등 돌함','언니 소매의 실 순서대로 구슬을 눌러 보자. <b>청 → 백 → 적</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 덜컥 제자리로 돌아갔다.']]); return; }
+      const ok=await lockGame('석등 돌함','언니 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 덜컥 제자리로 돌아갔다.']]); return; }
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
       h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-52); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
-      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); SCN.finish(); }}];
+      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); GAME.cine=0; SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{sky:pcanvas(W,H,p=>dgrad(p,0,W,0,GY,Zp.sky)),far:mirrorStrip(FARIMG.temple_far,Math.ceil(W+(w-W)*.12)+4),fog:fogCanvas({fog:'#8a6aa0'},11),gr:groundCanvas2(w,Zp),fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
     props:[{k:'pillar',x:226},{k:'hmirror',x:226,y:GY-72,hide:()=>S.items.includes('mirror')||H_[0].done},{k:'pillar',x:430},{k:'lantern',x:520,light:{r:56,c:'#ffcf7a',y:GY-24}},{k:'pillar',x:760}],
@@ -822,11 +859,15 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       else if(!S.flags.order&&!S.mirror) t='오른쪽 위 鏡 버튼을 눌러 거울을 들어 보세요. 산 사람 눈에 안 보이는 것이 보여요.';
       else if(!S.flags.order) t='거울 속에서만 반짝이는 곳이 생겼어요. 언니에게 다가가 보세요.';
       else if(S.mirror) t='鏡 버튼을 다시 눌러 거울을 내리세요.';
-      else if(!has('seal')&&!dn('gate')) t='석등을 살펴 자물쇠를 열어 보세요. 화면을 빠르게 두 번 누르면 짧게 달려요.';
+      else if(!has('seal')&&!dn('gate')) t='석등을 살펴 자물쇠를 열어 보세요.<small>화면을 빠르게 두 번 누르면 짧게 달려요</small>';
       else if(!dn('gate')) t='귀문을 눌러 부적을 붙이세요.';
       let pt=null; if(!S.flags.reach) pt={hot:'pillar'}; else if(!dn('pillar')) pt={hot:'pillar',swipe:1}; else if(!S.flags.order&&!S.mirror) pt={dom:'#mirbtn'}; else if(!S.flags.order) pt={hot:'sis'}; else if(S.mirror) pt={dom:'#mirbtn'}; else if(!has('seal')&&!dn('gate')) pt={hot:'lantern'}; else if(!dn('gate')) pt={hot:'gate'}; SCN.pointer=pt;
       if(P.air) S.flags.jumped=1; if(!GAME.lock&&!GAME.busy) coach(t); },
-    drawYin(cx,T){ ctx.globalAlpha=.9; ctx.fillStyle='#e8f2ff'; const x=Math.round(sis.x-cx); [['#2f5d8a',0],['#e8e2d4',3],['#b0262b',6]].forEach(([c,o])=>{ ctx.fillStyle=c; ctx.fillRect(x-14,GY-40+o,6,2); }); ctx.globalAlpha=1; }};
+    drawYin(cx,T){ /* 거울 속에서만: 언니 발치 땅바닥에 靑·白·赤 세 글자가 빛으로 떠오른다 */ const x0=Math.round(sis.x-cx), c=ctx;
+      [['靑','#6fa8e0','#cfe6ff'],['白','#e8e2d4','#ffffff'],['赤','#e0463a','#ffc0a8']].forEach(([ch,col,hi],i)=>{ const m=glyphMask(ch,11), gx=x0-17+i*17, gy=GY-9+Math.round(Math.sin(T*2+i*1.3)*1.2), a=.75+.25*Math.sin(T*3+i);
+        c.globalAlpha=.22*a; c.fillStyle=col; c.beginPath(); c.ellipse(gx,GY-1,8,2.5,0,0,7); c.fill(); c.globalAlpha=.18*a; c.beginPath(); c.arc(gx,gy,8,0,7); c.fill();
+        c.globalAlpha=a; for(const [px,py,n,v] of m.pts){ c.fillStyle=v>=8?hi:col; c.fillRect(Math.round(gx+px),Math.round(gy+py),1,1); }
+        if(Math.random()<.04) part(sis.x-17+i*17+rnd(-3,3),gy+3,rnd(-4,4),rnd(-14,-6),rnd(.5,.9),hi,'ember'); }); c.globalAlpha=1; }};
   return def; }
 
 /* ================= 1화 · 홍련의 셋방 ================= */
@@ -925,9 +966,9 @@ function sceneWell(){ const w=1340, DITCH={x0:300,x1:326};
 /* ================= 스토리 장면 ================= */
 const vn=()=>$('#vn');
 function fade(on,ms=700){ const f=$('#fade'); f.style.transitionDuration=ms+'ms'; f.classList.toggle('on',on); return wait(ms+30); }
-async function vnOpen(bg,tag){ await fade(true); GAME.story=1; const v=vn(); v.hidden=false; v.querySelector('.bg').src=VNBG[bg]; v.querySelector('.tag').textContent=tag||''; $('#hud').hidden=true; coach(''); await wait(120); await fade(false,900); }
+async function vnOpen(bg,tag){ if(BG2M[bg]) sceneMusic(BG2M[bg]); await fade(true); GAME.story=1; const v=vn(); v.hidden=false; v.querySelector('.bg').src=VNBG[bg]; v.querySelector('.tag').textContent=tag||''; $('#hud').hidden=true; coach(''); await wait(120); await fade(false,900); }
 async function vnClose(){ await fade(true); vn().hidden=true; GAME.story=0; $('#hud').hidden=false; await wait(120); await fade(false,800); }
-async function vnBg(bg,tag){ await fade(true,500); vn().querySelector('.bg').src=VNBG[bg]; vn().querySelector('.tag').textContent=tag||''; await fade(false,700); }
+async function vnBg(bg,tag){ if(BG2M[bg]) sceneMusic(BG2M[bg]); await fade(true,500); vn().querySelector('.bg').src=VNBG[bg]; vn().querySelector('.tag').textContent=tag||''; await fade(false,700); }
 function vnBlood(){ const b=document.querySelector('#vnblood'); if(!b) return; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
 function vnFx(k){ const v=vn(); v.classList.remove('shake','red','flash'); void v.offsetWidth; v.classList.add(k); if(k==='red') snd('scare',1.1,.5); setTimeout(()=>v.classList.remove(k),900); }
 function vnCard(big,small,ms=2800){ const c=$('#vncard'); c.querySelector('b').innerHTML=big||''; c.querySelector('span').textContent=small||''; c.className=''; void c.offsetWidth; c.className='show'; return wait(ms).then(()=>{ c.className=''; c.querySelector('b').innerHTML=''; c.querySelector('span').textContent=''; }); }
@@ -949,7 +990,7 @@ async function ep1(){ S.items=[]; S.mirrorOK=false; syncHUD();
   await say([['백련','너를… 뭐라고 불렀더라.'],['백련','방금까지 입에 있었는데. 아무리 떠올려도… 안 떠올라.'],['홍련','무슨 소리야, 언니. 나잖아… 나…'],['','대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.']]);
   await inkCut('이름을 빼앗긴 자는,|그림자부터 사라진다.','다시, 보름 전','모든 일이 시작된 저녁 · 도성 남문 밖',{big:'第一章',name:'방울 소리',sub:'1장'});
   S.items=[]; S.mirrorOK=false; syncHUD();
-  vn().querySelector('.bg').src=VNBG.market; vn().querySelector('.tag').textContent='보름 전 · 도성 남문 밖 장터'; await fade(false,900);
+  sceneMusic(2); vn().querySelector('.bg').src=VNBG.market; vn().querySelector('.tag').textContent='보름 전 · 도성 남문 밖 장터'; await fade(false,900);
   await say([['','조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'],['','요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'],
     ['분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'],['','대여섯 살쯤 된 계집아이가 좌판 앞에서 발돋움을 했다. 홍련은 웃으며 쑥 한 줌을 쥐여 주었다.'],['홍련','돈은 됐어. 어머니께 달여 드려.'],
     ['분이','진짜요? 그럼 이거 받아요. 엄마가 그러는데, 그냥 받기만 하면 복이 달아난대요.'],['','아이가 고사리손으로 꼭 쥐고 있던 것을 좌판 위에 내려놓았다. 반들반들한 조약돌 하나였다.'],
@@ -1046,7 +1087,7 @@ async function storyWell(){ await vnOpen('gwell','우물가 · 깊은 밤');
     ['','아이가 홍련의 뒤로 숨었다. 촌장의 횃불이 흔들렸다.'],['태석','…촌장 어른. 아이는 관아에서 보호하겠소. 내일 아침에 이야기 좀 나눕시다.'],['','촌장은 아무 말 없이 돌아섰다. 그리고 그날 밤, 촌장의 집에서는 새벽까지 불이 꺼지지 않았다.']]);
   await chapterEnd('1부 2화','「우물」 끝 · '+S.ending,'다음 화 「무너진 신당」 — 하얀 누나가 아이들을 숨긴 산속 절, 그리고 여우 가면.',null); }
 
-function chapterEnd(small,big,next,btn){ return new Promise(res=>{ modalHTML(`<div class="endc"><small>${small}</small><h2>${big}</h2><p class="dim">${next}</p>${btn?`<button data-m="next" class="def">${btn}</button>`:'<p class="dim">시험판은 여기까지예요. 해 보신 소감을 들려주세요.</p>'}<button data-m="again">처음부터 다시</button></div>`,'endm',(v,close)=>{ close(); if(v==='again'){ location.reload(); return; } res(); }); }); }
+function chapterEnd(small,big,next,btn){ sceneMusic(8); return new Promise(res=>{ modalHTML(`<div class="endc"><small>${small}</small><h2>${big}</h2><p class="dim">${next}</p>${btn?`<button data-m="next" class="def">${btn}</button>`:'<p class="dim">시험판은 여기까지예요. 해 보신 소감을 들려주세요.</p>'}<button data-m="again">처음부터 다시</button></div>`,'endm',(v,close)=>{ close(); if(v==='again'){ location.reload(); return; } res(); }); }); }
 
 /* ================= 오프닝 · 타이틀 (본편과 같은 방식) ================= */
 function playOpening(){ return new Promise(done=>{ const o=document.createElement('div'); o.className='opening'; document.body.appendChild(o);
@@ -1056,7 +1097,7 @@ function playOpening(){ return new Promise(done=>{ const o=document.createElemen
   const s2=add(`<div class="lay"><div class="op-row"><img class="op-seal" src="${OPENIMG.lg_AO}" alt="月痕"><img class="op-wm" src="${OPENIMG.lg_WML2}" alt="월흔 WOLHEUN"></div><div class="op-by">by&nbsp;&nbsp;PPOGAK STUDIO</div></div>`);
   setTimeout(()=>moon.classList.add('on'),200); setTimeout(()=>{ s2.querySelector('.op-seal').classList.add('on'); snd('bell',.7,.5); },1600); setTimeout(()=>s2.querySelector('.op-wm').classList.add('on'),3000); setTimeout(()=>s2.querySelector('.op-by').classList.add('on'),4300);
   setTimeout(()=>{ o.classList.add('out'); setTimeout(()=>{ o.remove(); done(); },800); },7600); }); }
-function showTitle(){ const ash=Array.from({length:22},(_,i)=>`<span class="ash" style="left:${(i*37+11)%100}%;animation-duration:${9+(i*7)%9}s;animation-delay:${-(i*13)%17}s;transform:scale(${.6+(i%4)*.25})"></span>`).join('');
+function showTitle(){ sceneMusic(1); const ash=Array.from({length:22},(_,i)=>`<span class="ash" style="left:${(i*37+11)%100}%;animation-duration:${9+(i*7)%9}s;animation-delay:${-(i*13)%17}s;transform:scale(${.6+(i%4)*.25})"></span>`).join('');
   const t=document.createElement('div'); t.className='title'; t.id='titleScr';
   t.innerHTML=`<div class="blur" style="background-image:url(${OPENIMG.key})"></div><div class="art" style="background-image:url(${OPENIMG.key})"></div><div class="shade"></div>${ash}<img class="tlabel" src="${OPENIMG.lg_CL}" alt="월흔 WOLHEUN"><div class="in"><div class="tlogo"><h1><img class="tttl" src="${OPENIMG.ttl}" alt="墨夜"></h1><div class="tseal">묵야</div></div><div class="tname">鬼名錄 <b>귀명록</b></div><div class="tsub">시즌 1 · 보름의 귀문</div><div class="thook">이름을 빼앗긴 자는,<br>그림자부터 사라진다.</div><div class="tfeat">걸어 다니며 조사하는 조선 괴담 공포 어드벤처 · 시험판</div><div class="ttap">화면을 눌러 시작하세요</div></div>`;
   document.body.appendChild(t); t.addEventListener('click',startGame,{once:true}); }
@@ -1068,7 +1109,7 @@ function boot(){ FR=PFX.createFrame(W,H); FIMG=new ImageData(W,H); [FXC,FXX]=mk(
   $('#modal').addEventListener('click',e=>{ const b=e.target.closest('[data-m]'); if(b&&MODAL){ SFXP.ui(); MODAL(b.dataset.m); } });
   $('#dialog').addEventListener('pointerup',e=>{ e.stopPropagation(); dlgNext(); });
   $('#mirbtn').addEventListener('click',e=>{ e.stopPropagation(); toggleMirror(); });
-  $('#snd').addEventListener('click',e=>{ e.stopPropagation(); AU.on=!AU.on; $('#snd').textContent=AU.on?'소리 켬':'소리 끔'; if(AU.master) AU.master.gain.value=AU.on?.9:0; });
+  $('#snd').addEventListener('click',e=>{ e.stopPropagation(); AU.on=!AU.on; $('#snd').textContent=AU.on?'소리 켬':'소리 끔'; if(AU.master) AU.master.gain.value=AU.on?.9:0; musicOn(AU.on); });
   $('#prompt').addEventListener('pointerup',e=>{ e.stopPropagation(); if(NEAR&&!GAME.lock&&!GAME.busy) investigate(NEAR); });
   requestAnimationFrame(frame); playOpening().then(showTitle); }
 loadImages(()=>loadFar(boot));
