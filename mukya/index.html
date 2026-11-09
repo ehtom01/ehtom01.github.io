@@ -152,6 +152,9 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 #coach b{flex:none;font-size:.78em;letter-spacing:.08em;background:#c9a24a;color:#1a1410;padding:.1em .45em;margin-top:.15em}
 #mini{z-index:6}
 #mini:not([hidden])~#coach,#modal:not([hidden])~#coach{display:none!important}
+#tr button.pointme{position:relative;border-color:#ffd25a!important;color:#ffd25a!important;animation:pme 1s ease-in-out infinite}
+#tr button.pointme::after{content:"▲ 여기를 눌러요";position:absolute;top:calc(100% + 8px);right:0;white-space:nowrap;font-family:var(--serif);font-size:max(11px,calc(var(--u)*4));color:#1a1410;background:#ffd25a;padding:.15em .5em;animation:pmb .8s ease-in-out infinite alternate}
+@keyframes pme{50%{box-shadow:0 0 0 6px rgba(255,210,90,.35)}}@keyframes pmb{to{transform:translateY(4px)}}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -451,7 +454,7 @@ function bellGame(title='원이 금빛 고리에 닿을 때 눌러라 · 세 번
   const cv2=m.querySelector('canvas'), x=cv2.getContext('2d'); cv2.width=300; cv2.height=300; let tries=0, hits=0, t0=performance.now(), done=false, fb=[]; const DUR=1250;
   function draw(){ if(done) return; const el=performance.now()-t0, k=el/DUR, r=150*(1-k)+10; x.fillStyle='#0b090e'; x.fillRect(0,0,300,300);
     x.strokeStyle='#4a3a1a'; x.lineWidth=16; x.beginPath(); x.arc(150,150,52,0,7); x.stroke(); x.strokeStyle='#eabf4f'; x.lineWidth=3; x.beginPath(); x.arc(150,150,52,0,7); x.stroke();
-    x.fillStyle='#eabf4f'; x.beginPath(); x.moveTo(150,128); x.quadraticCurveTo(128,150,132,170); x.lineTo(168,170); x.quadraticCurveTo(172,150,150,128); x.fill(); x.fillStyle='#9b7426'; x.fillRect(146,170,8,6);
+    drawShamanBell(x,150,140,.55,fb[tries-1]&&performance.now()-t0<0?1:0,performance.now());
     if(el>=0){ x.strokeStyle=Math.abs(r-52)<15?'#fff6c4':'#c8bff0'; x.lineWidth=4; x.beginPath(); x.arc(150,150,Math.max(2,r),0,7); x.stroke(); }
     for(let i=0;i<4;i++){ x.fillStyle=i<tries?(fb[i]?'#eabf4f':'#7a1418'):'#3a3242'; x.beginPath(); x.arc(105+i*30,270,8,0,7); x.fill(); }
     if(k>=1) hit(false); requestAnimationFrame(draw); }
@@ -460,8 +463,22 @@ function bellGame(title='원이 금빛 고리에 닿을 때 눌러라 · 세 번
   function end(ok){ done=true; setTimeout(()=>{ m.hidden=true; GAME.lock--; res(ok); },500); }
   cv2.onpointerdown=e=>{ e.preventDefault(); if(performance.now()>=t0) hit(true); };
   m.querySelector('.mt').textContent=title; draw(); }); }
+
+/* 무당 방울: 손잡이 위에 둥근 방울 일곱 개가 층층이 달리고 오방색 끈이 늘어진 모양 */
+function drawShamanBell(x,cx,cy,sc,shake,t){ x.save(); x.translate(cx,cy+60*sc); x.rotate(Math.sin(t/55)*shake*.22); x.translate(0,-60*sc);
+  const cols=['#2f5d8a','#b0262b','#c9a24a','#e8e2d4','#1a1714'];
+  cols.forEach((c,i)=>{ const ox=(i-2)*6*sc; x.strokeStyle=c; x.lineWidth=5*sc; x.lineCap='round'; x.beginPath(); x.moveTo(ox*.4,70*sc); x.bezierCurveTo(ox,100*sc,ox*1.6+Math.sin(t/120+i)*6*shake*sc,125*sc,ox*1.2+Math.sin(t/90+i)*10*shake*sc,150*sc); x.stroke(); });
+  x.fillStyle='#5a3a1e'; x.fillRect(-6*sc,22*sc,12*sc,52*sc); x.fillStyle='#7a5228'; x.fillRect(-6*sc,22*sc,4*sc,52*sc); x.fillStyle='#c9a24a'; x.fillRect(-9*sc,66*sc,18*sc,7*sc); x.fillRect(-9*sc,20*sc,18*sc,5*sc);
+  x.strokeStyle='#9b7426'; x.lineWidth=3*sc; x.beginPath(); x.arc(0,8*sc,30*sc,Math.PI*1.05,Math.PI*1.95); x.stroke();
+  const B=[[0,-34],[-17,-22],[17,-22],[-28,-4],[28,-4],[-12,-8],[12,-8]];
+  B.forEach(([bx,by],i)=>{ const j=shake?Math.sin(t/30+i*1.7)*2.2*shake:0; const X=(bx+j)*sc, Y=(by+Math.abs(j)*.5)*sc, r=9*sc;
+    x.strokeStyle='#9b7426'; x.lineWidth=2*sc; x.beginPath(); x.moveTo(X,Y); x.lineTo(bx*.3*sc,8*sc); x.stroke();
+    const g=x.createRadialGradient(X-r*.35,Y-r*.4,r*.1,X,Y,r); g.addColorStop(0,'#fff3c0'); g.addColorStop(.35,'#eabf4f'); g.addColorStop(1,'#7a5418'); x.fillStyle=g; x.beginPath(); x.arc(X,Y,r,0,7); x.fill();
+    x.strokeStyle='#4a3010'; x.lineWidth=1.6*sc; x.beginPath(); x.moveTo(X-r*.6,Y+r*.25); x.lineTo(X+r*.6,Y+r*.25); x.stroke(); x.fillStyle='#2a1a08'; x.beginPath(); x.arc(X-r*.6,Y+r*.25,1.6*sc,0,7); x.arc(X+r*.6,Y+r*.25,1.6*sc,0,7); x.fill(); });
+  x.restore(); }
 function tapGame(title,n=3){ return new Promise(res=>{ const m=$('#mini'); m.hidden=false; m.className='bell'; GAME.lock++; const cv2=m.querySelector('canvas'), x=cv2.getContext('2d'); cv2.width=300; cv2.height=300; let c=0, sw=0, done=false;
-  function draw(){ if(done) return; sw*=.9; x.fillStyle='#0b090e'; x.fillRect(0,0,300,300); x.save(); x.translate(150,110); x.rotate(Math.sin(performance.now()/60)*sw*.4); x.fillStyle='#eabf4f'; x.beginPath(); x.moveTo(0,0); x.quadraticCurveTo(-40,40,-34,80); x.lineTo(34,80); x.quadraticCurveTo(40,40,0,0); x.fill(); x.fillStyle='#fff0a8'; x.fillRect(-18,30,8,30); x.fillStyle='#9b7426'; x.fillRect(-6,80,12,10); x.fillStyle='#b0262b'; x.fillRect(-3,-20,6,20); x.restore();
+  function draw(){ if(done) return; sw*=.92; const tt=performance.now(); x.fillStyle='#0b090e'; x.fillRect(0,0,300,300); const g=x.createRadialGradient(150,120,10,150,120,150); g.addColorStop(0,'rgba(234,191,79,'+(0.12+sw*.25)+')'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.fillRect(0,0,300,300);
+    drawShamanBell(x,150,92,1.25,sw,tt); if(c<n){ const k=(tt/600)%1; x.strokeStyle='rgba(255,240,190,'+(1-k)+')'; x.lineWidth=3; x.beginPath(); x.arc(150,70,40+k*50,0,7); x.stroke(); x.fillStyle='#f3dfa0'; x.font='bold 15px "Gowun Batang",serif'; x.textAlign='center'; x.fillText('방울을 눌러요',150,24); }
     for(let i=0;i<n;i++){ x.fillStyle=i<c?'#eabf4f':'#3a3242'; x.beginPath(); x.arc(150-(n-1)*20+i*40,265,10,0,7); x.fill(); } requestAnimationFrame(draw); }
   cv2.onpointerdown=e=>{ e.preventDefault(); if(done) return; c++; sw=1; snd('bell',.9+c*.15,.5+c*.12); GAME.shake=c*2; try{navigator.vibrate&&navigator.vibrate(20*c);}catch(_){} if(c>=n){ done=true; setTimeout(()=>{ m.hidden=true; GAME.lock--; res(true); },500); } };
   m.querySelector('.mt').textContent=title; draw(); }); }
@@ -525,6 +542,7 @@ function render(){ const c=ctx; c.setTransform(1,0,0,1,0,0); c.globalAlpha=1; c.
   if(S.mirror) mirrorPass(cx,T);
   lighting(cx,T);
   fxPass('front',cx);
+  drawPointer(cx,T);
   c.restore();
   c.drawImage(VIG,0,0); if(GAME.red>0){ c.globalAlpha=Math.min(.85,GAME.red); c.drawImage(REDV,0,0); c.globalAlpha=1; }
   if(GAME.flash>0){ c.fillStyle=`rgba(255,250,235,${GAME.flash})`; c.fillRect(0,0,W,H); } }
@@ -569,6 +587,15 @@ function layout(){ const app=$('#app'), cs=getComputedStyle(app), aw=app.clientW
   document.body.classList.toggle('portrait',ah>aw); }
 let last=performance.now(), acc=0;
 function frame(t){ requestAnimationFrame(frame); const dt=Math.min(.05,(t-last)/1000); last=t; acc+=dt; let n=0; while(acc>=1/60&&n<5){ update(1/60); acc-=1/60; n++; } try{ render(); }catch(e){ console.error(e); } const pr=$('#prompt'); pr.hidden=!(NEAR&&!GAME.lock&&!GAME.busy&&!GAME.story); if(NEAR&&pr.dataset.n!==NEAR.name){ pr.dataset.n=NEAR.name; pr.textContent=NEAR.name+' 살펴보기'; } }
+
+/* 튜토리얼: 누를 곳 표시 (반짝이는 고리 + 통통 튀는 화살표, 화면 밖이면 가장자리 화살표) */
+function drawPointer(cx,T){ const pt=SCN&&SCN.pointer; const off=!pt||GAME.lock||GAME.busy||GAME.story; document.querySelectorAll('.pointme').forEach(e=>{ if(off||pt.dom!=='#'+e.id) e.classList.remove('pointme'); });
+  if(off) return; if(pt.dom){ const el=document.querySelector(pt.dom); if(el&&!el.hidden) el.classList.add('pointme'); return; }
+  const h=SCN.hots.find(q=>q.id===pt.hot); if(!h) return; const c=ctx, y=Math.round(h.top||(h.low?GY-10:GY-30)), x=Math.round(h.x-cx), b=Math.round(Math.abs(Math.sin(T*5))*5);
+  if(x<8||x>W-8){ const ex=x<8?8:W-8, d=x<8?-1:1, yy=GY-40; c.fillStyle='#eabf4f'; for(let i=0;i<7;i++) c.fillRect(ex-d*i+(d>0?-b:b),yy-i,1,i*2+1); c.fillStyle='#0b090e'; c.fillRect(ex-d*7+(d>0?-b:b),yy-7,1,15); return; }
+  const k=(T*1.3)%1, r=Math.round(7+k*10); c.strokeStyle=`rgba(255,226,140,${1-k})`; c.lineWidth=1; c.beginPath(); c.ellipse(x+.5,y+.5,r,Math.round(r*.7),0,0,7); c.stroke();
+  c.fillStyle='#0b090e'; c.fillRect(x-5,y-23-b,11,9); c.fillRect(x-2,y-31-b,5,9);
+  c.fillStyle='#ffd25a'; for(let i=0;i<5;i++) c.fillRect(x-4+i,y-22-b+i,9-i*2,1); c.fillRect(x-1,y-30-b,3,8); c.fillStyle='#fff3c0'; c.fillRect(x-1,y-30-b,1,8); }
 
 /* ================= 장면 소품 ================= */
 function buildProps2(){
@@ -630,6 +657,7 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       else if(S.mirror) t='鏡 버튼을 다시 눌러 거울을 내리세요.';
       else if(!has('seal')&&!dn('gate')) t='석등을 살펴 자물쇠를 열어 보세요.';
       else if(!dn('gate')) t='귀문을 눌러 부적을 붙이세요.';
+      let pt=null; if(!dn('pillar')) pt={hot:'pillar'}; else if(!S.flags.order&&!S.mirror) pt={dom:'#mirbtn'}; else if(!S.flags.order) pt={hot:'sis'}; else if(S.mirror) pt={dom:'#mirbtn'}; else if(!has('seal')&&!dn('gate')) pt={hot:'lantern'}; else if(!dn('gate')) pt={hot:'gate'}; SCN.pointer=pt;
       if(P.air) S.flags.jumped=1; if(!GAME.lock&&!GAME.busy) coach(t); },
     drawYin(cx,T){ ctx.globalAlpha=.9; ctx.fillStyle='#e8f2ff'; const x=Math.round(sis.x-cx); [['#2f5d8a',0],['#e8e2d4',3],['#b0262b',6]].forEach(([c,o])=>{ ctx.fillStyle=c; ctx.fillRect(x-14,GY-40+o,6,2); }); ctx.globalAlpha=1; }};
   return def; }
