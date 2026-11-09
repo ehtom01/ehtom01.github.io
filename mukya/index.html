@@ -652,7 +652,7 @@ function spotlight(pt,cx){ const sp=document.querySelector('#spot'); if(!sp) ret
   const V=document.querySelector('#view').getBoundingClientRect(), G=document.querySelector('#g').getBoundingClientRect(), v={left:V.left,top:V.top,width:G.width,height:G.height}, gx0=G.left-V.left, gy0=G.top-V.top; let l,t,w,h;
   if(pt.dom){ const el=document.querySelector(pt.dom); if(!el||el.hidden){ sp.hidden=true; return; } const r=el.getBoundingClientRect(); l=r.left-v.left-6; t=r.top-v.top-6; w=r.width+12; h=r.height+12; sp.classList.add('sq'); }
   else { const hh=SCN.hots.find(q=>q.id===pt.hot); if(!hh){ sp.hidden=true; return; } const sx=(hh.x-cx)/W*v.width, r=v.width*.07; let sy=(hh.top||(hh.low?GY-10:GY-30))/H*v.height; if(sx<0||sx>v.width){ sp.hidden=true; return; }
-    if(pt.swipe){ sy=(GY-48)/H*v.height; l=sx-r*1.1; t=sy-r*2; w=r*2.2; h=r*4; } else { l=sx-r; t=sy-r; w=r*2; h=r*2; } l+=gx0; t+=gy0; sp.classList.remove('sq'); }
+    if(pt.swipe){ const mx=(((hh.x+P.x)/2)-cx)/W*v.width; sy=(GY-48)/H*v.height; l=mx-r*1.25; w=r*2.5; t=sy-r*2; h=r*4; } else { l=sx-r; t=sy-r; w=r*2; h=r*2; } l+=gx0; t+=gy0; sp.classList.remove('sq'); }
   sp.hidden=false; sp.style.left=l+'px'; sp.style.top=t+'px'; sp.style.width=w+'px'; sp.style.height=h+'px'; }
 
 /* 귀문 봉인: 허공에 붉은 진언 글자가 하나씩 써졌다가 먹물로 흩어지고, 가운데 「封」이 찍힌다 */
