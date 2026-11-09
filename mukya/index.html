@@ -6,10 +6,10 @@
 /* 먹 바탕 한 화면: 가운데 16:9 도트 화면, 그 위에 본편과 같은 사진 대화창 */
 :root{ --ink:#07060a; --paper:#efe4cf; --dim:#9a8f86; --cinnabar:#c8372d; --gold:#e2b84a; --line:rgba(226,184,74,.32);
   --serif:"Noto Serif KR","Gowun Batang","Nanum Myeongjo",serif; --brush:"Ma Shan Zheng","Gowun Batang",serif; color-scheme:dark; --u:3px; }
-html,body{height:100%}
+html,body{height:100%;height:100dvh}
 [hidden]{display:none!important}
 body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-#app{height:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px}
+#app{height:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:max(8px,env(safe-area-inset-bottom,0px))}
 #view{position:relative;flex:none;background:#000;box-shadow:0 0 0 1px #2a2236,0 0 0 3px #0b090e,0 12px 40px rgba(0,0,0,.7);overflow:hidden;max-width:100%;cursor:pointer}
 #g{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #hud{position:absolute;inset:0;pointer-events:none}
@@ -364,6 +364,7 @@ body,#dialog,#modal,#coach,#menu,#goal,#prompt,#toast{word-break:keep-all;overfl
 .plates button{min-width:3.6em!important;display:flex!important;flex-direction:column;align-items:center;gap:.25em;padding:.45em .6em!important;background:linear-gradient(180deg,#2c2329,#110d11) padding-box,linear-gradient(180deg,rgba(214,176,96,.55),rgba(90,70,40,.35)) border-box!important}
 .plates button::before{content:"";width:1.3em;height:1.3em;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 45%),var(--c);box-shadow:0 0 0 1px #000,0 2px 4px rgba(0,0,0,.6)}
 #modal .ghostbtn{align-self:center;min-width:8em;text-align:center!important}
+#items{top:calc(var(--u)*5 + max(11px,calc(var(--u)*4.3))*1.9)!important}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -953,7 +954,7 @@ function drawSeals(cx,T){ const c=ctx;
       else if(t<2.3){ const k=(t-1.75)/.55; drawGlyph(m,gx+(x-gx)*k*k,gy+(y-gy)*k*k,1.2,1-k,['#d8d4ec','#6a6488','#ffffff'],k*6); } });
     if(t>=1.75&&!q.popped){ q.popped=1; MANTRA.forEach((_,i)=>{ const a=-Math.PI/2+i/MANTRA.length*Math.PI*2; for(let j=0;j<8;j++) part(q.x+Math.cos(a)*R0,q.y-30+Math.sin(a)*R0,-Math.cos(a)*rnd(40,90),-Math.sin(a)*rnd(40,90)-20,rnd(.4,.8),pick(['#ffffff','#d8d4ec','#8a84a8']),'ember'); }); }
     if(t>=2.25){ const lt=t-2.25; if(!q.stamped){ q.stamped=1; GAME.flash=Math.max(GAME.flash,.35); GAME.shake=Math.max(GAME.shake,5); burst(q.x,q.y-30,30,['#ffffff','#d8d4ec','#6a6488'],110); snd('ritok',.7,.5); }
-      const m=glyphMask('封',40), sc=lt<.12?1+(1-lt/.12)*.8:1, a=lt<2.5?1:Math.max(.35,1-(lt-2.5)*.4)*(.85+.15*Math.sin(T*3));
+      const m=glyphMask('封',40), sc=lt<.12?1+(1-lt/.12)*.8:1, a=lt<1.8?1:Math.max(0,1-(lt-1.8)*.6);
       if(lt<.6){ c.fillStyle=`rgba(235,230,255,${.4*(1-lt/.6)})`; c.beginPath(); c.arc(x,y,30+lt*36,0,7); c.fill(); }
       c.globalAlpha=a; for(const [px,py,n,v] of m.pts){ c.fillStyle=v>=9?'#ffffff':(v>=6?'#dcd8f0':'#8a84a8'); const s2=Math.ceil(sc); c.fillRect(Math.round(x+px*sc),Math.round(y+py*sc),s2,s2); } c.globalAlpha=1;
       if(lt>.2&&lt<3){ /* 마른 먹이 바스러지듯 글자 가장자리에서 붉은 재가 떨어진다 */ if(Math.random()<.5){ const pp=pick(m.pts); part(q.x+pp[0],q.y-30+pp[1],rnd(-6,6),rnd(-30,-10),rnd(.6,1.2),pick(['#ffffff','#e8e4ff','#a8a0c8']),'ember'); } } } } }
@@ -991,15 +992,15 @@ function againLine(h){ h.seen=(h.seen||0)+1; const own=h.again||[], pool=AGAIN_P
 setTimeout(()=>{ if(!TALIIMG&&typeof ITEMIMG!=='undefined'){ TALIIMG=new Image(); TALIIMG.src=ITEMIMG.tali_e; TALIFULL=new Image(); TALIFULL.src=ITEMIMG.tali_f; } },0);
 
 /* ===== 귀문: 무너진 문 안에서 먹물이 휘몰아치는 소용돌이 ===== */
-const [VXc,VXx]=mk(120,150); const VXARMS=Array.from({length:9},(_,i)=>({a:i/9*Math.PI*2,w:2+Math.random()*3,l:.55+Math.random()*.4,c:['#0c0a0d','#1c181c','#2e2a2c','#4a4446','#6a6264','#8a8284'][i%6]}));
-function drawVortex(x,y,T,k=1,close=0){ const c=VXx, W2=120,H2=150, cx2=60, cy2=78; c.clearRect(0,0,W2,H2);
-  const g=c.createRadialGradient(cx2,cy2,2,cx2,cy2,62*k); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(.55,'rgba(14,10,14,.92)'); g.addColorStop(1,'rgba(30,24,30,0)'); c.fillStyle=g; c.beginPath(); c.ellipse(cx2,cy2,56*k,70*k,0,0,7); c.fill();
-  const spin=T*(1.6+close*6);
-  for(let ring=0;ring<3;ring++) for(const A of VXARMS){ c.strokeStyle=A.c; c.globalAlpha=.55+ring*.12; c.lineWidth=A.w*(1-ring*.25); c.beginPath();
-    for(let t=0;t<=1;t+=.04){ const r=(8+t*54*A.l)*k*(1-ring*.18), a=A.a+spin+ring*.7-t*3.4; const px=cx2+Math.cos(a)*r, py=cy2+Math.sin(a)*r*1.25; t?c.lineTo(px,py):c.moveTo(px,py); } c.stroke(); }
-  c.globalAlpha=1; c.fillStyle='rgba(150,20,24,.18)'; c.beginPath(); c.ellipse(cx2,cy2,26*k,32*k,0,0,7); c.fill();
-  const img=c.getImageData(0,0,W2,H2), d=img.data; for(let i=0;i<d.length;i+=4){ if(d[i+3]<70){ d[i+3]=0; continue; } d[i+3]=d[i+3]>180?255:200; d[i]=d[i]>>4<<4; d[i+1]=d[i+1]>>4<<4; d[i+2]=d[i+2]>>4<<4; } c.putImageData(img,0,0);
-  ctx.drawImage(VXc,Math.round(x-cx2),Math.round(y-cy2)); }
+const [VXc,VXx]=mk(150,190); const VXARMS=Array.from({length:14},(_,i)=>({a:i/14*Math.PI*2,w:3+Math.random()*5,l:.6+Math.random()*.4,g:[18,30,44,60,78,96][i%6]}));
+function drawVortex(x,y,T,k=1,close=0){ const c=VXx, W2=150,H2=190, cx2=75, cy2=100; c.clearRect(0,0,W2,H2);
+  const g=c.createRadialGradient(cx2,cy2,2,cx2,cy2,80*k); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(.5,'rgba(10,8,10,.95)'); g.addColorStop(.85,'rgba(30,26,28,.6)'); g.addColorStop(1,'rgba(40,34,36,0)'); c.fillStyle=g; c.beginPath(); c.ellipse(cx2,cy2,70*k,90*k,0,0,7); c.fill();
+  const spin=T*(1.2+close*7); c.lineCap='round';
+  for(const A of VXARMS){ for(let t=0;t<1;t+=.035){ const t2=t+.035, r1=(10+t*62*A.l)*k, r2=(10+t2*62*A.l)*k, a1=A.a+spin-t*4, a2=A.a+spin-t2*4;
+      const gv=A.g+t*70; c.strokeStyle=`rgba(${gv},${gv-4},${gv-2},${.85-t*.5})`; c.lineWidth=A.w*(1-t*.75)*k;
+      c.beginPath(); c.moveTo(cx2+Math.cos(a1)*r1,cy2+Math.sin(a1)*r1*1.25); c.lineTo(cx2+Math.cos(a2)*r2,cy2+Math.sin(a2)*r2*1.25); c.stroke(); } }
+  const g2=c.createRadialGradient(cx2,cy2,0,cx2,cy2,22*k); g2.addColorStop(0,'rgba(0,0,0,1)'); g2.addColorStop(1,'rgba(0,0,0,0)'); c.fillStyle=g2; c.fillRect(0,0,W2,H2);
+  ctx.save(); ctx.imageSmoothingEnabled=false; ctx.drawImage(VXc,Math.round(x-cx2),Math.round(y-cy2)); ctx.restore(); }
 function drawGateFrame(x,cx){ const c=ctx, X=Math.round(x-cx), top=GY-150; /* 쓰러질 듯한 나무 문틀 + 부서진 지붕 */
   c.fillStyle='#120c0c'; c.fillRect(X-60,top+16,9,150-16); c.fillRect(X+51,top+20,9,150-20);
   c.fillStyle='#3a2420'; c.fillRect(X-58,top+16,5,150-16); c.fillRect(X+53,top+20,5,150-20); c.fillStyle='#5a2a24'; for(let y=top+30;y<GY;y+=13){ c.fillRect(X-58,y,3,6); c.fillRect(X+54,y+5,3,5); }
@@ -1107,14 +1108,14 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
       h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-52); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
-      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; SCN.closeT=GAME.t; snd('ritok',.8,.7); await wait(900); GAME.cine=0; SCN.finish(); }}];
+      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; SCN.closeT=GAME.t; if(SCN.portal){ SCN.portal.kill=1; fx('poof',{x:700,y:GY-44,palette:FXP.void}); } snd('ritok',.8,.7); await wait(900); GAME.cine=0; SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{pano:FARIMG.gate_pano,gr:mk(w,40)[0],fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
-    props:[{k:'pillar',x:226},{k:'hmirror',x:226,y:GY-72,hide:()=>S.items.includes('mirror')||H_[0].done},{k:'pillar',x:430},{k:'lantern2',x:520,light:{r:60,c:'#ffcf7a',y:GY-32}},{k:'pillar',x:760}],
+    props:[{k:'pillar',x:226},{k:'hmirror',x:226,y:GY-72,hide:()=>S.items.includes('mirror')||H_[0].done},{k:'pillar',x:430},{k:'lantern2',x:520,light:{r:60,c:'#ffcf7a',y:GY-32}},{k:'pillar',x:772},{k:'pillar',x:628}],
     hots:H_, clueTotal:0,
-    build(d){ NPCS=[sis];  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
-    drawBack(cx,T){ const k=SCN.closing?Math.max(0,1-(GAME.t-SCN.closeT)*.9):1; drawGateFrame(700,cx); if(k>0) drawVortex(700-cx,GY-70,T,k,SCN.closing?1:0); },
-    lights(L,cx,T){ L.push({x:700-cx,y:GY-60,r:70,c:'#8a2a30',g:.45}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
+    build(d){ NPCS=[sis]; { const g=fx('portal',{x:700,y:GY-44,palette:FXP.void,width:30,height:52},'behind'); g.keep=1; d.portal=g; }  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
+    drawBack(cx,T){ const k=SCN.closing?Math.max(0,1-(GAME.t-SCN.closeT)*.9):1;  },
+    lights(L,cx,T){ L.push({x:700-cx,y:GY-44,r:70,c:'#9a5ad0',g:.7}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
     tick(){ const has=k=>S.items.includes(k), dn=id=>H_.find(h=>h.id===id).done;
       if(S.flags.reach&&!dn('pillar')&&P.air&&P.y>14&&Math.abs(P.x-226)<20&&!GAME.lock&&!GAME.busy){ grab(H_[0]); return; }
       let t=''; if(!S.flags.reach) t='화면을 누르면 걸어가요. 반짝이는 곳(붉은 기둥)을 누르면 살펴봐요.'; else if(!dn('pillar')) t=Math.abs(P.x-226)<22?'화면을 위로 쓸어 올리면 뛰어올라요. 뛰어서 거울을 잡으세요!':'기둥 아래로 가서 뛰어 보세요.';
