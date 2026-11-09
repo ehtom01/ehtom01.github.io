@@ -729,13 +729,12 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{sky:pcanvas(W,H,p=>dgrad(p,0,W,0,GY,Zp.sky)),far:mirrorStrip(FARIMG.temple_far,Math.ceil(W+(w-W)*.12)+4),fog:fogCanvas({fog:'#8a6aa0'},11),gr:groundCanvas2(w,Zp),fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
-    walls:[{x:350,w:30,h:14}],
-    props:[{k:'pillar',x:226},{k:'pillar',x:430},{k:'steps',x:365},{k:'lantern',x:520,light:{r:56,c:'#ffcf7a',y:GY-24}},{k:'pillar',x:760}],
+    props:[{k:'pillar',x:226},{k:'pillar',x:430},{k:'lantern',x:520,light:{r:56,c:'#ffcf7a',y:GY-24}},{k:'pillar',x:760}],
     hots:H_, clueTotal:0,
     build(d){ NPCS=[sis]; const g=fx('portal',{x:700,y:GY-44,palette:FXP.void,width:30,height:52},'behind'); g.keep=1; d.portal=g; goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
     lights(L,cx,T){ L.push({x:700-cx,y:GY-44,r:70,c:'#9a5ad0',g:.7}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
     tick(){ const has=k=>S.items.includes(k), dn=id=>H_.find(h=>h.id===id).done;
-      let t=''; if(!dn('pillar')) t=P.x>300&&!S.flags.jumped?'돌계단 앞에서는 저절로 뛰어올라요. 위로 쓸면 언제든 뛸 수 있어요.':'화면을 누르면 걸어가요. 반짝이는 곳(붉은 기둥)을 누르면 살펴봐요.';
+      let t=''; if(!dn('pillar')) t='화면을 누르면 걸어가요. 반짝이는 곳(붉은 기둥)을 누르면 살펴봐요.';
       else if(!S.flags.order&&!S.mirror) t='오른쪽 위 鏡 버튼을 눌러 거울을 들어 보세요. 산 사람 눈에 안 보이는 것이 보여요.';
       else if(!S.flags.order) t='거울 속에서만 반짝이는 곳이 생겼어요. 언니에게 다가가 보세요.';
       else if(S.mirror) t='鏡 버튼을 다시 눌러 거울을 내리세요.';
@@ -785,8 +784,7 @@ function sceneFox(night){ const w=920; const Zp={sky:night?['#05040a','#0a0814',
     {id:'top',x:890,name:'고개 너머',hidden:()=>!S.flags.foxWin,ev:async h=>{ h.done=1; SCN.finish(); }}];
   return {w,start:50,taeseok:1,amb:'amb_night',dark:night?.72:.5,flies:night?['#5aa0ff','#9ad0ff']:null,clueTotal:3,
     bg:{sky:pcanvas(W,H,p=>dgrad(p,0,W,0,GY,Zp.sky)),far:mirrorStrip(FARIMG.fox_far,Math.ceil(W+(w-W)*.12)+4),fog:fogCanvas({fog:'#8a5a6a'},21),mid:mirrorStrip(FARIMG.road_mid,Math.ceil(W+(w-W)*.4)+4),gr:groundCanvas2(w,Zp),fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,22)},
-    walls:[{x:640,w:22,h:13}],
-    props:[{k:'jang',x:210},{k:'cairn',x:380},{k:'blood1',x:486,y:GY+5},{k:'bush',x:476},{k:'stones',x:651},{k:'jang',x:880}],
+    props:[{k:'jang',x:210},{k:'cairn',x:380},{k:'blood1',x:486,y:GY+5},{k:'bush',x:476},{k:'jang',x:880}],
     hots:H_,
     build(){ goal('고개를 넘어 소리개 마을로'); coach(''); },
     lights(L,cx){ for(const w2 of wisps) L.push({x:w2.f.options.x-cx,y:w2.f.options.y-30,r:34,c:'#5ad0e0',g:.9}); },
@@ -830,9 +828,8 @@ function sceneWell(){ const w=1340, DITCH={x0:300,x1:326};
   const Z=ZONES[1];
   return {w,start:60,taeseok:1,amb:'amb_well',dark:.6,rain:1,bloodBase:.12,yinBlood:[{k:'scrawl',x:1076,y:GY-66},{k:'hand',x:1092,y:GY-34},{k:'hand',x:640,y:GY-28}],flies:['#a8d0c0','#d8f0e0'],clueTotal:8,
     bg:{sky:skyCanvas(Z,3,false),far:mirrorStrip(FARIMG.well_far,Math.ceil(W+(w-W)*.12)+4),mid,fog:fogCanvas(Z,5),gr:groundCanvas2(w,{gr:Z.gr,top:Z.grTop,grD:Z.grD,flag:'#262a2e',ditch:DITCH}),fg:fgCanvas(Z,Math.ceil(W+(w-W)*1.25)+6,9)},
-    walls:[{x:828,w:22,h:13}],
     props:[{k:'blood2',x:418,y:GY+5},{k:'drops',x:1030,y:GY+4},{k:'blood3',x:1112,y:GY+6},{k:'lantern',x:236,light:{r:56,c:'#ffcf7a',y:GY-24}},{k:'inn',x:96,light:{r:60,c:'#ffcf7a',y:GY-36}},{k:'fence',x:170},{k:'crock',x:410,shadow:1},{k:'jang',x:520},{k:'jang',x:556},{k:'chestb',x:578},{k:'fence',x:640},
-      {k:'willow',x:712},{k:'stones',x:839},{k:'lantern',x:900,light:{r:48,c:'#bfe4ff',y:GY-24}},{k:'pailp',x:968},{k:'well',x:1110,shadow:1},{k:'wall',x:1230},{k:'lantern',x:1290,light:{r:48,c:'#bfe4ff',y:GY-24}}],
+      {k:'willow',x:712},{k:'lantern',x:900,light:{r:48,c:'#bfe4ff',y:GY-24}},{k:'pailp',x:968},{k:'well',x:1110,shadow:1},{k:'wall',x:1230},{k:'lantern',x:1290,light:{r:48,c:'#bfe4ff',y:GY-24}}],
     hots:H_,
     build(){ goal('우물 속 아이에게 닿자'); coach(''); const dip=a=>(!a.air&&a.x>DITCH.x0+2&&a.x<DITCH.x1-2)?5:0; P.dip=dip; TS.dip=dip; },
     onEnter(){ if(!S.flags.wellTip){ S.flags.wellTip=1; toast('거울로 비춰야만 보이는 것도 있다'); } },
