@@ -1131,7 +1131,7 @@ function chapterEnd(small,big,next,btn){ sceneMusic(8); return new Promise(res=>
 /* ================= 오프닝 · 타이틀 (본편과 같은 방식) ================= */
 function playOpening(){ return new Promise(done=>{ const o=document.createElement('div'); o.className='opening op2'; document.body.appendChild(o);
   const add=h=>{ const d=document.createElement('div'); d.innerHTML=h.trim(); const e=d.firstChild; o.appendChild(e); return e; };
-  add('<div class="op-grain"></div>'); const moon=add('<div class="op-moon2"><i></i></div>'); add('<div class="op-fog" style="top:52%"></div>'); add('<div class="op-fog" style="top:18%;animation-duration:22s;animation-direction:reverse;opacity:.6"></div>');
+  add('<div class="op-grain"></div>'); const moon={classList:{add(){}}}; add('<div class="op-fog" style="top:52%"></div>'); add('<div class="op-fog" style="top:18%;animation-duration:22s;animation-direction:reverse;opacity:.6"></div>');
   const s2=add(`<div class="lay"><div class="op-row2"><div class="op-sealw"><span class="op-ink"></span><img class="op-seal2" src="${OPENIMG.lg_AO}" alt="月痕"></div><span class="op-vr"></span><div class="op-wmw"><img class="op-wm2" src="${OPENIMG.lg_WML2}" alt="월흔 WOLHEUN"></div></div>
     <div class="op-by2"><span class="op-hr"></span><em>by</em><b>PPOGAK STUDIO</b><span class="op-hr"></span></div></div>`);
   const on=(sel,t)=>setTimeout(()=>s2.querySelector(sel).classList.add('on'),t);
