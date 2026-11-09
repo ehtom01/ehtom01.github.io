@@ -1153,8 +1153,13 @@ function sceneRoom(){ const w=531; let ghostAt=null;
     await say([['???','홍…련…아…']]);
     scare('face'); await wait(700);
     await say([['홍련','오지 마!']]);
-    if(S.flags.refused){ await say([['','문틈으로 젖은 머리카락이 스며들었다. 방바닥에 젖은 글씨가 번졌다. 「문이 열린다」.']]); GAME.shake=6; SCN.lamp=2; await wait(800); await say([['','호롱불이 꺼졌다. 어둠 속에서 누군가 아주 오래, 홍련을 내려다보고 있었다.']]); }
-    else await say([['','문틈으로 젖은 머리카락이 스며들었다. 그러나 그것은 방 안으로 들어오지 않았다.'],['','흰 손이 문지방 위에 무언가를 내려놓고 사라졌다. 젖은 붉은 연꽃잎 한 장.'],['홍련','(붉은 연꽃… 언니 방울 끈에 수놓인 꽃이랑 똑같아.)'],['홍련','…누구야. 누군데 나를 그렇게 불러.'],['','대답은 없었다. 홍련은 연꽃잎을 부적과 함께 품에 넣고, 날이 밝을 때까지 눈을 붙이지 못했다.']]);
+    const ch=await choose('문 너머에 무언가가 서 있다',[{t:'언니의 부적을 꺼내 문에 「封」을 긋는다.',v:'tali'},{t:'호롱불을 끌어안고 숨을 죽인다.',v:'hide'}]);
+    if(ch==='tali'){ const ok=await taliGame('언니의 부적 위에 「封」을 그어 문을 막아라');
+      if(ok){ GAME.flash=.5; snd('ritok',1,.6); NPCS=NPCS.filter(n=>n!==ghostAt); await say([['','홍련이 부적을 창호지에 붙이자 먹 글씨가 불처럼 번쩍였다. 문 너머의 그림자가 비명도 없이 뒤로 밀려났다.'],['홍련','(손이… 기억하고 있어. 언니가 가르쳐 준 획을.)']]); S.flags.roomSeal=1; }
+      else { GAME.red=.8; GAME.blood=1.4; GAME.shake=6; SFXP.thud(); await faceBlink('face',[60,200,60,200,60]); await say([['','획이 엇나갔다. 부적이 젖어 축 늘어지는 순간, 창호지 너머로 하얀 얼굴이 바싹 다가왔다.']]); } }
+    else { GAME.red=.5; await say([['','홍련은 호롱불을 끌어안고 숨을 죽였다. 숨소리가 문틈을 따라 천천히, 아주 천천히 방 안을 한 바퀴 돌았다.']]); }
+    if(S.flags.refused&&!S.flags.roomSeal){ await say([['','문틈으로 젖은 머리카락이 스며들었다. 방바닥에 젖은 글씨가 번졌다. 「문이 열린다」.']]); GAME.shake=6; SCN.lamp=2; await wait(800); await say([['','호롱불이 꺼졌다. 어둠 속에서 누군가 아주 오래, 홍련을 내려다보고 있었다.']]); }
+    else await say([[ '',S.flags.roomSeal?'잠시 뒤, 문틈 아래로 물 한 줄기가 스며들었다. 그것은 더 들어오지 못하고 멈췄다.':'문틈으로 젖은 머리카락이 스며들었다. 그러나 그것은 방 안으로 들어오지 않았다.'],['','흰 손이 문지방 위에 무언가를 내려놓고 사라졌다. 젖은 붉은 연꽃잎 한 장.'],['홍련','(붉은 연꽃… 언니 방울 끈에 수놓인 꽃이랑 똑같아.)'],['홍련','…누구야. 누군데 나를 그렇게 불러.'],['','대답은 없었다. 홍련은 연꽃잎을 부적과 함께 품에 넣고, 날이 밝을 때까지 눈을 붙이지 못했다.']]);
     NPCS=NPCS.filter(n=>n!==ghostAt); if(SCN.dark0!=null) SCN.dark=SCN.dark0; P.pose=null; GAME.cine=0; SCN.finish(); }
   return {w,start:220,amb:'amb_room',dark:.5,indoor:1,plight:70,clueTotal:5,yinBlood:[{k:'hand',x:254,y:GY-68},{k:'hand',x:276,y:GY-54},{k:'scrawl',x:194,y:GY-85}],
     bg:{wall:FARIMG.room_wall,gr:mk(w,40)[0]},
