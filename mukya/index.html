@@ -388,7 +388,8 @@ async function audioInit(){ if(AU.ac){ if(AU.ac.state==='suspended') AU.ac.resum
   if(AU.want) ambient(AU.want); }
 const TRIM={page:.5,bell:.2,pick:.2,brush:.15,ritok:.15,clue:.15};
 function leadOff(b,th){ if(!th) return 0; const d=b.getChannelData(0); let pk=0; for(let i=0;i<d.length;i++) pk=Math.max(pk,Math.abs(d[i])); for(let i=0;i<d.length;i++) if(Math.abs(d[i])>pk*th) return Math.max(0,i/b.sampleRate-.008); return 0; }
-function snd(k,rate=1,vol=.6){ if(k==='bell') AU.lastBell=performance.now(); const a=AU.ac; if(!a||!AU.on||!AU.buf[k]) return; try{ const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.playbackRate.value=rate; const g=a.createGain(); g.gain.value=vol; s.connect(g); g.connect(AU.master); s.start(0,AU.off[k]||0); }catch(e){} }
+const NOVOICE={whisper:1,kid_hum:1,kid_laugh:1,forget:1};
+function snd(k,rate=1,vol=.6){ if(NOVOICE[k]) return; if(k==='bell') AU.lastBell=performance.now(); const a=AU.ac; if(!a||!AU.on||!AU.buf[k]) return; try{ const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.playbackRate.value=rate; const g=a.createGain(); g.gain.value=vol; s.connect(g); g.connect(AU.master); s.start(0,AU.off[k]||0); }catch(e){} }
 function tone(f0,f1,dur,vol=.2,type='sine',delay=0){ const a=AU.ac; if(!a||!AU.on) return; const t=a.currentTime+delay, o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(AU.master); o.start(t); o.stop(t+dur+.02); }
 let NB=null; function noise(dur,vol=.2,f0=1000,f1=400,type='lowpass',q=1){ const a=AU.ac; if(!a||!AU.on) return; if(!NB){ NB=a.createBuffer(1,a.sampleRate,a.sampleRate); const d=NB.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
   const t=a.currentTime, s=a.createBufferSource(); s.buffer=NB; const f=a.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(f0,t); f.frequency.exponentialRampToValueAtTime(f1,t+dur); const g=a.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f); f.connect(g); g.connect(AU.master); s.start(t,Math.random()*.5); s.stop(t+dur+.02); }
@@ -606,7 +607,7 @@ addEventListener('keydown',e=>{ const k=e.code; if(['ArrowLeft','ArrowRight','Ar
   if(DLG&&(k==='Enter'||k==='Space'||k==='KeyE')){ dlgNext(); return; }
   if(k==='ArrowLeft'||k==='KeyA') KEY.L=1; if(k==='ArrowRight'||k==='KeyD') KEY.R=1; if(k==='Space'||k==='ArrowUp'||k==='KeyW') KEY.jump=1; if(k==='KeyQ') toggleMirror(); if((k==='KeyE'||k==='Enter')&&NEAR&&!GAME.lock&&!GAME.busy) investigate(NEAR); });
 addEventListener('keyup',e=>{ const k=e.code; if(k==='ArrowLeft'||k==='KeyA') KEY.L=0; if(k==='ArrowRight'||k==='KeyD') KEY.R=0; });
-function toggleMirror(){ if(!S.mirrorOK||GAME.lock||GAME.cine||GAME.story||TITLE) return; S.mirror=!S.mirror; GAME.mirT=.35; GAME.flash=.15; snd(S.mirror?'whisper':'page',S.mirror?.8:1,.35); syncHUD(); if(SCN&&SCN.onMirror) SCN.onMirror(S.mirror); }
+function toggleMirror(){ if(!S.mirrorOK||GAME.lock||GAME.cine||GAME.story||TITLE) return; S.mirror=!S.mirror; GAME.mirT=.35; GAME.flash=.15; snd(S.mirror?'drip':'page',S.mirror?.7:1,.4); syncHUD(); if(SCN&&SCN.onMirror) SCN.onMirror(S.mirror); }
 function bindView(){ const v=$('#view'); let sx=0, sy=0;
   v.addEventListener('pointerdown',e=>{ sx=e.clientX; sy=e.clientY; });
   v.addEventListener('pointerup',e=>{ if(e.target.closest('#hud button,#modal,#mini,#prompt')) return;
