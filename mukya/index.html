@@ -830,13 +830,12 @@ async function vnClose(){ await fade(true); vn().hidden=true; GAME.story=0; $('#
 async function vnBg(bg,tag){ await fade(true,500); vn().querySelector('.bg').src=VNBG[bg]; vn().querySelector('.tag').textContent=tag||''; await fade(false,700); }
 function vnBlood(){ const b=document.querySelector('#vnblood'); if(!b) return; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
 function vnFx(k){ const v=vn(); v.classList.remove('shake','red','flash'); void v.offsetWidth; v.classList.add(k); if(k==='red') snd('scare',1.1,.5); setTimeout(()=>v.classList.remove(k),900); }
-function vnCard(big,small,ms=2800){ const c=$('#vncard'); c.querySelector('b').innerHTML=big||''; c.querySelector('span').textContent=small||''; c.className=''; void c.offsetWidth; c.className='show'; return wait(ms); }
+function vnCard(big,small,ms=2800){ const c=$('#vncard'); c.querySelector('b').innerHTML=big||''; c.querySelector('span').textContent=small||''; c.className=''; void c.offsetWidth; c.className='show'; return wait(ms).then(()=>{ c.className=''; c.querySelector('b').innerHTML=''; c.querySelector('span').textContent=''; }); }
 async function toScene(def){ await fade(true); vn().hidden=true; GAME.story=0; $('#hud').hidden=false; const p=playScene(def); await wait(150); await fade(false,800); await p; await wait(400); }
 
 /* ---------- 1화 ---------- */
 async function ep1(){ S.items=[]; S.mirrorOK=false; syncHUD();
   await vnOpen('prologue','보름날 밤 · 폐사찰의 귀문 앞');
-  await vnCard('墨夜','묵야 · 귀명록',2600);
   await say([['','조선 말. 사람의 이름을 빼앗아 가는 귀신이 있었다.'],['','그것에게 이름을 빼앗긴 사람은 그림자부터 지워지고, 이윽고 모두의 기억에서 사라진다.'],
     ['','부모도, 동무도, 그 사람을 불러 주던 누구도. 처음부터 없었던 사람처럼.'],
     ['','무당 집안의 둘째 딸, 홍련. 어릴 적 귀신 딸이라 놀림받던 아이는 신내림 굿 전날 밤 도망쳤고, 지금은 도성 장터에서 약초를 판다.'],
