@@ -369,14 +369,14 @@ async function audioInit(){ if(AU.ac){ if(AU.ac.state==='suspended') AU.ac.resum
   AU.ac=new A(); AU.master=AU.ac.createGain(); AU.master.gain.value=.9; AU.master.connect(AU.ac.destination);
   for(const k in SFX){ try{ const bin=atob(SFX[k].split(',')[1]), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); AU.buf[k]=await new Promise((res,rej)=>AU.ac.decodeAudioData(u.buffer,res,rej)); }catch(e){} }
   if(AU.want) ambient(AU.want); }
-function snd(k,rate=1,vol=.6){ const a=AU.ac; if(!a||!AU.on||!AU.buf[k]) return; try{ const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.playbackRate.value=rate; const g=a.createGain(); g.gain.value=vol; s.connect(g); g.connect(AU.master); s.start(); }catch(e){} }
+function snd(k,rate=1,vol=.6){ if(k==='bell') AU.lastBell=performance.now(); const a=AU.ac; if(!a||!AU.on||!AU.buf[k]) return; try{ const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.playbackRate.value=rate; const g=a.createGain(); g.gain.value=vol; s.connect(g); g.connect(AU.master); s.start(); }catch(e){} }
 function tone(f0,f1,dur,vol=.2,type='sine',delay=0){ const a=AU.ac; if(!a||!AU.on) return; const t=a.currentTime+delay, o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(AU.master); o.start(t); o.stop(t+dur+.02); }
 let NB=null; function noise(dur,vol=.2,f0=1000,f1=400,type='lowpass',q=1){ const a=AU.ac; if(!a||!AU.on) return; if(!NB){ NB=a.createBuffer(1,a.sampleRate,a.sampleRate); const d=NB.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
   const t=a.currentTime, s=a.createBufferSource(); s.buffer=NB; const f=a.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(f0,t); f.frequency.exponentialRampToValueAtTime(f1,t+dur); const g=a.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f); f.connect(g); g.connect(AU.master); s.start(t,Math.random()*.5); s.stop(t+dur+.02); }
 function ambient(k){ AU.want=k; const a=AU.ac; if(!a) return; if(AU.amb&&AU.amb.k===k) return; if(AU.amb){ const o=AU.amb; o.g.gain.setValueAtTime(o.g.gain.value,a.currentTime); o.g.gain.linearRampToValueAtTime(0,a.currentTime+1.5); setTimeout(()=>{ try{o.s.stop()}catch(e){} },1700); AU.amb=null; }
   if(!k||!AU.buf[k]) return; const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.loop=true; const g=a.createGain(); g.gain.value=0; g.gain.linearRampToValueAtTime(.32,a.currentTime+2.5); s.connect(g); g.connect(AU.master); s.start(); AU.amb={s,g,k}; }
 const SFXP={ step:()=>noise(.05,.03,900,300), jump:()=>noise(.18,.08,400,1600,'bandpass',.8), land:()=>{ noise(.12,.1,600,120); tone(110,60,.12,.12); }, thud:()=>{ tone(90,30,.45,.5); noise(.3,.22,400,80); },
-  ui:()=>tone(520,780,.05,.05,'square'), deny:()=>tone(200,120,.12,.08,'square'), sting:()=>{ tone(1800,600,.6,.12,'sawtooth'); noise(.5,.3,3000,400); } };
+  ui:()=>snd('pick',1,.4), deny:()=>tone(200,120,.12,.08,'square'), sting:()=>{ tone(1800,600,.6,.12,'sawtooth'); noise(.5,.3,3000,400); } };
 
 /* ================= 상태 ================= */
 const ITEMS={mirror:{n:'청동 거울',ic:'鏡'},seal:{n:'봉 부적',ic:'封'},cord:{n:'언니의 방울 끈',ic:'結'},blank:{n:'빈 종이',ic:'紙'},talirev:{n:'언니의 부적',ic:'封'},fur:{n:'여우 털',ic:'毛'},
@@ -414,9 +414,9 @@ function say(lines){ return new Promise(res=>{ GAME.lock++; DLG={lines,i:0,res};
 function showLine(){ const d=$('#dialog'), [who,txt]=DLG.lines[DLG.i], k=WHO[who]; d.hidden=false; d.classList.toggle('nar',!who);
   if(GAME.story) vn().querySelectorAll('.ch').forEach(el=>el.classList.toggle('dim',!!k&&el.dataset.k!==k));
   const pi=d.querySelector('.por'); if(k&&PORSRC[k]){ pi.src=PORSRC[k]; pi.hidden=false; } else pi.hidden=true;
-  d.querySelector('.who').textContent=who||''; d.querySelector('.who').hidden=!who; const t=d.querySelector('.txt'); t.textContent=''; let i=0; clearInterval(TYPE);
-  TYPE=setInterval(()=>{ i++; t.textContent=txt.slice(0,i); if(i%3===0) tone(300+Math.random()*60,280,.03,.018,'square'); if(i>=txt.length){ clearInterval(TYPE); TYPE=null; } },24); DLG.full=txt; }
-function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++;
+  if(/짤랑/.test(txt)&&performance.now()-(AU.lastBell||0)>700) snd('bell',1,.5); d.querySelector('.who').textContent=who||''; d.querySelector('.who').hidden=!who; const t=d.querySelector('.txt'); t.textContent=''; let i=0; clearInterval(TYPE);
+  TYPE=setInterval(()=>{ i++; t.textContent=txt.slice(0,i); if(i>=txt.length){ clearInterval(TYPE); TYPE=null; } },24); DLG.full=txt; }
+function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++; snd('page',1,.45);
   if(DLG.i>=DLG.lines.length){ $('#dialog').hidden=true; GAME.lock--; const r=DLG.res; DLG=null; r(); } else showLine(); }
 function choose(title,opts){ return new Promise(res=>{ GAME.lock++; const m=$('#modal'); m.hidden=false; m.className='choice';
   const vis=opts.filter(o=>!o.show||o.show()); m.querySelector('.box').innerHTML=`<h2>${title}</h2>${vis.map((o,i)=>`<button data-m="${i}" class="opt${o.secret?' secret':''}"><b>${'一二三四'[i]}</b><span>${o.t}${o.secret?`<small>숨은 선택 · ${o.secret}</small>`:''}</span></button>`).join('')}`;
