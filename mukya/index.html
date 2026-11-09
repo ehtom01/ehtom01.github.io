@@ -160,6 +160,23 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 #tr{z-index:2}#coach{z-index:3}
 #vnblood{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 0 0,rgba(140,10,20,.85) 0,rgba(140,10,20,.5) 9%,transparent 22%),radial-gradient(circle at 100% 0,rgba(110,8,16,.8) 0,transparent 18%),radial-gradient(circle at 0 100%,rgba(120,8,16,.85) 0,transparent 24%),radial-gradient(circle at 100% 100%,rgba(140,10,20,.9) 0,rgba(90,6,12,.5) 12%,transparent 26%),radial-gradient(circle at 8% 70%,rgba(160,20,24,.7) 0,transparent 4%),radial-gradient(circle at 92% 30%,rgba(160,20,24,.7) 0,transparent 3%),radial-gradient(circle at 86% 82%,rgba(20,6,8,.7) 0,transparent 6%)}
 #vnblood.on{animation:vbl 3.2s ease-out forwards}@keyframes vbl{0%{opacity:0;transform:scale(1.15)}10%{opacity:1;transform:none}70%{opacity:.85}100%{opacity:.35}}
+.cutsc{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:opacity 1.4s ease}
+.cutsc.done{opacity:0;pointer-events:none}.cutink{position:absolute;inset:0;width:100%;height:100%}
+.cutq{position:relative;font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(20px,calc(var(--u)*12),34px);line-height:1.7;letter-spacing:.06em;color:#efe4cb;text-align:center;text-shadow:0 0 18px rgba(0,0,0,.9)}
+.cutq span{display:inline-block;opacity:0}.cutq.on span{animation:brushin .55s ease-out forwards}
+.cutq.gone{transition:opacity .8s ease,filter .8s ease,letter-spacing .8s ease;opacity:0;filter:blur(10px);letter-spacing:.25em}
+@keyframes brushin{from{opacity:0;filter:blur(6px);transform:translateY(4px) scale(1.15)}to{opacity:1;filter:blur(0);transform:none}}
+.cuttitle,.cutsub{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;transition:opacity .9s ease,filter .9s ease}
+.cuttitle img{height:clamp(70px,calc(var(--u)*46),170px);filter:drop-shadow(0 0 18px rgba(0,0,0,.9));transform:scale(1.08);transition:transform 2.4s ease}
+.cuttitle.on{opacity:1}.cuttitle.on img{transform:none}.cuttitle.gone{opacity:0;filter:blur(8px)}
+.ct-name{display:flex;align-items:center;gap:14px;font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(14px,calc(var(--u)*6),22px);letter-spacing:.3em;color:#c9a24a}.ct-name b{color:#efe4cb;font-weight:700}
+.ct-name i,.cs-main i{display:block;width:clamp(28px,9vw,48px);height:1px;background:linear-gradient(90deg,transparent,#c9a24a)}.ct-name i:last-child,.cs-main i:last-child{background:linear-gradient(90deg,#c9a24a,transparent)}
+.ct-big{font-family:var(--brush);font-size:clamp(54px,calc(var(--u)*34),120px);line-height:1;color:#efe4cb;text-shadow:0 0 22px rgba(0,0,0,.9);transform:scale(1.08);transition:transform 2.4s ease}.cuttitle.on .ct-big{transform:none}
+.ct-sub{font-family:'Noto Serif KR',serif;font-size:12px;letter-spacing:.32em;color:#a99d84}
+.cutsub.on{opacity:1}.cutsub.gone{opacity:0}
+.cs-main{display:flex;align-items:center;gap:16px}.cs-main span{font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(22px,calc(var(--u)*13),34px);letter-spacing:.12em;color:#efe4cb}
+.cs-2{font-family:'Noto Serif KR',serif;font-weight:500;font-size:13px;letter-spacing:.28em;color:#a99d84}
+.cutnext{position:absolute;right:18px;bottom:16px;color:#c9a24a;font-size:14px;opacity:0;transition:opacity .4s}.cutnext.on{opacity:1;animation:cblink 1.2s infinite}@keyframes cblink{50%{opacity:.25}}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -364,12 +381,14 @@ Object.assign(VNBG,{"room":"data:image/webp;base64,UklGRlYfAQBXRUJQVlA4IEofAQDw4
 const BRUSH={"急20": {"n": 24, "r": ["........................", "........................", "........................", "..........6.............", ".........69.............", ".........966899.........", "........9...998.........", ".......6...79...........", "......4...69754.........", "........69765799........", "...........44599........", ".........7998796........", ".............99.........", "..........68996.........", "........497545..........", "............3...98......", "..........595.5..99.....", "......9....6..494.4.....", ".....86..84....496......", ".....96..698545799......", ".....73...79999999......", "...........489997.......", "........................", "........................"]}, "如20": {"n": 24, "r": ["........................", "........................", "........................", "........................", "........................", "..........9.............", ".........49.............", ".........89.............", ".........96.............", "........59..............", "........89497...........", "......4799997.4677874...", "....79699.58.87...997...", "...46..97.94.64..597....", ".......9999..48..98.....", "........698...96998.....", "........9996..896684....", "......56..894...........", "..........499...........", "...........89...........", "........................", "........................", "........................", "........................"]}, "律20": {"n": 24, "r": ["........................", "........................", "........................", ".............5..........", ".........6...86.........", "........494.599773......", "........95...87398......", ".......75...49989975....", "......63.396.9769..4....", "........53..39999.......", "........95.899976.......", ".......78....96.........", "......49.....9878.......", "......96...899866.......", ".....7.63....95.........", "....4..74.3689999995....", ".......83596496...4.....", ".......8.....95.........", ".......9.....95.........", ".......63....95.........", ".............93.........", ".............7..........", "........................", "........................"]}, "令20": {"n": 24, "r": ["........................", "........................", "........................", "..........3.............", "..........97............", ".........794............", "........3997............", "........983995..........", ".......79...998.........", "......59.45..9995.......", ".....49..799..99996.....", ".....8...499...999997...", "....6...........6995....", "..........57996.........", ".......4874.699.........", "......88....99..........", "...........593..........", "...........95...........", ".........886............", ".........899............", "..........996...........", "...........7............", "........................", "........................"]}, "封40": {"n": 44, "r": ["............................................", "............................................", "............................................", "............................................", "............................................", "..............58............................", "..............8993...........599............", "..............9996...........6999...........", "..............9996...........79993..........", "..............9996...........7999...........", "..............999854.........7999...........", "............489999998........7999...........", ".........389999999998........7999...........", ".........999589995...........8999...........", ".........69..7999............8999699883.....", ".............9999..........469999999999.....", ".............9997....334699999999889999.....", "............699999999999996439999....3......", ".........4799999999999998....9998...........", "......48999997543..45687.....9998...........", ".....999984...87.............8998...........", ".....377......997............8998...........", ".............5999............8999...........", ".............6999895...986...7999...........", "............69999998...9999..7999...........", "..........899999965....49995.7999...........", ".........59959999........99..79994..........", ".............9999............79994..........", ".............9999............79994..........", "............4999999996.......6999...........", "............7999999997.......7999...........", "..........37999999753........7999...........", "........489999984............79993..........", ".......7999997...............8999...........", ".......59998.................9999...........", ".........55............46...69999...........", "........................899799999...........", ".........................89999997...........", "..........................9999995...........", "..........................799999............", "..........................49997.............", "............................................", "............................................", "............................................"]}};
 
 /* ================= 소리 ================= */
-const AU={ac:null,buf:{},on:true,amb:null,master:null};
+const AU={ac:null,buf:{},off:{},on:true,amb:null,master:null};
 async function audioInit(){ if(AU.ac){ if(AU.ac.state==='suspended') AU.ac.resume(); return; } const A=window.AudioContext||window.webkitAudioContext; if(!A) return;
   AU.ac=new A(); AU.master=AU.ac.createGain(); AU.master.gain.value=.9; AU.master.connect(AU.ac.destination);
-  for(const k in SFX){ try{ const bin=atob(SFX[k].split(',')[1]), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); AU.buf[k]=await new Promise((res,rej)=>AU.ac.decodeAudioData(u.buffer,res,rej)); }catch(e){} }
+  for(const k in SFX){ try{ const bin=atob(SFX[k].split(',')[1]), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); AU.buf[k]=await new Promise((res,rej)=>AU.ac.decodeAudioData(u.buffer,res,rej)); AU.off[k]=leadOff(AU.buf[k],TRIM[k]); }catch(e){} }
   if(AU.want) ambient(AU.want); }
-function snd(k,rate=1,vol=.6){ if(k==='bell') AU.lastBell=performance.now(); const a=AU.ac; if(!a||!AU.on||!AU.buf[k]) return; try{ const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.playbackRate.value=rate; const g=a.createGain(); g.gain.value=vol; s.connect(g); g.connect(AU.master); s.start(); }catch(e){} }
+const TRIM={page:.5,bell:.2,pick:.2,brush:.15,ritok:.15,clue:.15};
+function leadOff(b,th){ if(!th) return 0; const d=b.getChannelData(0); let pk=0; for(let i=0;i<d.length;i++) pk=Math.max(pk,Math.abs(d[i])); for(let i=0;i<d.length;i++) if(Math.abs(d[i])>pk*th) return Math.max(0,i/b.sampleRate-.008); return 0; }
+function snd(k,rate=1,vol=.6){ if(k==='bell') AU.lastBell=performance.now(); const a=AU.ac; if(!a||!AU.on||!AU.buf[k]) return; try{ const s=a.createBufferSource(); s.buffer=AU.buf[k]; s.playbackRate.value=rate; const g=a.createGain(); g.gain.value=vol; s.connect(g); g.connect(AU.master); s.start(0,AU.off[k]||0); }catch(e){} }
 function tone(f0,f1,dur,vol=.2,type='sine',delay=0){ const a=AU.ac; if(!a||!AU.on) return; const t=a.currentTime+delay, o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(AU.master); o.start(t); o.stop(t+dur+.02); }
 let NB=null; function noise(dur,vol=.2,f0=1000,f1=400,type='lowpass',q=1){ const a=AU.ac; if(!a||!AU.on) return; if(!NB){ NB=a.createBuffer(1,a.sampleRate,a.sampleRate); const d=NB.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
   const t=a.currentTime, s=a.createBufferSource(); s.buffer=NB; const f=a.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(f0,t); f.frequency.exponentialRampToValueAtTime(f1,t+dur); const g=a.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f); f.connect(g); g.connect(AU.master); s.start(t,Math.random()*.5); s.stop(t+dur+.02); }
@@ -416,7 +435,7 @@ function showLine(){ const d=$('#dialog'), [who,txt]=DLG.lines[DLG.i], k=WHO[who
   const pi=d.querySelector('.por'); if(k&&PORSRC[k]){ pi.src=PORSRC[k]; pi.hidden=false; } else pi.hidden=true;
   if(/짤랑/.test(txt)&&performance.now()-(AU.lastBell||0)>700) snd('bell',1,.5); d.querySelector('.who').textContent=who||''; d.querySelector('.who').hidden=!who; const t=d.querySelector('.txt'); t.textContent=''; let i=0; clearInterval(TYPE);
   TYPE=setInterval(()=>{ i++; t.textContent=txt.slice(0,i); if(i>=txt.length){ clearInterval(TYPE); TYPE=null; } },24); DLG.full=txt; }
-function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++; snd('page',1,.45);
+function dlgNext(){ if(!DLG) return; if(TYPE){ clearInterval(TYPE); TYPE=null; $('#dialog .txt').textContent=DLG.full; return; } DLG.i++; snd('page',1,.9);
   if(DLG.i>=DLG.lines.length){ $('#dialog').hidden=true; GAME.lock--; const r=DLG.res; DLG=null; r(); } else showLine(); }
 function choose(title,opts){ return new Promise(res=>{ GAME.lock++; const m=$('#modal'); m.hidden=false; m.className='choice';
   const vis=opts.filter(o=>!o.show||o.show()); m.querySelector('.box').innerHTML=`<h2>${title}</h2>${vis.map((o,i)=>`<button data-m="${i}" class="opt${o.secret?' secret':''}"><b>${'一二三四'[i]}</b><span>${o.t}${o.secret?`<small>숨은 선택 · ${o.secret}</small>`:''}</span></button>`).join('')}`;
@@ -845,12 +864,11 @@ async function ep1(){ S.items=[]; S.mirrorOK=false; syncHUD();
   await toScene(sceneGate());
   await vnOpen('prologue','보름날 밤 · 폐사찰의 귀문 앞');
   await say([['','홍련이 방울을 높이 들었다. 그 순간, 발끝에서부터 그림자가 먹물처럼 번지며 지워지기 시작했다.'],['백련','홍련아, 네 그림자가…!'],['홍련','괜찮아. 문만 닫으면 돼.'],['','백련이 동생의 손을 잡으려 손을 뻗었다. 그런데 그 손이 허공에서 멈췄다.'],['백련','…어?']]);
-  vnFx('red'); vnBlood(); snd('forget',1,.6);
+  vnFx('red'); vnBlood();
   await say([['백련','너를… 뭐라고 불렀더라.'],['백련','방금까지 입에 있었는데. 아무리 떠올려도… 안 떠올라.'],['홍련','무슨 소리야, 언니. 나잖아… 나…'],['','대답하려던 이름이, 홍련 자신의 입에서도 나오지 않았다.']]);
-  await fade(true,900); await vnCard('이름을 빼앗긴 자는,<br>그림자부터 사라진다.','',3200); await vnCard('다시, 보름 전','모든 일이 시작된 저녁 · 도성 남문 밖',2800);
+  await inkCut('이름을 빼앗긴 자는,|그림자부터 사라진다.','다시, 보름 전','모든 일이 시작된 저녁 · 도성 남문 밖',{big:'第一章',name:'방울 소리',sub:'1장'});
   S.items=[]; S.mirrorOK=false; syncHUD();
   vn().querySelector('.bg').src=VNBG.market; vn().querySelector('.tag').textContent='보름 전 · 도성 남문 밖 장터'; await fade(false,900);
-  await vnCard('第一話','1화 · 방울 소리',2400);
   await say([['','조선 말, 도성 남문 밖 장터. 해가 기울면 장꾼들은 서둘러 좌판을 접는다.'],['','요즘 해 진 뒤의 장터에는 이상한 소문이 돌았다. 그림자 없는 아이를 봤다는 소문.'],
     ['분이','언니! 쑥 한 줌에 얼마예요? 엄마가 체했어요.'],['','대여섯 살쯤 된 계집아이가 좌판 앞에서 발돋움을 했다. 홍련은 웃으며 쑥 한 줌을 쥐여 주었다.'],['홍련','돈은 됐어. 어머니께 달여 드려.'],
     ['분이','진짜요? 그럼 이거 받아요. 엄마가 그러는데, 그냥 받기만 하면 복이 달아난대요.'],['','아이가 고사리손으로 꼭 쥐고 있던 것을 좌판 위에 내려놓았다. 반들반들한 조약돌 하나였다.'],
@@ -858,7 +876,7 @@ async function ep1(){ S.items=[]; S.mirrorOK=false; syncHUD();
     ['','분이가 깡충 뛰어 돌아섰다. 노을이 길게 깔린 장터 바닥 위로 아이가 달려갔다.'],['','그런데, 그림자가 없었다.']]);
   vnFx('red'); await say([['홍련','(…저 아이, 그림자가.)'],['','짤랑. 누구의 손에도 들리지 않은 방울이, 오직 홍련의 귀에만 울렸다.'],['','3년 전부터였다. 언니가 사라진 그 밤 이후로, 방울 소리는 한 번도 그친 적이 없었다.'],['홍련','(안 들려. 난 아무것도 안 들려.)'],
     ['','얼마 지나지 않아, 한 여인이 장터를 헤매며 들어왔다.'],['여인','혹시… 우리 애 못 봤어요? 이만한 계집애인데. 쑥 사러 간다고…'],['홍련','방금 왔었어요. 분이요. 저쪽 골목으로—'],['여인','분… 이?'],['','여인이 그 이름을 처음 듣는 사람처럼 되뇌었다.']]);
-  snd('forget',1,.6); await say([['여인','…그런데 내가 왜 여기 왔더라. 애? 나는… 애가 없는데.'],['','여인은 고개를 갸웃하더니 빈손으로 돌아섰다.'],['홍련','(방금 그 아이 이름이… 뭐였지? 분명히 들었는데.)'],['','혀끝에 걸린 이름이 물에 젖은 먹처럼 번져 갔다.']]);
+  await say([['여인','…그런데 내가 왜 여기 왔더라. 애? 나는… 애가 없는데.'],['','여인은 고개를 갸웃하더니 빈손으로 돌아섰다.'],['홍련','(방금 그 아이 이름이… 뭐였지? 분명히 들었는데.)'],['','혀끝에 걸린 이름이 물에 젖은 먹처럼 번져 갔다.']]);
   const a=await choose('이름이 지워지고 있다',[{t:'잊기 전에, 손바닥에 먹으로 아이의 이름을 적는다.',v:'wrote'},{t:'아이가 사라진 골목으로 뛰어간다.',v:'chase'}]); S.flags[a]=1;
   if(a==='wrote') await say([['','홍련은 장부용 먹을 찍어 손바닥에 급히 적었다. 첫 글자를 쓰자마자 붓끝이 멈췄다. 나머지는 이미 기억에 없었다.'],['','손바닥에 남은 것은 한 글자. 「분」.'],['홍련','(한 글자. 그래도 한 글자는 붙잡았어.)']]);
   else await say([['','골목 끝은 막다른 담이었다. 아이는 없었다.'],['','담벼락 아래, 하얀 털 한 줌과 쑥 한 줌이 나란히 떨어져 있었다. 털은 개털보다 길고 부드러웠다.'],['홍련','(여우 털…?)']]);
@@ -900,7 +918,7 @@ async function ep1(){ S.items=[]; S.mirrorOK=false; syncHUD();
 
 /* ---------- 2화 ---------- */
 async function ep2(){ S.items=['mirror']; S.mirrorOK=true; syncHUD();
-  await vnBg('village','소리개 마을 어귀 · 해 질 녘'); await vnCard('第二話','2화 · 우물',2400);
+  await vnBg('village','소리개 마을 어귀 · 해 질 녘'); await vnCard('第二章','2장 · 우물',2400);
   await say([['','우물 쪽으로 걸음을 옮기려는 순간, 닫혀 있던 대문 하나가 벌컥 열렸다.'],['촌장','누구요! 해 지면 아무도 돌아다니지 말라 했거늘!'],['','흰 수염에 탕건을 쓴 노인이 몽둥이를 들고 서 있었다. 소리개 마을 촌장이었다.'],['촌장','관아에서 왔다더니 웬 처자를 달고 왔소?'],['태석','실종 사건을 도울 사람이오.'],
     ['촌장','혹시 무당이오? 이 마을엔 무당은 발도 못 들이오. 백련 그 여자 때문에 아이들이…'],['','촌장은 홍련을 알아보지 못했다. 3년 사이 홍련은 많이 변해 있었다.']]);
   const a=await choose('촌장 앞에서',[{t:'정체를 밝힌다. "나는 백련의 동생입니다."',v:'honest'},{t:'약초꾼이라고 둘러댄다.',v:'lie'}]);
@@ -973,6 +991,34 @@ function boot(){ FR=PFX.createFrame(W,H); FIMG=new ImageData(W,H); [FXC,FXX]=mk(
   $('#prompt').addEventListener('pointerup',e=>{ e.stopPropagation(); if(NEAR&&!GAME.lock&&!GAME.busy) investigate(NEAR); });
   requestAnimationFrame(frame); playOpening().then(showTitle); }
 loadImages(()=>loadFar(boot));
+
+/* 방탈출판 컷신: 먹물이 화면을 덮고 → 붓 문구 → (제목) → 「보름 전」 */
+function inkSpread(cv,dur){ const dpr=Math.min(2,devicePixelRatio||1), w=cv.clientWidth||innerWidth, h=cv.clientHeight||innerHeight; cv.width=w*dpr; cv.height=h*dpr;
+  const c=cv.getContext('2d'); c.scale(dpr,dpr); const diag=Math.hypot(w,h), R=(a,b)=>a+Math.random()*(b-a);
+  const drops=[{x:w*.5,y:h*.52,t0:0,R:diag*.62}]; for(let i=0;i<9;i++){ const a=R(0,Math.PI*2), d=R(.18,.48)*diag; drops.push({x:w*.5+Math.cos(a)*d,y:h*.52+Math.sin(a)*d,t0:R(.08,.45),R:R(.18,.36)*diag}); }
+  drops.forEach(d=>{ d.k=[]; for(let f=2;f<=56;f++) if(Math.random()<.55) d.k.push({f,a:R(.5,1)*.34/Math.pow(f,1.05),p:R(0,7),s:R(-1,1)}); });
+  const specks=Array.from({length:40},()=>({x:R(0,w),y:R(0,h),r:R(1,5),t:R(.05,.6)})), N=260, t0=performance.now();
+  (function fr(now){ const p=Math.min(1,(now-t0)/dur); c.clearRect(0,0,w,h);
+    drops.forEach(d=>{ const q=Math.max(0,(p-d.t0)/(1-d.t0)); if(q<=0) return; const r=d.R*(1-Math.pow(1-q,2.4));
+      [[1.16,.22,18],[1.06,.5,7],[1,.97,1.5]].forEach(([sc,al,bl])=>{ c.save(); c.filter=`blur(${bl}px)`; c.fillStyle=`rgba(6,5,4,${al})`; c.beginPath();
+        for(let i=0;i<=N;i++){ const a=i/N*Math.PI*2; let m=1; d.k.forEach(k=>m+=k.a*Math.sin(k.f*a+k.p+k.s*q*2.2)); const x=d.x+Math.cos(a)*r*sc*m, y=d.y+Math.sin(a)*r*sc*m; i?c.lineTo(x,y):c.moveTo(x,y); } c.closePath(); c.fill(); c.restore(); }); });
+    specks.forEach(sp=>{ if(p>sp.t){ c.fillStyle='rgba(6,5,4,.9)'; c.beginPath(); c.arc(sp.x,sp.y,sp.r*Math.min(1,(p-sp.t)*8),0,7); c.fill(); } });
+    if(p>.82){ c.fillStyle=`rgba(5,4,4,${(p-.82)/.18})`; c.fillRect(0,0,w,h); } if(p<1) requestAnimationFrame(fr); })(t0); }
+function inkCut(quote,sub,sub2,title){ return new Promise(done=>{ GAME.lock++;
+  const ov=document.createElement('div'); ov.className='cutsc'; const ink=document.createElement('canvas'); ink.className='cutink'; ov.appendChild(ink);
+  let k=0; const q=document.createElement('div'); q.className='cutq'; q.innerHTML=quote.split('|').map(l=>`<div>${[...l].map(ch=>`<span style="animation-delay:${(k++)*.07}s">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>`).join(''); ov.appendChild(q);
+  const tt=document.createElement('div'); tt.className='cuttitle'; if(title) tt.innerHTML=`<div class="ct-big">${title.big}</div><div class="ct-name"><i></i>${title.sub} <b>${title.name}</b><i></i></div>`; ov.appendChild(tt);
+  const sb=document.createElement('div'); sb.className='cutsub'; sb.innerHTML=`<div class="cs-main"><i></i><span>${sub}</span><i></i></div>${sub2?`<div class="cs-2">${sub2}</div>`:''}`; ov.appendChild(sb);
+  const nx=document.createElement('div'); nx.className='cutnext'; nx.textContent='▼'; ov.appendChild(nx);
+  (document.querySelector('#view')||document.body).appendChild(ov);
+  const T=t=>new Promise(r=>setTimeout(r,t)); let ready=false, phase=0, fin=false; const wt=()=>{ ready=true; nx.classList.add('on'); };
+  const finish=async()=>{ if(fin) return; fin=true; await fade(true,60); ov.classList.add('done'); setTimeout(()=>ov.remove(),1500); GAME.lock--; done(); };
+  ov.addEventListener('pointerup',async e=>{ e.stopPropagation(); if(!ready) return; ready=false; nx.classList.remove('on'); snd('page',1,.9);
+    if(phase===0){ q.classList.add('gone'); await T(900); if(title){ phase=1; tt.classList.add('on'); snd('bell',.7,.5); await T(1800); wt(); return; } phase=2; sb.classList.add('on'); await T(700); wt(); }
+    else if(phase===1){ phase=2; tt.classList.add('gone'); await T(900); sb.classList.add('on'); await T(700); wt(); }
+    else { sb.classList.add('gone'); await T(500); finish(); } });
+  ov.addEventListener('pointerdown',e=>e.stopPropagation());
+  (async()=>{ requestAnimationFrame(()=>inkSpread(ink,1200)); await T(300); snd('bell',1,.45); await T(1000); q.classList.add('on'); await T(k*70+600); wt(); })(); }); }
 
 
 </script>
