@@ -627,34 +627,26 @@ function spotlight(pt,cx){ const sp=document.querySelector('#spot'); if(!sp) ret
   else { const hh=SCN.hots.find(q=>q.id===pt.hot); if(!hh){ sp.hidden=true; return; } const sx=(hh.x-cx)/W*v.width, sy=(hh.top||(hh.low?GY-10:GY-30))/H*v.height, r=v.width*.07; if(sx<0||sx>v.width){ sp.hidden=true; return; } l=sx-r; t=sy-r; w=r*2; h=r*2; sp.classList.remove('sq'); }
   sp.hidden=false; sp.style.left=l+'px'; sp.style.top=t+'px'; sp.style.width=w+'px'; sp.style.height=h+'px'; }
 
-/* 귀문 봉인: 괴황지 부적 + 붉은 붓 원 + 오방색 방울끈 (서양식 마법진 대신) */
-let SEALS=[], TALI=null;
-function taliCanvas(){ if(TALI) return TALI; const w=18,h=38, [c,x]=mk(w,h);
-  x.fillStyle='#3a2a10'; x.fillRect(0,0,w,h); x.fillStyle='#d9b24a'; x.fillRect(1,1,w-2,h-2); x.fillStyle='#e8c860'; x.fillRect(2,2,w-5,h-4);
-  const d=x.getImageData(0,0,w,h); for(let i=0;i<d.data.length;i+=4){ const n=((i*7919)>>3)%9; if(n<2&&d.data[i+3]){ d.data[i]-=18; d.data[i+1]-=18; } } x.putImageData(d,0,0);
-  const R='#a8141c', D='#6a0a10'; x.fillStyle=R;
-  x.fillRect(4,3,10,1); x.fillRect(8,2,2,3); x.fillRect(5,4,1,1); x.fillRect(12,4,1,1);           /* 머리 획 */
-  const [g,gx]=mk(16,16); gx.fillStyle='#000'; gx.font='bold 14px serif'; gx.textAlign='center'; gx.textBaseline='middle'; gx.fillText('封',8,8.5);
-  const gd=gx.getImageData(0,0,16,16).data; for(let yy=0;yy<16;yy++) for(let xx=0;xx<16;xx++) if(gd[(yy*16+xx)*4+3]>110){ x.fillStyle=R; x.fillRect(1+xx,7+yy,1,1); }
-  x.fillStyle=R; for(let yy=24;yy<35;yy++){ x.fillRect(9+((yy%4)<2?0:1),yy,1,1); } x.fillRect(5,28,9,1); x.fillRect(6,32,7,1); x.fillStyle=D; x.fillRect(4,35,10,1);
-  x.fillStyle=R; x.fillRect(11,30,4,4); x.fillStyle='#e8c860'; x.fillRect(12,31,1,1); x.fillRect(13,32,1,1);   /* 붉은 낙관 */
-  return TALI=c; }
-function sealFx(x,y){ SEALS.push({x,y,t:0}); burst(x,y-20,26,['#a8141c','#6a0a10','#1a0c10'],80); }
+/* 귀문 봉인: 허공에 붉은 진언 글자가 하나씩 써졌다가 먹물로 흩어지고, 가운데 「封」이 찍힌다 */
+let SEALS=[]; const GLYPH={};
+function glyphMask(ch,px){ const k=ch+px; if(GLYPH[k]) return GLYPH[k]; const n=px+4, [g,gx]=mk(n,n); gx.fillStyle='#000'; gx.font=`900 ${px}px "Noto Serif KR","Nanum Myeongjo",serif`; gx.textAlign='center'; gx.textBaseline='middle'; gx.fillText(ch,n/2,n/2+1);
+  const d=gx.getImageData(0,0,n,n).data, pts=[]; for(let y=0;y<n;y++) for(let x=0;x<n;x++) if(d[(y*n+x)*4+3]>120) pts.push([x-n/2,y-n/2,((x*37+y*91)%23)/23]); return GLYPH[k]={pts,n}; }
+const MANTRA=['唵','嘛','呢','叭','彌','吽'];
+function sealFx(x,y){ SEALS.push({x,y,t:0,popped:0,stamped:0}); }
+function drawGlyph(m,x,y,rev,alpha,cols,lift=0){ const c=ctx; c.globalAlpha=alpha; for(const [px,py,n] of m.pts){ if(py/m.n+.5>rev+n*.15) continue; c.fillStyle=n<.2?cols[2]:(n<.7?cols[0]:cols[1]); c.fillRect(Math.round(x+px),Math.round(y+py-lift*n),1,1); } c.globalAlpha=1; }
 function drawSeals(cx,T){ const c=ctx;
-  for(const q of SEALS){ const t=q.t, x=Math.round(q.x-cx), y=Math.round(q.y); if(x<-60||x>W+60) continue;
-    /* 붉은 붓으로 긋는 원 */
-    const prog=clamp((t-.25)/.8,0,1), R0=30;
-    if(prog>0){ const steps=Math.floor(120*prog); for(let i=0;i<steps;i++){ const a=-Math.PI/2+i/120*Math.PI*2, th=i<8?1:(i>110?1:2+(Math.sin(i*.7)>.6?1:0)), r=R0+Math.sin(i*.35)*1.2;
-        const px=Math.round(x+Math.cos(a)*r), py=Math.round(y-30+Math.sin(a)*r*1.05); c.fillStyle=i%9===0?'#6a0a10':'#b0141c'; c.fillRect(px,py,th,th); }
-      if(prog>=1&&Math.sin(T*3)>0){ c.fillStyle='rgba(255,90,60,.18)'; c.beginPath(); c.arc(x,y-30,R0+3,0,7); c.fill(); } }
-    /* 오방색 방울끈 다섯 가닥이 원을 돈다 */
-    if(t>.6){ const k=clamp((t-.6)/.5,0,1); OBANG.forEach(([n,col],i)=>{ const a=T*.9+i/5*Math.PI*2, r=R0+7, px=Math.round(x+Math.cos(a)*r), py=Math.round(y-30+Math.sin(a)*r*.95);
-        c.globalAlpha=k; c.fillStyle='#2a1a08'; c.fillRect(px-2,py-2,5,5); c.fillStyle=col==='#1a1714'?'#3a3430':col; c.fillRect(px-1,py-1,3,3); c.fillStyle='#fff6c4'; c.fillRect(px-1,py-1,1,1);
-        c.fillStyle=col==='#1a1714'?'#3a3430':col; for(let j=1;j<5;j++) c.fillRect(Math.round(px-Math.cos(a)*j*1.4),Math.round(py+j*1.2),1,1); c.globalAlpha=1; }); }
-    /* 부적이 위에서 펼쳐지며 내려와 붙는다 */
-    const tl=taliCanvas(), un=clamp(t/.3,0,1), dy=Math.round((1-un)*-20), hh=Math.max(1,Math.round(tl.height*un)), sway=Math.round(Math.sin(T*2.2)*(t>1?0:1));
-    c.drawImage(tl,0,0,tl.width,hh,x-9+sway,y-49+dy,tl.width,hh);
-    if(t<.5){ c.fillStyle=`rgba(255,240,200,${.6*(1-t*2)})`; c.fillRect(x-11,y-51+dy,22,hh+4); } } }
+  for(const q of SEALS){ const t=q.t, x=Math.round(q.x-cx), y=Math.round(q.y)-30; if(x<-80||x>W+80) continue;
+    const R0=46, red=['#f4f0ff','#a8a0c8','#ffffff'];
+    MANTRA.forEach((ch,i)=>{ const st=.15+i*.2, lt=t-st; if(lt<0) return; const m=glyphMask(ch,17), a=-Math.PI/2+i/6*Math.PI*2+Math.min(t,2)*.15, gx=x+Math.cos(a)*R0, gy=y+Math.sin(a)*R0*.92;
+      if(t<1.75){ const rev=clamp(lt/.3,0,1.2); if(lt<.5){ c.fillStyle=`rgba(255,255,255,${.45*(1-lt*2)})`; c.beginPath(); c.arc(gx,gy,9,0,7); c.fill(); }
+        c.fillStyle=`rgba(220,215,255,${.1+.05*Math.sin(T*4+i)})`; c.beginPath(); c.arc(gx,gy,11,0,7); c.fill(); drawGlyph(m,gx,gy,rev,.95,red); }
+      else if(t<2.3){ const k=(t-1.75)/.55; drawGlyph(m,gx+(x-gx)*k*k,gy+(y-gy)*k*k,1.2,1-k,['#d8d4ec','#6a6488','#ffffff'],k*6); } });
+    if(t>=1.75&&!q.popped){ q.popped=1; MANTRA.forEach((_,i)=>{ const a=-Math.PI/2+i/6*Math.PI*2; for(let j=0;j<8;j++) part(q.x+Math.cos(a)*R0,q.y-30+Math.sin(a)*R0,-Math.cos(a)*rnd(40,90),-Math.sin(a)*rnd(40,90)-20,rnd(.4,.8),pick(['#ffffff','#d8d4ec','#8a84a8']),'ember'); }); }
+    if(t>=2.25){ const lt=t-2.25; if(!q.stamped){ q.stamped=1; GAME.flash=Math.max(GAME.flash,.35); GAME.shake=Math.max(GAME.shake,5); burst(q.x,q.y-30,30,['#ffffff','#d8d4ec','#6a6488'],110); snd('ritok',.7,.5); }
+      const m=glyphMask('封',34), sc=lt<.12?1+(1-lt/.12)*.8:1, a=lt<2.5?1:Math.max(.35,1-(lt-2.5)*.4)*(.85+.15*Math.sin(T*3));
+      if(lt<.6){ c.fillStyle=`rgba(235,230,255,${.4*(1-lt/.6)})`; c.beginPath(); c.arc(x,y,30+lt*36,0,7); c.fill(); }
+      c.globalAlpha=a; for(const [px,py,n] of m.pts){ c.fillStyle=n<.15?'#ffffff':(n<.75?'#f0ecff':'#b4aed0'); const s2=Math.ceil(sc); c.fillRect(Math.round(x+px*sc),Math.round(y+py*sc),s2,s2); } c.globalAlpha=1;
+      if(lt>.2&&lt<3){ /* 마른 먹이 바스러지듯 글자 가장자리에서 붉은 재가 떨어진다 */ if(Math.random()<.5){ const pp=pick(m.pts); part(q.x+pp[0],q.y-30+pp[1],rnd(-6,6),rnd(-30,-10),rnd(.6,1.2),pick(['#ffffff','#e8e4ff','#a8a0c8']),'ember'); } } } } }
 
 /* ================= 장면 소품 ================= */
 function buildProps2(){
@@ -710,7 +702,7 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       const ok=await lockGame('석등 돌함','언니 소매의 실 순서대로 구슬을 눌러 보자. <b>청 → 백 → 적</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 덜컥 제자리로 돌아갔다.']]); return; }
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
-      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-14); snd('brush',1,.6); await say([['','부적을 소용돌이 한가운데 붙였다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
+      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-52); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
       coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{sky:pcanvas(W,H,p=>dgrad(p,0,W,0,GY,Zp.sky)),far:mirrorStrip(FARIMG.temple_far,Math.ceil(W+(w-W)*.12)+4),fog:fogCanvas({fog:'#8a6aa0'},11),gr:groundCanvas2(w,Zp),fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
