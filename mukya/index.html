@@ -150,6 +150,8 @@ body.portrait #help::after{content:" · 휴대폰은 가로로 돌리면 크게 
 
 #coach{position:absolute;left:50%;top:calc(var(--u)*16);transform:translateX(-50%);max-width:86%;font-size:max(12px,calc(var(--u)*4.4));line-height:1.5;color:#f4ecd8;background:rgba(20,16,10,.88);border:1px solid rgba(201,162,74,.7);padding:.4em .8em;display:flex;gap:.6em;align-items:flex-start;pointer-events:none;z-index:2}
 #coach b{flex:none;font-size:.78em;letter-spacing:.08em;background:#c9a24a;color:#1a1410;padding:.1em .45em;margin-top:.15em}
+#mini{z-index:6}
+#mini:not([hidden])~#coach,#modal:not([hidden])~#coach{display:none!important}
 #rotate{position:fixed;inset:0;z-index:100000;background:#07060a;color:#efe4cf;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-size:15px;line-height:1.7;padding:0 24px}
 #rotate i{width:46px;height:78px;border:3px solid #e2b84a;border-radius:8px;animation:rot 1.8s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
 #rotate b{color:#e2b84a}
@@ -231,14 +233,22 @@ const NATIVE={hong:1,taeseok:1,monk:1,boss:-1,shade:1,wraith:-1};
 function rows(img,o){ const w=img.width,h=img.height, keep=[]; const a=Math.floor(h*(o.from??.3)), b=Math.floor(h*(o.to??.85));
   for(let y=0;y<h;y++){ if(o.drop&&y>=a&&y<b&&(y-a)%o.drop===o.drop-1) continue; keep.push(y); if(o.dup&&y>=a&&y<b&&(y-a)%o.dup===0) keep.push(y); }
   const [c,x]=mk(w,keep.length); keep.forEach((sy,i)=>x.drawImage(img,0,sy,w,1,0,i,w,1)); return c; }
+
+/* 걷기: 아랫몸을 좌우 반으로 나눠 엇갈리게(다리 가위질) + 위아래 출렁임 */
+function walkFrame(img,ph,o){ const w=img.width,h=img.height,[c,x]=mk(w+PAD*2,h+PAD); const hip=Math.floor(h*(o.hip??.6)), mid=Math.floor(w/2)+(o.mid||0), st=o.stride??3, lean=o.lean??2;
+  const s=Math.sin(ph), sway=Math.cos(ph)*(o.sway??1);
+  for(let y=0;y<h;y++){ const top=lean*Math.pow(1-y/h,1.3); if(y<hip){ x.drawImage(img,0,y,w,1,PAD+Math.round(top+sway*(y/hip)*.5),PAD+y,w,1); continue; }
+    const k=(y-hip)/(h-hip), L=Math.round(top+s*st*k+sway*.5), R=Math.round(top-s*st*k+sway*.5);
+    x.drawImage(img,0,y,mid,1,PAD+L,PAD+y,mid,1); x.drawImage(img,mid,y,w-mid,1,PAD+mid+R,PAD+y,w-mid,1); if(R>L&&o.fill!==false) x.drawImage(img,mid-1,y,1,1,PAD+mid+L,PAD+y,R-L,1); }
+  c.bob=Math.round(Math.abs(Math.sin(ph))*(o.bob??2)); c.contact=Math.abs(s)<.25; return c; }
 function buildAnims(){ const A=(k,v)=>ANIM[k]=v, cyc=(img,n,f)=>Array.from({length:n},(_,i)=>deform(img,f(i/n*Math.PI*2,i)));
   const h=IMG.hong;
-  A('hong',{idle:cyc(h,8,ph=>({sway:.8,ph,hem:.5})),walk:cyc(h,8,ph=>({sway:2.2,ph,lean:2,hem:.45})),
+  A('hong',{idle:cyc(h,8,ph=>({sway:.8,ph,hem:.5})),walk:Array.from({length:8},(_,i)=>walkFrame(h,i/8*Math.PI*2,{hip:.55,stride:4,lean:2,bob:2,sway:.8})),
     squash:[deform(rows(h,{drop:4}),{lean:1,sway:1.5,ph:1})],air:[deform(rows(h,{dup:9,from:.5,to:.95}),{lean:2,sway:-3,ph:2,hem:.4})],fall:[deform(h,{lean:1,sway:3,ph:4,hem:.4})],
     crouch:[deform(rows(h,{drop:3,from:.35,to:.9}),{lean:4,sway:1,ph:1,hem:.5})],reach:[deform(rows(h,{dup:8,from:.1,to:.6}),{lean:3,sway:.5,ph:2})],
     scared:cyc(h,4,ph=>({lean:-5,sway:2.5,ph:ph*3,hem:.4})),mirror:cyc(h,4,ph=>({sway:.6,ph,lean:1}))});
-  const t=IMG.taeseok; A('taeseok',{idle:cyc(t,8,ph=>({sway:.5,ph,hem:.6})),walk:cyc(t,8,ph=>({sway:1.6,ph,lean:1,hem:.55})),air:[deform(rows(t,{dup:9,from:.5,to:.95}),{lean:2,sway:-2})],scared:cyc(t,4,ph=>({lean:-4,sway:1.5,ph:ph*3}))});
-  A('monk',{idle:cyc(IMG.monk,8,ph=>({sway:.5,ph,hem:.6})),walk:cyc(IMG.monk,8,ph=>({sway:1.4,ph,lean:1,hem:.6}))});
+  const t=IMG.taeseok; A('taeseok',{idle:cyc(t,8,ph=>({sway:.5,ph,hem:.6})),walk:Array.from({length:8},(_,i)=>walkFrame(t,i/8*Math.PI*2,{hip:.66,stride:4,lean:1,bob:2,sway:.5})),air:[deform(rows(t,{dup:9,from:.5,to:.95}),{lean:2,sway:-2})],scared:cyc(t,4,ph=>({lean:-4,sway:1.5,ph:ph*3}))});
+  A('monk',{idle:cyc(IMG.monk,8,ph=>({sway:.5,ph,hem:.6})),walk:Array.from({length:8},(_,i)=>walkFrame(IMG.monk,i/8*Math.PI*2,{hip:.65,stride:3,lean:1,bob:1}))});
   A('shade',{idle:cyc(IMG.shade,8,ph=>({sway:2.4,ph,hem:.25})),lunge:[deform(IMG.shade,{lean:7,sway:-4,hem:.2})]});
   A('wraith',{idle:cyc(IMG.wraith,8,ph=>({sway:2.4,ph,hem:.25}))});
   const b=IMG.boss; A('boss',{crawl:cyc(b,6,ph=>({cols:1.4,ph,dir:-1})),rear:cyc(b,4,ph=>({cols:1,ph,dir:-1,lift:9})),scream:cyc(b,4,ph=>({cols:2,ph:ph*3,dir:-1,lift:12})),calm:cyc(b,6,ph=>({cols:.6,ph,dir:-1}))});
@@ -377,7 +387,7 @@ function animFrame(a){ const A=ANIM[a.key];
   if(a.pose&&A[a.pose]) return A[a.pose][Math.floor(a.t*6)%A[a.pose].length];
   if(a.pre>0||a.land>0) return (A.squash||A.idle)[0];
   if(a.air) return a.vy<0?(A.air||A.idle)[0]:(A.fall||A.air||A.idle)[0];
-  if(a.state==='walk') return A.walk[Math.floor(a.anim*11)%A.walk.length];
+  if(a.state==='walk') return A.walk[Math.floor(a.anim*14)%A.walk.length];
   if(S.mirror&&a===P) return A.mirror[Math.floor(a.t*4)%4];
   return A.idle[Math.floor(a.anim*6)%A.idle.length]; }
 
@@ -469,7 +479,7 @@ function update(dt){ GAME.t+=dt; GAME.flash=Math.max(0,GAME.flash-dt); GAME.red=
     if(!mv&&TARGET){ const tx=TARGET.hot?TARGET.hot.x-(TARGET.hot.x>P.x?14:-14):TARGET.x; if(Math.abs(tx-P.x)>3) mv=sgn(tx-P.x); else { const h=TARGET.hot; TARGET=null; if(h) investigate(h); } } }
   if(GAME.cine&&P.goto!=null){ if(Math.abs(P.goto-P.x)>3) mv=sgn(P.goto-P.x); else P.goto=null; }
   P.state=mv?'walk':'idle'; stepActor(P,dt,mv,S.mirror?62:86);
-  if(mv&&!P.air){ P.stepT=(P.stepT||0)-dt; if(P.stepT<=0){ P.stepT=.3; SFXP.step(); } }
+  if(mv&&!P.air){ P.stepT=(P.stepT||0)-dt; if(P.stepT<=0){ P.stepT=.285; SFXP.step(); } }
   if(free&&KEY.jump){ KEY.jump=0; jump(P); } else KEY.jump=0;
   if(TS){ const want=P.x-P.face*44; let tm=0; if(Math.abs(TS.x-want)>8) tm=sgn(want-TS.x); TS.state=tm?'walk':'idle'; stepActor(TS,dt,tm,90); if(!tm) TS.face=sgn(P.x-TS.x)||1; }
   for(const n of NPCS){ n.t+=dt; n.anim+=dt; if(n.goto!=null){ const d=n.goto-n.x; if(Math.abs(d)>2){ n.state='walk'; n.face=sgn(d); n.x+=sgn(d)*(n.speed||60)*dt; } else { n.goto=null; n.state='idle'; } } }
@@ -489,7 +499,9 @@ function shadowAt(x,w=16){ x=Math.round(x); ctx.fillStyle='rgba(0,0,0,.5)'; ctx.
 function blitC(img,x,bottom,flip){ x=Math.round(x); const y=Math.round(bottom)-img.height; if(flip){ ctx.save(); ctx.translate(x,0); ctx.scale(-1,1); ctx.drawImage(img,-Math.floor(img.width/2),y); ctx.restore(); } else ctx.drawImage(img,x-Math.floor(img.width/2),y); }
 function fxPass(which,cx){ FR.ox=cx; FR.oy=0; PFX.clearFrame(FR); let n=0; for(const e of FXL){ if(which==='back'){ if(e.layer==='behind'){ e.f.draw(FR); n++; } else if(e.layer==='split'){ e.f.draw(FR,'back'); n++; } } else { if(e.layer==='front'){ e.f.draw(FR); n++; } else if(e.layer==='split'){ e.f.draw(FR,'front'); n++; } } }
   if(!n) return; PFX.composite(FR,FIMG.data,null); FXX.putImageData(FIMG,0,0); ctx.drawImage(FXC,0,0); }
-function drawActor(a,cx){ const img=animFrame(a), dip=a.dip?a.dip(a):0; if(!dip&&!a.noShadow) shadowAt(a.x-cx,a.air?Math.max(8,18-a.y/3):20); drawAnim(a.key,img,a.x-cx,GY+1-Math.round(a.y)+dip,a.face,a.alpha??1); }
+function drawActor(a,cx){ const img=animFrame(a), dip=a.dip?a.dip(a):0, bob=(a.state==='walk'&&!a.air)?(img.bob||0):0; if(!dip&&!a.noShadow) shadowAt(a.x-cx,a.air?Math.max(8,18-a.y/3):(bob?18:20));
+  if(a.state==='walk'&&!a.air&&img.contact&&a.lastC!==img){ a.lastC=img; if(Math.random()<.8) part(a.x-a.face*4,GY,-a.face*rnd(5,15),-rnd(5,15),.3,SCN&&SCN.indoor?'#c8a868':'#5a5262','spark'); } if(!img.contact) a.lastC=null;
+  drawAnim(a.key,img,a.x-cx,GY+1-Math.round(a.y)+dip-bob,a.face,a.alpha??1); }
 function glint(h,cx,T){ const x=Math.round(h.x-cx), y=Math.round(h.top||(h.low?GY-10:GY-30)), ph=(T*1.6+h.x*.013)%1; if(x<-10||x>W+10) return; const c=ctx;
   if(ph<.5){ const k=Math.sin(ph/.5*Math.PI), r=Math.round(1+k*3); c.fillStyle=`rgba(255,240,190,${.5+k*.5})`; c.fillRect(x-r,y,r*2+1,1); c.fillRect(x,y-r,1,r*2+1); c.fillStyle='#fff'; c.fillRect(x,y,1,1); }
   if(NEAR===h){ c.fillStyle='#eabf4f'; c.fillRect(x-1,y-10+Math.round(Math.sin(T*6)),3,2); c.fillRect(x,y-8+Math.round(Math.sin(T*6)),1,2); } }
@@ -603,7 +615,7 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
       h.done=1; takeItem('seal'); GAME.cine=1; fx('hexSigil',{x:700,y:GY,palette:FXP.crimson}); snd('brush',1,.6); await say([['','부적을 소용돌이 한가운데 붙였다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
-      coach('방울을 세 번 눌러 흔드세요'); await tapGame('방울을 세 번 흔들어 귀문을 닫아라',3); coach(''); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); SCN.finish(); }}];
+      coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.flash=.6; GAME.shake=8; SCN.closing=1; snd('ritok',.8,.7); await wait(900); SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{sky:pcanvas(W,H,p=>dgrad(p,0,W,0,GY,Zp.sky)),far:mirrorStrip(FARIMG.temple_far,Math.ceil(W+(w-W)*.12)+4),fog:fogCanvas({fog:'#8a6aa0'},11),gr:groundCanvas2(w,Zp),fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
     walls:[{x:350,w:30,h:14}],
