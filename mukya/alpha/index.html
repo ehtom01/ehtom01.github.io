@@ -28,7 +28,7 @@ body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow:
 #toast{position:absolute;left:50%;top:calc(var(--u)*16);transform:translateX(-50%);font-size:max(12px,calc(var(--u)*4.6));color:#f3dfa0;background:rgba(11,9,14,.85);border:1px solid var(--line);padding:.3em .9em;opacity:0;pointer-events:none;white-space:nowrap}
 #toast.show{animation:tst 2.2s ease forwards}@keyframes tst{0%{opacity:0;margin-top:6px}12%{opacity:1;margin-top:0}80%{opacity:1}100%{opacity:0}}
 #banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3em;pointer-events:none;opacity:0}
-#banner b{font-family:var(--brush);font-weight:400;font-size:calc(var(--u)*24);color:var(--paper)}#banner span{font-size:max(13px,calc(var(--u)*6));letter-spacing:.35em}
+#banner b{font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(22px,calc(var(--u)*14),40px);letter-spacing:.06em;color:#efe4cb;text-shadow:0 0 18px rgba(0,0,0,.9)}#banner span{font-size:max(13px,calc(var(--u)*6));letter-spacing:.35em}
 #banner.show{animation:ban 2.4s ease forwards}@keyframes ban{0%{opacity:0}12%{opacity:1}78%{opacity:1}100%{opacity:0}}
 #dialog{position:absolute;left:3%;right:3%;bottom:4%;display:grid;grid-template-columns:auto 1fr;gap:0 .9em;align-items:start;background:linear-gradient(rgba(14,11,18,.94),rgba(8,6,11,.96));border:1px solid var(--line);box-shadow:inset 0 0 0 3px rgba(0,0,0,.55);padding:.7em .9em;font-size:max(13px,calc(var(--u)*5.4));line-height:1.6;cursor:pointer;pointer-events:auto}
 #dialog .por{grid-row:span 2;width:calc(var(--u)*30);height:calc(var(--u)*30);min-width:56px;min-height:56px;object-fit:cover;border:1px solid var(--line);box-shadow:0 0 0 2px #000}
@@ -68,7 +68,7 @@ body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow:
 #vn .tag:empty{display:none}
 #vn .chars{display:none}
 #vncard b{line-height:1.4;text-align:center}
-#vncard{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4em;background:rgba(5,3,8,.82);opacity:0;pointer-events:none}#vncard b{font-family:var(--brush);font-weight:400;font-size:calc(var(--u)*26);color:var(--paper)}#vncard span{font-size:max(13px,calc(var(--u)*5.5));letter-spacing:.4em;color:#d8cdbd}
+#vncard{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4em;background:rgba(5,3,8,.82);opacity:0;pointer-events:none}#vncard b{font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(22px,calc(var(--u)*14),40px);letter-spacing:.06em;color:#efe4cb;text-shadow:0 0 18px rgba(0,0,0,.9)}#vncard span{font-size:max(13px,calc(var(--u)*5.5));letter-spacing:.4em;color:#d8cdbd}
 #vncard.show{animation:vcd 2.6s ease forwards}@keyframes vcd{0%{opacity:0}18%{opacity:1}80%{opacity:1}100%{opacity:0}}
 #vn .ch{position:absolute;bottom:-4%;height:96%;transform:translate(-50%,6%) scaleX(var(--fx,1));opacity:0;transition:opacity .5s,transform .5s,filter .3s,left .5s;filter:drop-shadow(0 0 10px rgba(0,0,0,.8))}
 #vn .ch.in{opacity:1;transform:translate(-50%,0) scaleX(var(--fx,1))}
@@ -664,7 +664,7 @@ let SCN=null, P, TS=null, NPCS=[], CAM={x:0}, PARTS=[], FXL=[], GAME={t:0,shake:
 function fx(name,o={},layer='split'){ const f=PFX.createFx(PFX.FX[name],o); const e={f,layer,name}; FXL.push(e); return e; }
 const FXP={gold:['#2a1a08','#6a4410','#b07a1a','#e8b030','#ffe066','#fff6c4','#ffffff'],water:['#04080a','#0a1a1e','#14302f','#2a4f4a','#4f7a72','#86aaa0','#c8dcd4','#f0fff8'],
  ghost:['#06080e','#101a2e','#1e3456','#3a5a8a','#6a90c0','#a8c8ec','#e0f0ff','#ffffff'],crimson:['#14060a','#3a0c14','#6a1420','#a01e24','#d03a2a','#ff7a50','#ffd0b0','#ffffff'],
- void:['#040208','#0c0614','#180c24','#28143a','#3c2052','#5a3474','#8a5aa8','#d0b8f0'],blue:['#040a16','#08203a','#0b3a52','#0f5e6e','#16908e','#2cc4b4','#7ef0dc','#c8fff2','#ffffff']};
+ inkv:['#020203','#060609','#0c0b10','#141218','#1d1a20','#29232a','#3c2a2c','#5a3430'], void:['#040208','#0c0614','#180c24','#28143a','#3c2052','#5a3474','#8a5aa8','#d0b8f0'],blue:['#040a16','#08203a','#0b3a52','#0f5e6e','#16908e','#2cc4b4','#7ef0dc','#c8fff2','#ffffff']};
 
 /* ================= 인물 ================= */
 function newActor(key,x){ return {key,x,y:0,vy:0,face:1,state:'idle',t:0,anim:0,air:false,land:0,pose:null,alpha:1}; }
@@ -895,6 +895,7 @@ function render(){ const c=ctx; c.setTransform(1,0,0,1,0,0); c.globalAlpha=1; c.
   for(const h of SCN.hots){ if(h.done&&!h.ev) continue; if(h.yin||(h.hidden&&h.hidden())) continue; glint(h,cx,T); }
   if(SCN.drawBack) SCN.drawBack(cx,T);
   if(SCN.backClip){ const q=SCN.backClip; c.save(); c.beginPath(); c.rect(q.x0-cx,q.y0,q.x1-q.x0,q.y1-q.y0); c.clip(); fxPass('back',cx); c.restore(); } else fxPass('back',cx);
+  if(SCN.drawFront) SCN.drawFront(cx,T);
   for(const n of NPCS) if(!n.front) drawActor(n,cx);
   if(TS) drawActor(TS,cx); drawActor(P,cx);
   for(const n of NPCS) if(n.front) drawActor(n,cx);
@@ -1184,17 +1185,31 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       const ok=await lockGame('석등 돌함','언니 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 제자리로 돌아갔다. 순서가 틀렸다.']]); return; }
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','돌함이 열렸다. 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
-      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-25); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
+      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-25); setTimeout(()=>{ if(SCN) SCN.sealed=1; },1800); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
       coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.shake=6; snd('ritok',.8,.7); await fade(true,1400); GAME.cine=0; SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{pano:FARIMG.gate_pano,gr:mk(w,40)[0],fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
     props:[{k:'pillar',x:226},{k:'hmirror',x:226,y:GY-72,hide:()=>S.items.includes('mirror')||H_[0].done},{k:'pillar',x:430},{k:'lantern2',x:520,light:{r:60,c:'#ffcf7a',y:GY-32}},{k:'pillar_s',x:776},{k:'pillar_s',x:624},{k:'roof',x:700,y:GY-108,light:{r:50,c:'#7a5aa0',y:GY-120}}],
     hots:H_, clueTotal:0,
-    build(d){ NPCS=[sis]; { const g=fx('portal',{x:700,y:GY+16,palette:FXP.void,width:84,height:70},'behind'); g.keep=1; d.portal=g; }  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
+    build(d){ NPCS=[sis]; d.portal={}; d.sealed=0;  goal('귀문을 닫을 봉 부적을 찾자'); coach('화면에서 가고 싶은 곳을 누르면 걸어가요. 반짝이는 곳을 누르면 살펴봐요.'); },
     backClip:{x0:636,x1:764,y0:GY-104,y1:GY+1},
-    drawBack(cx,T){ const c=ctx, x0=636-cx, y0=GY-104, w=128, h=105; const g=c.createLinearGradient(0,y0,0,y0+h); g.addColorStop(0,'#08040e'); g.addColorStop(.6,'#140a22'); g.addColorStop(1,'#241238'); c.fillStyle=g; c.fillRect(x0,y0,w,h);
-      c.fillStyle='rgba(120,70,170,.18)'; for(let i=0;i<5;i++){ const yy=Math.round(GY-6-((T*14+i*21)%90)); c.fillRect(x0+4+((i*37)%110),yy,1,3); } },
-    lights(L,cx,T){ L.push({x:700-cx,y:GY-55,r:90,c:'#9a5ad0',g:.8}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
+    drawBack(cx,T){ const c=ctx, x0=636-cx, y0=GY-104, w=128, h=105; const g=c.createLinearGradient(0,y0,0,y0+h); g.addColorStop(0,'#050407'); g.addColorStop(.6,'#0b0a0d'); g.addColorStop(1,'#17121a'); c.fillStyle=g; c.fillRect(x0,y0,w,h); },
+    /* 원혼 행렬: 흰 소복 그림자들이 양쪽에서 걸어 들어와 소용돌이 한가운데로 빨려 들어간다. 가끔 하얀 손이 문틀을 붙잡는다 */
+    drawFront(cx,T){ const c=ctx, X0=636-cx, X1=764-cx, CX=700-cx, CY=GY-46; if(SCN.sealed) return;
+      c.save(); c.beginPath(); c.rect(X0,GY-104,128,106); c.clip();
+      { const g=c.createRadialGradient(CX,CY,2,CX,CY,70); g.addColorStop(0,'#000'); g.addColorStop(.55,'#07070a'); g.addColorStop(1,'rgba(14,12,16,.0)'); c.fillStyle=g; c.fillRect(X0,GY-104,128,106);
+        for(let m=0;m<14;m++){ const a=T*.25+m*.45, r=(18+((m*37+T*6)%50)), mx=CX+Math.cos(a)*r*1.1, my=CY+Math.sin(a)*r*.55; c.globalAlpha=.10; c.fillStyle=m%4?'#1d1b20':'#3a2a2a'; c.beginPath(); c.ellipse(mx,my,14,4,a,0,7); c.fill(); } c.globalAlpha=1; }
+      for(let i=0;i<9;i++){ const per=8+(i%3)*1.4, k=((T+i*2.3)%per)/per, side=i%2?1:-1;
+        const sx=side<0?X0+6:X1-6, sy=GY-2, x=sx+(CX-sx)*k, y=sy+(CY-sy)*k*k, sc=1-k*.8, al=(k<.12?k/.12:1)*(1-k*.85)*.85;
+        if(al<=.02) continue; const H=Math.max(3,Math.round(40*sc)), Wd=Math.max(2,Math.round(14*sc)), sway=Math.round(Math.sin(T*3+i)*sc*1.5);
+        const fr=(ANIM.shade.walk||ANIM.shade.idle)[Math.floor(T*4+i)%(ANIM.shade.walk||ANIM.shade.idle).length]; if(!fr) continue;
+        const fw=fr.width*sc*.8, fh=fr.height*sc*.8, dx=Math.round(x+sway-fw/2), dy=Math.round(y-fh);
+        c.globalAlpha=al*.9; c.filter='grayscale(1) brightness(1.15)'; c.save(); c.translate(dx+fw/2,0); c.scale(x<CX?1:-1,1); c.drawImage(fr,-fw/2,dy,fw,fh); c.restore(); c.filter='none'; }
+      const hp=(T%9)/9; if(hp<.22){ const k=hp/.22, a=k<.3?k/.3:(k>.75?(1-k)/.25:1), side=Math.floor(T/9)%2?1:-1, ex=side<0?X0:X1, hy=Math.round(GY-60+Math.floor(T/9)%3*14);
+        c.globalAlpha=a*.85; c.fillStyle='#ece8e0'; const dir=side<0?1:-1;
+        for(let f=0;f<4;f++) c.fillRect(ex+dir*(1+f%2)-(dir<0?6:0),hy+f*2,6,1); c.fillRect(ex+dir*5-(dir<0?3:0),hy-1,3,9); }
+      c.globalAlpha=1; c.restore(); },
+    lights(L,cx,T){ L.push({x:700-cx,y:GY-55,r:80,c:'#c9c2b6',g:.45}); L.push({x:700-cx,y:GY-40,r:46,c:'#8a2a24',g:.35}); L.push({x:sis.x-cx,y:GY-34,r:30,c:'#c8d8ff',g:.4}); },
     tick(){ const has=k=>S.items.includes(k), dn=id=>H_.find(h=>h.id===id).done;
       if(S.flags.reach&&!dn('pillar')&&P.air&&P.y>14&&Math.abs(P.x-226)<20&&!GAME.lock&&!GAME.busy){ grab(H_[0]); return; }
       let t=''; if(!S.flags.reach) t='화면을 누른 채 끌면 조이스틱이 나와 걸어가요. 끝까지 밀면 달려요. 반짝이는 곳(붉은 기둥)은 톡 누르면 살펴봐요.'; else if(!dn('pillar')) t=Math.abs(P.x-226)<22?'조이스틱을 위로 밀면 뛰어올라요. 오른쪽 위로 밀면 앞으로 뛰어요. 뛰어서 거울을 잡으세요!':'기둥 아래로 가서 뛰어 보세요.';
@@ -1326,7 +1341,7 @@ function sceneWell(){ const w=1340, DITCH={x0:-99,x1:-98};
      await say([['','장승 뒤에 작은 궤짝이 숨겨져 있다. 뚜껑에 이름 패 넷이 박혀 있고, 「사라진 차례대로」라고 새겨져 있다.']]);
      const ok=await lockGame('이름 패 자물쇠','이름 패 셋을 아이들이 사라진 차례대로 눌러야 열린다. 넷째 패의 이름은… 아무리 봐도 읽히지 않는다.',[['막동','#56653f'],['순이','#7a4f62'],['복동','#45587a'],['???','#3a3632']],['막동','순이','복동']);
      if(!ok){ snd('kid_laugh',.9,.4); await say([['','패가 제자리로 돌아갔다. 어디선가 아이 웃음소리가 났다.']]); return; }
-     h.done=1; clue('chest'); fx('chest',{x:578,y:GY+1,palette:FXP.gold},'behind').keep=1; snd('ritok',1.1,.5); await wait(700); await gainItem('rope'); await gainItem('sealp');
+     h.done=1; clue('chest'); burst(578,GY-8,14,['#6b5f52','#8a7d6c','#4a423a'],30); snd('ritok',.8,.4); await wait(700); await gainItem('rope'); await gainItem('sealp');
      await say([['','궤짝이 열렸다. 안에 둘둘 감은 새 밧줄. 그리고 붉은 관아 인장이 찍힌 종잇조각 하나.'],['태석','…관아 인장이오. 이게 왜 여기 있소.']]); goal('밧줄을 두레박에 묶자'); }},
    {id:'thread',x:712,high:1,top:GY-92,name:'버드나무 가지',clue:1,txt:'버드나무 가지에 붉은 실이 걸려 있다. 연꽃 무늬… 언니 방울 끈의 실이다.',say:[['홍련','(언니… 여기 왔었어.)']]},
    {id:'pail',x:968,low:1,name:'두레박',clue:1,ev:async h=>{ if(S.items.includes('pailrope')){ await say([['','두레박은 이미 밧줄에 묶여 있다.']]); return; }
@@ -1354,10 +1369,10 @@ function sceneWell(){ const w=1340, DITCH={x0:-99,x1:-98};
 /* ================= 스토리 장면 ================= */
 const vn=()=>$('#vn');
 function fade(on,ms=700){ const f=$('#fade'); f.style.transitionDuration=ms+'ms'; f.classList.toggle('on',on); return wait(ms+30); }
-async function vnOpen(bg,tag){ if(BG2M[bg]) sceneMusic(BG2M[bg]); await fade(true); GAME.story=1; const v=vn(); v.hidden=false; v.querySelector('.bg').src=VNBG[bg]; v.querySelector('.tag').textContent=tag||''; $('#hud').hidden=true; coach(''); await wait(120); await fade(false,900); }
+async function vnOpen(bg,tag){ if(BG2M[bg]) sceneMusic(BG2M[bg]); await fade(true); GAME.story=1; const v=vn(); v.hidden=false; v.querySelector('.bg').src=VNBG[bg]; { const bb=v.querySelector('#vnblood'); if(bb) bb.classList.remove('on'); } v.classList.remove('red'); v.querySelector('.tag').textContent=tag||''; $('#hud').hidden=true; coach(''); await wait(120); await fade(false,900); }
 async function vnClose(){ await fade(true); vn().hidden=true; GAME.story=0; $('#hud').hidden=false; await wait(120); await fade(false,800); }
 async function vnBg(bg,tag){ if(BG2M[bg]) sceneMusic(BG2M[bg]); await fade(true,500); vn().querySelector('.bg').src=VNBG[bg]; vn().querySelector('.tag').textContent=tag||''; await fade(false,700); }
-function vnBlood(){ const b=document.querySelector('#vnblood'); if(!b) return; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
+function vnBlood(){ const b=document.querySelector('#vnblood'); if(!b) return; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(vnBlood.t); vnBlood.t=setTimeout(()=>b.classList.remove('on'),3300); }
 function vnFx(k){ const v=vn(); v.classList.remove('shake','red','flash'); void v.offsetWidth; v.classList.add(k); if(k==='red') snd('scare',1.1,.5); setTimeout(()=>v.classList.remove(k),900); }
 function vnCard(big,small,ms=2800){ const c=$('#vncard'); c.querySelector('b').innerHTML=big||''; c.querySelector('span').textContent=small||''; c.className=''; void c.offsetWidth; c.className='show'; return wait(ms).then(()=>{ c.className=''; c.querySelector('b').innerHTML=''; c.querySelector('span').textContent=''; }); }
 async function toScene(def){ await fade(true); vn().hidden=true; GAME.story=0; $('#hud').hidden=false; const p=playScene(def); await wait(150); await fade(false,800); await p; await wait(400); }
