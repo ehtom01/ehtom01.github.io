@@ -1020,7 +1020,7 @@ function glyphMask(ch,px){ const k=ch+px; if(GLYPH[k]) return GLYPH[k]; const B=
   if(B){ const pts=[]; B.r.forEach((row,y)=>{ for(let x=0;x<row.length;x++){ const v=row[x]; if(v!=='.') pts.push([x-B.n/2,y-B.n/2,((x*37+y*91)%23)/23,+v]); } }); return GLYPH[k]={pts,n:B.n}; }
   const n=px+4, [g,gx]=mk(n,n); gx.fillStyle='#000'; gx.font=`900 ${px}px serif`; gx.textAlign='center'; gx.textBaseline='middle'; gx.fillText(ch,n/2,n/2+1);
   const d=g.getContext('2d').getImageData(0,0,n,n).data, pts=[]; for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const a=d[(y*n+x)*4+3]; if(a>120) pts.push([x-n/2,y-n/2,((x*37+y*91)%23)/23,Math.min(9,a/26|0)]); } return GLYPH[k]={pts,n}; }
-const MANTRA=['急','急','如','律','令'];
+const MANTRA=['門','閉','封','鎖','滅'];
 function sealFx(x,y){ SEALS.push({x,y,t:0,popped:0,stamped:0}); }
 function drawGlyph(m,x,y,rev,alpha,cols,lift=0){ const c=ctx; c.globalAlpha=alpha; for(const [px,py,n,v] of m.pts){ if(py/m.n+.5>rev+n*.15) continue; c.fillStyle=v>=9?cols[0]:(v>=6?cols[1]:cols[2]); c.fillRect(Math.round(x+px),Math.round(y+py-lift*n),1,1); } c.globalAlpha=1; }
 function drawSeals(cx,T){ const c=ctx;
