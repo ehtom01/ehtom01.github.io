@@ -1180,12 +1180,12 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
     await say([['','뛰어오른 홍련의 손끝에 끈이 걸렸다. 청동 거울이 손바닥 위로 떨어졌다.'],['홍련','(엄마 거울… 이걸로 비추면 저승 쪽이 보인다고 했지.)']]); await gainItem('mirror'); S.mirrorOK=true; syncHUD(); };
   const H_=[{id:'pillar',x:226,top:GY-82,name:'붉은 기둥',ev:async h=>{ if(!S.flags.reach){ S.flags.reach=1; await say([['','칠이 벗겨진 기둥 높은 곳에 붉은 끈이 감겨 있다. 끈 끝에 손바닥만 한 청동 거울이 매달려 있다.'],['홍련','(엄마 거울… 손이 안 닿아. 뛰어올라야 잡겠어.)']]); }
       else await say([['홍련','(까치발로는 어림없어. 힘껏 뛰어 보자.)']]); }},
-    {id:'sis',x:612,yin:1,top:GY-44,name:'거울 속 언니',ev:async h=>{ h.done=1; S.flags.order=1; await say([['','거울 속에서 보니 언니의 발밑에는 그림자가 없다. 그림자 대신, 언니가 선 자리 땅바닥에 빛나는 글자 세 개가 떠올라 있다. 왼쪽부터 靑, 白, 赤.'],['백련','석등… 그 안에 엄마가 부적을 넣어 뒀어. 실 순서대로야.']]); }},
-    {id:'lantern',x:520,name:'석등',ev:async h=>{ if(!S.flags.order){ await say([['','석등 안에 작은 돌함이 있다. 오방색 구슬 자물쇠가 걸려 있다. 순서를 모르겠다.'],['백련','…거울로 나를 봐, 홍련아.']]); return; }
-      const ok=await lockGame('석등 돌함','언니 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 제자리로 돌아갔다. 순서가 틀렸다.']]); return; }
+    {id:'sis',x:612,yin:1,top:GY-44,name:'거울 속 소복 여인',ev:async h=>{ h.done=1; S.flags.order=1; await say([['','거울 속에서 보니 소복 입은 여인의 발밑에는 그림자가 없다. 그림자 대신, 여인이 선 자리 땅바닥에 빛나는 글자 세 개가 떠올라 있다. 왼쪽부터 靑, 白, 赤.'],['???','석등… 그 안에 엄마가 부적을 넣어 뒀어. 실 순서대로야.']]); }},
+    {id:'lantern',x:520,name:'석등',ev:async h=>{ if(!S.flags.order){ await say([['','석등 안에 작은 돌함이 있다. 오방색 구슬 자물쇠가 걸려 있다. 순서를 모르겠다.'],['???','…네 눈엔 내가 안 보여. 거울에 비춰 봐.']]); return; }
+      const ok=await lockGame('석등 돌함','그 여인의 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 제자리로 돌아갔다. 순서가 틀렸다.']]); return; }
       h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','돌함이 열렸다. 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
-    {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
-      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-25); setTimeout(()=>{ if(SCN) SCN.sealed=1; },1800); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
+    {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['???','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
+      h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-25); setTimeout(()=>{ if(SCN) SCN.sealed=1; },1800); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['???','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
       coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.shake=6; snd('ritok',.8,.7); await fade(true,1400); GAME.cine=0; SCN.finish(); }}];
   const def={w,start:40,amb:'amb_temple',dark:.55,flies:['#c8bff0','#e8d8ff'],
     bg:{pano:FARIMG.gate_pano,gr:mk(w,40)[0],fg:fgCanvas({id:'x'},Math.ceil(W+(w-W)*1.25)+6,12)},
@@ -1214,7 +1214,7 @@ function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a',
       if(S.flags.reach&&!dn('pillar')&&P.air&&P.y>14&&Math.abs(P.x-226)<20&&!GAME.lock&&!GAME.busy){ grab(H_[0]); return; }
       let t=''; if(!S.flags.reach) t='화면을 누른 채 끌면 조이스틱이 나와 걸어가요. 끝까지 밀면 달려요. 반짝이는 곳(붉은 기둥)은 톡 누르면 살펴봐요.'; else if(!dn('pillar')) t=Math.abs(P.x-226)<22?'조이스틱을 위로 밀면 뛰어올라요. 오른쪽 위로 밀면 앞으로 뛰어요. 뛰어서 거울을 잡으세요!':'기둥 아래로 가서 뛰어 보세요.';
       else if(!S.flags.order&&!S.mirror) t='오른쪽 위 鏡 버튼을 눌러 거울을 들어 보세요. 산 사람 눈에 안 보이는 것이 보여요.';
-      else if(!S.flags.order) t='거울 속에서만 반짝이는 곳이 생겼어요. 언니에게 다가가 보세요.';
+      else if(!S.flags.order) t='거울 속에서만 반짝이는 곳이 생겼어요. 소복 입은 여인에게 다가가 보세요.';
       else if(S.mirror) t='鏡 버튼을 다시 눌러 거울을 내리세요.';
       else if(!has('seal')&&!dn('gate')) t='석등을 살펴 자물쇠를 열어 보세요.<small>'+'조이스틱을 끝까지 밀면 달려요'+'</small>';
       else if(!dn('gate')) t='귀문을 눌러 부적을 붙이세요.';
