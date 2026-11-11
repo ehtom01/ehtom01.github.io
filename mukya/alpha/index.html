@@ -681,7 +681,7 @@ function animFrame(a){ const A=ANIM[a.key];
   if(a.pose&&A[a.pose]) return A[a.pose][Math.floor(a.t*6)%A[a.pose].length];
   if(a.pre>0||a.land>0) return (A.squash||A.idle)[0];
   if(a.air) return a.vy<0?(A.air||A.idle)[0]:(A.fall||A.air||A.idle)[0];
-  if(a.state==='walk'){ if(a.running&&A.run) return A.run[Math.floor(a.anim*12)%A.run.length]; return A.walk[Math.floor(a.anim*14)%A.walk.length]; }
+  if(a.state==='walk'){ if(a.running&&A.run) return A.run[Math.floor(a.anim*10)%A.run.length]; return A.walk[Math.floor(a.anim*14)%A.walk.length]; }
   if(S.mirror&&a===P) return A.mirror[Math.floor(a.t*4)%4];
   return A.idle[Math.floor(a.anim*6)%A.idle.length]; }
 
@@ -853,8 +853,8 @@ function update(dt){ GAME.blood=Math.max(0,(GAME.blood||0)-dt*.35); GAME.t+=dt; 
     if(mv) TARGET=null;
     if(!mv&&TARGET){ const tx=TARGET.hot?TARGET.hot.x-(TARGET.hot.x>P.x?14:-14):TARGET.x; if(Math.abs(tx-P.x)>3){ mv=sgn(tx-P.x); run=TARGET.run&&Math.abs(tx-P.x)>16?1:0; } else { const h=TARGET.hot; TARGET=null; if(h) investigate(h); } } }
   if(GAME.cine&&P.goto!=null){ if(Math.abs(P.goto-P.x)>3) mv=sgn(P.goto-P.x); else P.goto=null; }
-  const spdK=run?(SCN.indoor?1.3:1.7):(slow?.6:1); P.state=mv?'walk':'idle'; P.running=!!(mv&&(run||SCN.run)); stepActor(P,dt,mv,SCN.run?SCN.run:(S.mirror?62:86)*spdK); if(run&&mv) P.anim+=dt*.55;
-  if(mv&&!P.air){ P.stepT=(P.stepT||0)-dt; if(P.stepT<=0){ P.stepT=run?.2:.285; SFXP.step(); if(run) for(let i=0;i<4;i++) part(P.x-P.face*5,GY-rnd(0,2),-P.face*rnd(15,45),-rnd(6,22),.32,SCN.indoor?'#8a7656':'#5a5260','spark'); } }
+  const spdK=run?(SCN.indoor?1.3:1.55):(slow?.6:1); P.state=mv?'walk':'idle'; P.running=!!(mv&&(run||SCN.run)); stepActor(P,dt,mv,SCN.run?SCN.run:(S.mirror?62:86)*spdK);
+  if(mv&&!P.air){ P.stepT=(P.stepT||0)-dt; if(P.stepT<=0){ P.stepT=run?.3:.285; SFXP.step(); if(run) for(let i=0;i<4;i++) part(P.x-P.face*5,GY-rnd(0,2),-P.face*rnd(15,45),-rnd(6,22),.32,SCN.indoor?'#8a7656':'#5a5260','spark'); } }
   if(free&&KEY.jump){ KEY.jump=0; jump(P); } else KEY.jump=0;
   if(TS){ const want=P.x-P.face*44; let tm=0; if(Math.abs(TS.x-want)>8) tm=sgn(want-TS.x); TS.state=tm?'walk':'idle'; TS.running=!!(tm&&(P.running||SCN.run)); stepActor(TS,dt,tm,SCN.run?SCN.run*1.15:(P.running?150:90)); if(!tm) TS.face=sgn(P.x-TS.x)||1; }
   for(const n of NPCS){ n.t+=dt; n.anim+=dt; if(n.goto!=null){ const d=n.goto-n.x; if(Math.abs(d)>2){ n.state='walk'; n.face=sgn(d); n.x+=sgn(d)*(n.speed||60)*dt; } else { n.goto=null; n.state='idle'; } } }
