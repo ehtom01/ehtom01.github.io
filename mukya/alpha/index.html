@@ -658,7 +658,7 @@ const SFXP={ step:()=>noise(.05,.03,900,300), jump:()=>noise(.18,.08,400,1600,'b
 
 /* ================= 상태 ================= */
 const ITEMS={mirror:{n:'청동 거울',ic:'鏡',d:'어머니가 쓰던 무구. 비추면 산 사람 눈에 보이지 않는 저승 쪽이 드러난다.'},seal:{n:'봉 부적',ic:'封',d:'붉은 글씨로 「封」이라 쓴 부적. 열린 귀문을 막는 힘이 깃들어 있다.'},cord:{n:'언니의 방울 끈',ic:'結',d:'붉은 연꽃 아래 매듭 세 개. 매듭의 빛깔에 순서가 숨어 있다.'},blank:{n:'빈 종이',ic:'紙',d:'아무것도 적히지 않은 누런 종이. 그러나 어딘가 손때가 묻어 있다.'},talirev:{n:'언니의 부적',ic:'封',d:'불기운에 떠오른 언니의 글씨. 「封」 한 글자가 희미하게 떨린다.'},fur:{n:'여우 털',ic:'毛',d:'덤불에 걸린 붉은 털. 사람 머리카락처럼 길고 차갑다.'},
-  rope:{n:'새 밧줄',ic:'繩',d:'튼튼한 새 밧줄. 우물 깊이까지 닿을 만큼 길다.'},pailrope:{n:'밧줄 묶은 두레박',ic:'桶',d:'밧줄을 단단히 묶은 두레박. 우물 바닥까지 내려갈 수 있다.'},sealp:{n:'관아 인장 종잇조각',ic:'印',d:'찢어진 종이에 찍힌 관아의 붉은 인장. 누가 여기까지 왔던 걸까.'},shoe:{n:'젖은 고무신',ic:'履',d:'아이의 작은 고무신. 아직 물이 뚝뚝 떨어진다.'}};
+  rope:{n:'새 밧줄',ic:'繩',d:'튼튼한 새 밧줄. 우물 깊이까지 닿을 만큼 길다.'},pailrope:{n:'밧줄 묶은 두레박',ic:'桶',d:'밧줄을 단단히 묶은 두레박. 우물 바닥까지 내려갈 수 있다.'},sealp:{n:'관아 인장 종잇조각',ic:'印',d:'찢어진 종이에 찍힌 관아의 붉은 인장. 누가 여기까지 왔던 걸까.'},shoe:{n:'젖은 고무신',ic:'履',d:'아이의 작은 고무신. 아직 물기가 흥건하다.'}};
 const S={items:[],clues:{},flags:{},mirror:false,mirrorOK:false,ending:null};
 let SCN=null, P, TS=null, NPCS=[], CAM={x:0}, PARTS=[], FXL=[], GAME={t:0,shake:0,flash:0,red:0,lock:0,mirT:0}, TITLE=true, PASS=null, NEAR=null, TARGET=null;
 function fx(name,o={},layer='split'){ const f=PFX.createFx(PFX.FX[name],o); const e={f,layer,name}; FXL.push(e); return e; }
@@ -1176,13 +1176,13 @@ function roomWall(w){ return pcanvas(w,H,(p,r)=>{ for(let y=0;y<GY;y++) for(let 
 function sceneGate(){ const w=780; const Zp={sky:['#0a0716','#150e26','#22133a','#3a1a44'],gr:'#1c1722',top:'#4c4258',grD:'#110d16',flag:'#2a2534',speck:'#2a2532'};
   const sis=newActor('shade',612); sis.face=-1; sis.alpha=.88; sis.noShadow=1;
   const grab=async h=>{ h.done=1; GAME.busy=1; snd('pick',1,.6); burst(226,GY-80,12,['#e8c860','#b07a1a','#fff6c4'],50); await wait(450); GAME.busy=0;
-    await say([['','휙. 뛰어오른 홍련의 손끝에 끈이 걸렸다. 툭, 청동 거울이 손바닥 위로 떨어졌다.'],['홍련','(엄마 거울… 이걸로 비추면 저승 쪽이 보인다고 했지.)']]); await gainItem('mirror'); S.mirrorOK=true; syncHUD(); };
+    await say([['','뛰어오른 홍련의 손끝에 끈이 걸렸다. 청동 거울이 손바닥 위로 떨어졌다.'],['홍련','(엄마 거울… 이걸로 비추면 저승 쪽이 보인다고 했지.)']]); await gainItem('mirror'); S.mirrorOK=true; syncHUD(); };
   const H_=[{id:'pillar',x:226,top:GY-82,name:'붉은 기둥',ev:async h=>{ if(!S.flags.reach){ S.flags.reach=1; await say([['','칠이 벗겨진 기둥 높은 곳에 붉은 끈이 감겨 있다. 끈 끝에 손바닥만 한 청동 거울이 매달려 있다.'],['홍련','(엄마 거울… 손이 안 닿아. 뛰어올라야 잡겠어.)']]); }
       else await say([['홍련','(까치발로는 어림없어. 힘껏 뛰어 보자.)']]); }},
     {id:'sis',x:612,yin:1,top:GY-44,name:'거울 속 언니',ev:async h=>{ h.done=1; S.flags.order=1; await say([['','거울 속에서 보니 언니의 발밑에는 그림자가 없다. 그림자 대신, 언니가 선 자리 땅바닥에 빛나는 글자 세 개가 떠올라 있다. 왼쪽부터 靑, 白, 赤.'],['백련','석등… 그 안에 엄마가 부적을 넣어 뒀어. 실 순서대로야.']]); }},
     {id:'lantern',x:520,name:'석등',ev:async h=>{ if(!S.flags.order){ await say([['','석등 안에 작은 돌함이 있다. 오방색 구슬 자물쇠가 걸려 있다. 순서를 모르겠다.'],['백련','…거울로 나를 봐, 홍련아.']]); return; }
-      const ok=await lockGame('석등 돌함','언니 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 덜컥 제자리로 돌아갔다.']]); return; }
-      h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','딸깍. 돌함 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
+      const ok=await lockGame('석등 돌함','언니 발치에 떠오른 글자 순서대로 구슬을 눌러 보자. <b>청(靑) → 백(白) → 적(赤)</b>',OBANG,['청','백','적']); if(!ok){ await say([['','구슬이 제자리로 돌아갔다. 순서가 틀렸다.']]); return; }
+      h.done=1; snd('ritok',1.1,.5); fx('parry',{x:520,y:GY-30,palette:FXP.gold}); await gainItem('seal'); await say([['','돌함이 열렸다. 안에 붉은 글씨로 「封」이라 쓴 부적 한 장.']]); }},
     {id:'gate',x:700,name:'귀문',ev:async h=>{ if(!S.items.includes('seal')){ await say([['','검은 소용돌이가 숨을 쉬듯 일렁인다. 안에서 수많은 이름을 부르는 소리가 난다.'],['백련','맨손으로는 못 닫아. 엄마가 남긴 봉 부적이 근처 어딘가에 있어.']]); return; }
       h.done=1; takeItem('seal'); GAME.cine=1; sealFx(700,GY-25); snd('brush',1,.6); await wait(2700); await say([['','부적을 소용돌이에 내밀자 종이가 타올랐다. 재가 흩어진 자리마다 흰 글자가 허공에 한 자씩 새겨진다.'],['','글자들이 빛가루처럼 무너져 한가운데로 모이더니, 커다란 「封」 한 자가 귀문 위에 찍혔다. 귀문이 잠시 멈칫한다.'],['백련','홍련아. 이제 문을 닫자.'],['홍련','응, 언니. 이번엔 내가 할게.']]);
       coach(''); await tapGame('방울을 세 번 눌러 흔들어 귀문을 닫아라',3); GAME.shake=6; snd('ritok',.8,.7); await fade(true,1400); GAME.cine=0; SCN.finish(); }}];
@@ -1218,9 +1218,9 @@ function sceneRoom(){ const w=531; let ghostAt=null;
     {id:'chest',x:85,name:'낡은 장롱',ev:async h=>{ if(h.done){ await say([['','장롱 맨 아래 칸은 비어 있다.']]); return; }
       await say([['','맨 아래 칸에 놋쇠 자물쇠가 걸려 있다. 다섯 빛깔 구슬이 박혀 있다.']]);
       const ok=await lockGame('오방색 구슬 자물쇠','구슬 세 개를 순서대로 눌러야 열린다. 언니는 이 자물쇠를 어떻게 걸어 두었을까.',OBANG,['적','백','청']);
-      if(!ok){ await say([['','구슬이 덜컥 제자리로 돌아갔다.'+(S.items.includes('cord')?' 방울 끈의 매듭 색을 떠올려 보자.':' 언니 물건 어딘가에 순서가 있을지도.')]]); return; }
+      if(!ok){ await say([['','구슬이 제자리로 돌아갔다. 순서가 틀렸다.'+(S.items.includes('cord')?' 방울 끈의 매듭 색을 떠올려 보자.':' 언니 물건 어딘가에 순서가 있을지도.')]]); return; }
       h.done=1; clue('chest'); snd('ritok',1.1,.5); await gainItem('mirror'); await gainItem('blank'); S.mirrorOK=true; syncHUD();
-      await say([['','딸깍. 맨 아래 칸, 언니가 떠나기 전날 맡긴 보따리. 안에는 작은 청동 거울과, 아무것도 적히지 않은 누런 종이 한 장.'],['홍련','(엄마 거울… 언니가 이걸 나한테 맡겼구나.)']]); goal('빈 종이에 숨은 것을 찾자'); }},
+      await say([['','자물쇠가 열렸다. 맨 아래 칸, 언니가 떠나기 전날 맡긴 보따리. 안에는 작은 청동 거울과, 아무것도 적히지 않은 누런 종이 한 장.'],['홍련','(엄마 거울… 언니가 이걸 나한테 맡겼구나.)']]); goal('빈 종이에 숨은 것을 찾자'); }},
     {id:'window',x:266,name:'창호지 문',clue:1,ev:async h=>{ if(S.mirror&&!S.flags.face){ S.flags.face=1; clue('window'); await say([['','거울을 들어 창호지를 비추었다.']]); scare('face'); await wait(1200); await say([['','거울 속, 손바닥 자국 사이로 하얀 얼굴 하나가 이쪽을 들여다보고 있었다. 돌아보니… 아무도 없다.']]); return; }
       h.n=(h.n||0)+1; const L=[[['','창호지에 젖은 손바닥 자국이 찍혀 있다. 바깥쪽에서 누른 자국이다. 손가락이 이상하게 길다.']],[['','손바닥 자국이 아까보다 한 뼘 높아진 것 같다.'],...(S.mirrorOK&&!S.flags.face?[['홍련','(거울로 비춰 보면… 뭔가 보일지도 몰라.)']]:[])],[['홍련','(창호지 너머는 마당일 텐데. 왜 이렇게 숨소리가 가까이 들리지.)']]];
       await say(L[(h.n-1)%L.length]); clue('window_l'); }},
@@ -1230,13 +1230,13 @@ function sceneRoom(){ const w=531; let ghostAt=null;
     {id:'herb',x:422,high:1,top:GY-75,name:'약초 다발',again:[[['','검게 마른 쑥 잎이 바스러져 바닥에 떨어졌다.']],[['홍련','(잡귀를 막는 쑥이 하룻밤에… 이 방에 뭔가 들어왔었어.)']]],clue:1,txt:'어제 걸어 둔 쑥 다발이 하룻밤 새 까맣게 말라 비틀어졌다. 잡귀를 막는 쑥이다.'}];
   async function ghostEvent(){ GAME.cine=1; S.mirror=false; syncHUD(); ambient(null); SCN.lamp=1; await wait(600);
     await say([['','그때, 호롱불이 흔들렸다. 바람 한 점 들지 않는 방이었다.']]); GAME.flash=.2; await wait(400);
-    snd('bell',.8,.4); await say([['','짤랑.']]); snd('bell',.9,.55); await say([['','…짤랑.'],['','방울 소리가 마당을 건너와, 방문 바로 앞에서 멈췄다.'],['','숨소리가 들렸다. 문 너머에서. 아주 가까이.']]);
+    snd('bell',.8,.4); snd('bell',.9,.55); await say([['','방울 소리가 마당을 건너와, 방문 바로 앞에서 멈췄다.'],['','숨소리가 들렸다. 문 너머에서. 아주 가까이.']]);
     SCN.dark0=SCN.dark; SCN.dark=.78; GAME.red=.25;
     ghostAt=newActor('shade',285); ghostAt.face=-1; ghostAt.alpha=0; ghostAt.noShadow=1; NPCS.push(ghostAt);
     for(let i=0;i<30;i++){ ghostAt.alpha=Math.min(.38,i*.014); ghostAt.x-=.8; await wait(45); }   /* 창호지 너머로 그림자가 다가온다 */
     await say([['','창호지 너머로 사람 그림자가 비쳤다. 키가 너무 컸다. 고개가 한쪽으로 꺾여 있었다.']]);
     for(const [hx,hy] of [[254,GY-68],[276,GY-54],[261,GY-85],[282,GY-75],[269,GY-60]]){ SCN.props.push({k:Math.random()<.5?'wethand':'wethand2',x:hx,y:hy,a0:GAME.t,amax:.8}); GAME.shake=1.5; snd('drip',.45+Math.random()*.15,.55); await wait(520); }
-    await say([['','탁… 탁… 창호지 위로 젖은 손바닥 자국이 하나씩 번져 나갔다. 바깥쪽에서, 문을 더듬듯이. 물이 손가락 끝을 타고 흘러내렸다.']]);
+    await say([['','창호지 위로 젖은 손바닥 자국이 하나씩 번져 나갔다. 바깥쪽에서, 문을 더듬듯이. 물이 손가락 끝을 타고 흘러내렸다.']]);
     GAME.shake=5; GAME.red=.6; P.pose='scared'; await faceBlink('face');
     await say([['???','홍…련…아…']]);
     scare('face'); await wait(700);
@@ -1287,7 +1287,7 @@ function sceneFox(night){ const w=920; const Zp={sky:night?['#05040a','#0a0814',
     if(P.x>2230){ SCN.chase=null; SCN.run=0; NPCS=NPCS.filter(n=>n!==chaser); chaser=null; TARGET=null; coach(''); endTemp(); GAME.cine=1; GAME.flash=.5;
       await say([['','고개 마루를 넘는 순간, 뒤따르던 소리가 뚝 끊겼다.'],['','돌아보니 아무것도 없었다. 흙길 위에 손바닥 자국만 줄지어 찍혀 있었다. 손가락이 너무 길었다.'],['태석','…저 고개는 다시는 밤에 넘지 맙시다.']]); GAME.cine=0; SCN.finish(); return; }
     if(gap<14){ GAME.cine=1; SCN.run=0; TARGET=null; scare('crawl'); GAME.blood=1.8; GAME.shake=9; P.pose='scared';
-      await say([['','차가운 손이 발목을 움켜쥐었다. 홍련은 그대로 고꾸라졌다.'],['태석','이놈!'],['','태석의 방망이가 허공을 갈랐다. 그것은 킥킥거리며 물러났다… 아직, 가지 않았다.']]);
+      await say([['','차가운 손이 발목을 움켜쥐었다. 홍련은 그대로 고꾸라졌다.'],['태석','이놈!'],['','태석의 방망이가 허공을 갈랐다. 그것은 낮게 웃으며 물러났다… 아직, 가지 않았다.']]);
       P.pose=null; P.x=C.cp; P.y=0; P.air=false; if(TS) TS.x=P.x-40; chaser.x=P.x-190; C.hits=0; C.slow=0; for(const o of SCN.obst) if(o.x>P.x) o.passed=0; SCN.run=150; GAME.cine=0; coach('다시! 장애물이 오면 화면을 눌러 뛰어넘으세요.'); } }
   const H_=[{id:'jang',x:210,name:'길가 장승',again:[[['','장승의 붉은 눈이 홍련을 따라 움직이는 것 같았다.']],[['태석','자꾸 보지 마시오. 눈 마주치면 따라온다 했소.']]],clue:1,ev:async h=>{ if(h.done){ await say(againLine(h)); return; } h.done=1; clue('jang'); await say([['','「여우 고개」라 새긴 장승. 누군가 장승 눈에 붉은 칠을 덧발라 놓았다.']]); await emote(TS,'!'); await say([['태석','누가 장승 눈에 피칠을 해 놨소. 사람을 쫓으려는 짓인지, 귀신을 쫓으려는 짓인지…']]); TS.pose=null; }},
     {id:'cairn',x:380,low:1,name:'돌탑',again:[[['','꽃신이 아까와 다른 쪽을 향해 있다. 바람 한 점 없었는데.']],[['홍련','(누군가 돌을 하나 더 얹었어… 방금 전까지 없던 돌이야.)']]],clue:1,txt:'길가 돌탑 꼭대기에 작은 꽃신 한 짝이 올려져 있다. 아이 신이다. 소원을 빈 걸까, 넋을 달랜 걸까.'},
@@ -1325,9 +1325,9 @@ function sceneWell(){ const w=1340, DITCH={x0:-99,x1:-98};
    {id:'chest',x:576,low:1,name:'장승 뒤 궤짝',clue:1,ev:async h=>{ if(h.done){ await say([['','궤짝은 비어 있다.']]); return; }
      await say([['','장승 뒤에 작은 궤짝이 숨겨져 있다. 뚜껑에 이름 패 넷이 박혀 있고, 「사라진 차례대로」라고 새겨져 있다.']]);
      const ok=await lockGame('이름 패 자물쇠','이름 패 셋을 아이들이 사라진 차례대로 눌러야 열린다. 넷째 패의 이름은… 아무리 봐도 읽히지 않는다.',[['막동','#56653f'],['순이','#7a4f62'],['복동','#45587a'],['???','#3a3632']],['막동','순이','복동']);
-     if(!ok){ snd('kid_laugh',.9,.4); await say([['','패가 덜컥 제자리로 돌아갔다. 어디선가 아이 웃음소리가 났다.']]); return; }
+     if(!ok){ snd('kid_laugh',.9,.4); await say([['','패가 제자리로 돌아갔다. 어디선가 아이 웃음소리가 났다.']]); return; }
      h.done=1; clue('chest'); fx('chest',{x:578,y:GY+1,palette:FXP.gold},'behind').keep=1; snd('ritok',1.1,.5); await wait(700); await gainItem('rope'); await gainItem('sealp');
-     await say([['','딸깍. 궤짝 안에 둘둘 감은 새 밧줄. 그리고 붉은 관아 인장이 찍힌 종잇조각 하나.'],['태석','…관아 인장이오. 이게 왜 여기 있소.']]); goal('밧줄을 두레박에 묶자'); }},
+     await say([['','궤짝이 열렸다. 안에 둘둘 감은 새 밧줄. 그리고 붉은 관아 인장이 찍힌 종잇조각 하나.'],['태석','…관아 인장이오. 이게 왜 여기 있소.']]); goal('밧줄을 두레박에 묶자'); }},
    {id:'thread',x:712,high:1,top:GY-92,name:'버드나무 가지',clue:1,txt:'버드나무 가지에 붉은 실이 걸려 있다. 연꽃 무늬… 언니 방울 끈의 실이다.',say:[['홍련','(언니… 여기 왔었어.)']]},
    {id:'pail',x:968,low:1,name:'두레박',clue:1,ev:async h=>{ if(S.items.includes('pailrope')){ await say([['','두레박은 이미 밧줄에 묶여 있다.']]); return; }
      if(!S.items.includes('rope')){ clue('pail'); await say([['','두레박줄이 끊어져 있다. 닳아서가 아니라, 칼로 자른 자국이다.'],['태석','칼자국이오. 누군가 아이가 못 올라오게 일부러 끊은 거요.']]); goal('두레박에 맬 밧줄을 찾자'); return; }
@@ -1692,7 +1692,7 @@ async function ep2(){ S.items=[...new Set([...(S.items||[]),'mirror'])]; S.mirro
   const b=await choose('순이 어미에게',[{t:'“그 옷에 이름을 수놓아 보시오.”',v:'stitch'},{t:'“문을 꼭 잠그고 주무시오.”',v:'lock'}]);
   if(b==='stitch'){ sc('ja'); piece('순'); S.flags.suni=1; await say([['순이 어미','이름이요? 누구 이름을…'],['','바늘이 저절로 움직였다.'],['순이 어미','순… 순이. 순이라고 수놓았소. 왜 눈물이 나지?']]); }
   else await say([['순이 어미','…그러리다. 그런데 문을 잠가도, 저 물소리는 들어오던데.']]);
-  await say([['','골목 끝, 담장 위에서 무언가 툭 떨어졌다. 젖은 아이 짚신 한 짝. 아직 따뜻했다.'],['','등 뒤에서 첨벙, 첨벙. 맨발로 물웅덩이를 밟는 소리가 가까워졌다. 돌아보면 아무도 없었다.'],
+  await say([['','골목 끝, 담장 위에서 무언가 떨어졌다. 젖은 아이 짚신 한 짝. 아직 따뜻했다.'],['','등 뒤에서 맨발로 물웅덩이를 밟는 소리가 가까워졌다. 돌아보면 아무도 없었다.'],
     ['태석','누구요! 관아에서 나왔소. 나오시오!'],['','등불 끝에 작은 그림자가 걸렸다가, 그림자만 남고 아이는 없었다. 그림자가 우물 쪽으로 기어갔다.'],
     ['태석','…방금 그거, 봤소?'],['홍련','봤소. 그림자만 남은 아이요. 이름을 먼저 잃고, 몸이 나중에 사라진 거요.']]);
 
