@@ -1048,7 +1048,7 @@ function drawSeals(cx,T){ const c=ctx;
       if(lt>.2&&lt<3){ /* 마른 먹이 바스러지듯 글자 가장자리에서 붉은 재가 떨어진다 */ if(Math.random()<.5){ const pp=pick(m.pts); part(q.x+pp[0],q.y-30+pp[1],rnd(-6,6),rnd(-30,-10),rnd(.6,1.2),pick(['#ffffff','#e8e4ff','#a8a0c8']),'ember'); } } } } }
 
 /* ===== 배경음악: 방탈출판 곡 그대로 (1 타이틀 · 2 낮 장면 · 3 밤 장면 · 4 귀신 · 5 퇴마 · 6 긴장 · 7 굿 · 8 엔딩) ===== */
-const BGM_BASE='../gwimun/bgm/', MU={on:true,cur:0,el:null,want:0,base:0,vol:.32,tr:{},tempT:0,blocked:0};
+const BGM_BASE='../../gwimun/bgm/', MU={on:true,cur:0,el:null,want:0,base:0,vol:.32,tr:{},tempT:0,blocked:0};
 function fadeEl(a,to,ms,cb){ if(a._f) cancelAnimationFrame(a._f); const v0=a.volume, t0=performance.now(); const st=t=>{ const k=Math.min(1,(t-t0)/ms); try{ a.volume=Math.max(0,Math.min(1,v0+(to-v0)*k)); }catch(e){} if(k<1) a._f=requestAnimationFrame(st); else { a._f=0; cb&&cb(); } }; a._f=requestAnimationFrame(st); }
 function music(n){ MU.want=n; if(!MU.on){ return; } if(MU.cur===n&&MU.el&&!MU.el.paused) return; const old=MU.el; MU.cur=n;
   if(old&&old!==MU.tr[n]) fadeEl(old,0,900,()=>old.pause()); if(!n){ MU.el=null; return; }
@@ -1415,14 +1415,14 @@ function sceneWell(){ const w=1340, DITCH={x0:-99,x1:-98};
       ctx.globalAlpha=.75+Math.sin(T*4)*.25; blitC(PROP.glyph,1076-cx,GY-14); ctx.globalAlpha=1; } }; }
 
 /* 숨 참기: 화면을 꾹 누르고 있으면 숨을 참는다. 발소리가 가까울 때 손을 떼면 들킨다 */
-function breathGame(){ return new Promise(res=>{ GAME.lock++; const v=document.getElementById('view'), o=document.createElement('div'); o.id='breath';
+function breathGame(){ return new Promise(res=>{ GAME.lock++; try{ music(0); }catch(e){} /* 숨는 동안은 음악을 끊는다 */ const v=document.getElementById('view'), o=document.createElement('div'); o.id='breath';
   o.style.cssText='position:absolute;inset:0;z-index:7;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none';
   o.innerHTML='<div class="pk" style="position:absolute;inset:0;background:#000 center/cover no-repeat;opacity:1"></div><div class="ln" style="position:absolute;left:44.6%;width:10.2%;top:0;bottom:0;background:linear-gradient(90deg,rgba(40,48,60,.0),rgba(40,48,60,.35) 20%,rgba(20,24,30,.5) 50%,rgba(40,48,60,.35) 80%,rgba(40,48,60,0));opacity:.5;transition:opacity .7s"></div><div class="bt" style="position:absolute;left:0;right:0;top:7%;text-align:center;color:#d8cdbd;font-size:max(12px,calc(var(--u)*5));letter-spacing:.12em;text-shadow:0 0 8px #000"></div><div class="gb" style="position:absolute;left:30%;right:30%;top:4%;height:4px;background:#2a221c"><i style="display:block;height:100%;width:100%;background:#c9a24a"></i></div>'; o.querySelector('.pk').style.backgroundImage='url('+VNBG.peek+')';
   v.appendChild(o); const pk=o.querySelector('.pk'), ln=o.querySelector('.ln'), bt=o.querySelector('.bt'), gi=o.querySelector('.gb i');
   let hold=false, breath=1, t=0, expose=0, last=performance.now(), done=false, stepT=0; const D0=3.2, D1=8.2, END=9.4;
   const dn=e=>{ e.preventDefault(); hold=true; }, up=()=>{ hold=false; }; o.addEventListener('pointerdown',dn); o.addEventListener('pointerup',up); o.addEventListener('pointercancel',up); o.addEventListener('pointerleave',up);
   const kd=e=>{ if(e.code==='Space'){ hold=true; e.preventDefault(); } }, ku=e=>{ if(e.code==='Space') hold=false; }; addEventListener('keydown',kd); addEventListener('keyup',ku);
-  const fin=ok=>{ if(done) return; done=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); setTimeout(()=>{ o.remove(); GAME.lock--; res(ok); },ok?500:250); };
+  const fin=ok=>{ if(done) return; done=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); setTimeout(()=>{ o.remove(); GAME.lock--; try{ music(ok?MU.base:4); if(!ok) setTimeout(()=>music(MU.base),5000); }catch(e){} res(ok); },ok?500:250); };
   (function loop(now){ if(done) return; const dt=Math.min(.05,(now-last)/1000); last=now; t+=dt; const danger=t>D0&&t<D1;
     breath=Math.max(0,Math.min(1,breath+(hold?-dt/6.4:dt/2.2))); if(breath<=0) hold=false; gi.style.width=(breath*100)+'%'; gi.style.background=breath<.25?'#c9332b':'#c9a24a';
     bt.textContent=t<D0?'발소리가 다가온다. 화면을 꾹 누르면 숨을 참아요.':(t>7.05&&t<D1?'…찾았다.':(hold?'…':'숨소리가 새어 나간다!')); bt.style.color=danger&&!hold?'#e0463a':'#d8cdbd';
@@ -1714,7 +1714,7 @@ async function ep1(){ S.items=[]; S.mirrorOK=false; S.sc={yeon:0,gi:0,ja:0}; S.p
   await say([['','고갯마루. 아래로 소리개 마을의 불빛이 몇 개 보였다. 비구름이 몰려오고 있었다.'],['태석','저기가 소리개 마을이오. 엿장수가 저리 갔소.'],
     ...(c!=='fox'?[['태석','…아까는 고마웠소. 돌아보지 말라고 해 준 것.'],['홍련','당신은 들었소? 마지막에 그 여자가 뭐라고 했는지.'],['태석','여자? 고개에는 우리 둘뿐이었소.'],['홍련','…그렇소. 둘뿐이었소.']]:[]),
     ['','홍련은 허리춤의 방울 끈을 풀었다. 매듭 안쪽에 작은 수가 놓여 있었다.']]);
-  await vnSwap('cord2');
+  sceneMusic(8); await vnSwap('cord2');
   await say([['','붉은 실로 수놓은 이름 둘. 하나는 「홍련」. 다른 하나는 첫 글자가 번져 「□련」.'],
     ['홍련','(내 바느질이야. 이 땀은 내가 뜨는 방식이야.)'],['홍련','(그런데 이건 누구의 이름이지. 나는 왜 남의 이름을 내 방울 끈에 새겼지.)']]);
   snd('bell',.8,.5);
