@@ -1351,7 +1351,7 @@ function sceneFox(night){ const w=920; const Zp={sky:night?['#05040a','#0a0814',
     async tick(dt){ if(SCN.chase) return chaseTick(dt||1/60);
       if(S.flags.foxWin&&!SCN.taboo&&!SCN.chaseDone&&!SCN.done&&!GAME.lock&&!GAME.busy&&!GAME.cine&&P.x>600){ /* 금기: 뒤돌아보지 마라 */
         SCN.taboo={n:0,max:P.x,g:null}; GAME.cine=1; ambient(null); snd('bell',.7,.4); await wait(500); snd('bell',.8,.5);
-        await say([['','불이 꺼지고 난 뒤. 뒤쪽 어둠에서 방울이 울리기 시작했다. 점점 잦아졌다.'],['아이 목소리','언니. 나 여기 있어.'],['태석','방금 들었소? 아이 목소리요! 찾았소!'],['홍련','돌아보지 마시오!'],['아이 목소리','언니. 나 분이야. 부적 사 간 분이. 왜 안 봐?']]);
+        await say([['','불이 꺼지고 난 뒤. 뒤쪽 어둠에서 방울이 울리기 시작했다. 점점 잦아졌다.'],['아이 목소리','언니. 나 여기 있어.'],['태석','방금 들었소? 아이 목소리요! 찾았소!'],['홍련','돌아보지 마시오!'],['아이 목소리','언니. 나 분이야. 부적 사 간 분이. 왜 안 봐?'],['홍련','(저건 분이가 아니야. 아는 목소리를 입고 부르는 거야. 할멈이 말한 게 이거였어.)']]);
         GAME.cine=0; goal('뒤돌아보지 말고 고개를 넘어라'); coach('금기: 뒤돌아보지 마세요. 왼쪽으로 걸으면 뒤돌아보는 것이 됩니다.'); return; }
       if(SCN.taboo&&!SCN.chaseDone&&!GAME.lock&&!GAME.busy&&!GAME.cine){ const tb=SCN.taboo; tb.max=Math.max(tb.max,P.x);
         if(Math.random()<.012) snd('bell',.6+Math.random()*.3,.25+tb.n*.12);
