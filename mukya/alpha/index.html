@@ -2121,7 +2121,8 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
     {id:'scr',x:640,name:'담장의 낙서',ev:async h=>{ h.done=1; await say([['','담장에 손톱으로 긁은 글씨. 「서 있는 것에게 등을 보이지 마라. 등을 보면 온다.」'],['홍련','(마주 본 채로 지나가야 해. 거울을 그쪽으로 들고.)']]); try{ lore('jangseung'); }catch(e){} }},
     hideHot('h2',712,'버드나무 뒤'), pick('p2',968,'두레박',1,'두레박 안에 젖지 않은 부적이 한 장 접혀 있다.'),
     {id:'shoe',x:1110,low:1,name:'우물가의 꽃신',hidden:()=>Z&&Z.shoe,ev:async()=>{ Z.shoe=true; Z.cp=1110; hud(); snd('clue',1,.6); GAME.shake=4; await say([['','우물 턱에 작은 꽃신 한 짝이 놓여 있다. 젖지 않았다.'],['','집어 드는 순간, 마을 어귀 쪽에서 기는 소리가 빨라졌다.']]); K.st='chase'; K.rage=1; Z.seen=3; }},
-    hideHot('h3',1230,'담 그늘') ];
+    hideHot('h3',1230,'담 그늘'),
+    ...[[500,1010],[1010,500]].map(([x,to],n)=>({id:'hole'+n,x,low:1,name:'담 밑 개구멍',label:'E · 개구멍으로 기어 들어가기',ev:async()=>{ GAME.cine=1; Z.mir=false; snd('page',.6,.4); await fade(true,350); P.x=to; P.y=0; CAM.x=clamp(P.x-W/2,0,w-W); if(K.st==='chase'){ K.st='search'; K.tt=2.6; } await wait(500); await fade(false,350); GAME.cine=0; toast('담 뒤로 돌아 나왔다'); }})) ];
   const def=Object.assign(base,{start:START,taeseok:0,clueTotal:0,dark:.82,rain:0,hots:H_,yinBlood:[],
     build(){ S.mirrorOK=false; S.mirror=false; syncHUD(); Z={tal:3,hp:3,shoe:false,hid:null,mir:false,thr:0,inv:0,cp:START,seen:0,back:0,litK:0}; shots=[];
       K=newActor(ANIM.crawl2?'crawl2':'crawler',940); K.noShadow=1; K.st='patrol'; K.dir=-1; K.state='walk'; NPCS.push(K);
@@ -2155,10 +2156,16 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
       else if(K.st==='search'){ K.state='idle'; K.tt-=dt; K.face=Math.sin(GAME.t*4)>0?1:-1; if(K.tt<=0){ K.st='patrol'; K.dir=Math.random()<.5?-1:1; K.rage=Z.shoe?1:0; } }
       if(K.key==='crawl2') K.pose=K.st==='stun'?'stun':K.st==='search'?'look':K.st==='patrol'?'crawl':(ad<46?'lunge':null);
       hb-=dt; if(ad<320&&hb<=0&&K.st!=='stun'){ hb=clamp(ad/300,.22,.7); SFXP.thud(); }
-      /* 서 있는 것: 등을 보이면 온다 */
-      if(G&&!G.gone){ const gx=G.x-P.x, gd=Math.abs(gx), gl=lit(G.x,GY-26); G.alpha=gl?.85:(G.st==='rush'?.6:.1); G.face=gx>0?-1:1; if(G.key==='backkid') G.pose=G.st==='rush'?(gd<26?'grab':'rush'):(Z.back>.2?'face':Z.back>0?'tilt':null);
-        if(G.st==='rush'){ G.x-=Math.sign(gx)*250*dt; if(gd<14){ G.st=null; G.x=G.home; if(Z.inv<=0&&!Z.hid) hurt('등을 보였다'); } else if(gd>230||Z.hid){ G.st=null; G.x=G.home; } }
-        else if(gd<150&&gd>10&&!Z.hid){ const back=P.face!==Math.sign(gx); Z.back=back?Z.back+dt:0; if(Z.back>.4){ Z.back=0; G.st='rush'; snd('whisper',1.4,.6); snd('scare',1.6,.3); } } else Z.back=0; } } });
+      /* 서 있는 것: 등을 보이는 동안에만 한 걸음씩 다가온다 */
+      if(G&&!G.gone){ const gx=G.x-P.x, gd=Math.abs(gx), gl=lit(G.x,GY-26), kid=G.key==='backkid'; G.face=gx>0?-1:1;
+        const back=!Z.hid&&gd<200&&gd>8&&P.face!==Math.sign(gx)&&!gl;
+        if(back){ if(!Z.gt){ Z.gt=1; toast('뒤에서 발소리가 난다'); } if(Z.back===0) snd('whisper',1.2,.35); Z.back+=dt; G.alpha=Math.min(.9,.35+Z.back*.5);
+          if(Z.back>.7){ G.stp=(G.stp||0)-dt; if(G.stp<=0){ G.stp=Math.max(.24,.5-(G.n||0)*.035); G.n=(G.n||0)+1; G.x-=Math.sign(gx)*13; G.fr=((G.fr||0)+1)%3; try{ SFXP.step(); }catch(e){} snd('drip',.5,.25); } }
+          if(kid) G.pose=Z.back<.35?'tilt':Z.back<.7?'face':'rush'; if(kid&&ANIM.backkid.rush&&Z.back>=.7){ G.pose=null; G._f=ANIM.backkid.rush[G.fr||0]; } }
+        else { Z.back=Math.min(Z.back,.25); G.n=0; G.pose=null; G._f=null; G.alpha=gl?.9:(gd<200?.3:.14); }
+        if(gd<15&&!Z.hid&&back){ if(kid){ G.pose='grab'; G._f=null; } if(Z.inv<=0) hurt('등을 보였다'); setTimeout(()=>{ if(G&&!G.gone){ G.x=G.home; G.pose=null; Z.back=0; } },500); }
+        if(gd>330&&Math.abs(G.x-G.home)>4&&!gl) G.x=G.home; }
+} });
   return def; }
 { const _ep1=ep1; ep1=async function(){ if(location.hash.indexOf('zone')>=0){ S.items=[]; S.mirrorOK=false; S.sc={yeon:0,gi:0,ja:0}; S.pieces=[]; S.flags=S.flags||{}; await toScene(sceneZone()); GAME.story=1; try{ toast('시험판 끝 · 처음 화면으로 돌아갑니다'); }catch(e){} await wait(1800); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); return; } return _ep1(); }; }
 (function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xz')) return; const cl=box.querySelector('[data-k=close]'); const b=document.createElement('button'); b.type='button'; b.className='xb xz'; b.dataset.k='x'; b.innerHTML='<span>한 구역 시험판 (PC)</span><b>해 보기</b>'; b.addEventListener('click',()=>{ location.hash='zone'; location.reload(); }); box.insertBefore(b,cl); };
@@ -2172,6 +2179,8 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
 
 /* 잡혔을 때: 그림 없이 소리와 흔들림만 */
 function scareSoft(){ try{ GAME.blood=1.2; GAME.shake=7; GAME.red=.6; snd('scare',1,.8); SFXP.sting(); navigator.vibrate&&navigator.vibrate([60,40,120]); }catch(e){} }
+
+{ const _af=animFrame; animFrame=function(a){ return a&&a._f?a._f:_af(a); }; }
 
 
 </script>
