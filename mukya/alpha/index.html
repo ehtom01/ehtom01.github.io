@@ -1404,8 +1404,8 @@ function sceneWell(){ const w=1340, DITCH={x0:-99,x1:-98};
      clue('pail'); takeItem('rope'); await gainItem('pailrope'); await say([['','두레박 손잡이에 새 밧줄을 단단히 묶었다. 이제 우물에 내릴 수 있다.']]); goal('우물 속 아이에게 닿자'); }},
    {id:'wallyin',x:1076,yin:1,top:GY-40,name:'우물 돌벽',clue:1,txt:'거울 속 돌벽에 손톱으로 긁은 이름이 빽빽하다. 맨 아래, 가장 오래된 자리에 「달래」. 그 위로 「막동 · 순이 · 복동」.',say:[['','맨 위쪽, 아직 돌가루가 묻어 있는 새 자국이 하나 있다.'],['홍련','(분이야. 그 아이가 여기를 거쳐 갔어. 며칠 안 됐어.)'],['홍련','(누군가 아이들 이름을 여기 대신 적어 두고 있어.)']],f:()=>{ S.flags.dallae=1; }},
    {id:'wash',x:300,low:1,name:'빨래 방망이',txt:'평상 아래 빨래 방망이가 둘 놓여 있다. 하나는 어른 것, 하나는 아이 손에 맞게 깎은 작은 것이다. 작은 쪽 손잡이만 닳아 반들거린다.',say:[['홍련','(이 집에도 아이가 있었어. 엄마 따라 빨래하던 아이.)']]},
-   {id:'geum2',x:842,high:1,top:GY-72,name:'거꾸로 붙은 부적',txt:'우물로 가는 길목의 금줄에 부적이 거꾸로 매달려 있다. 밖을 막는 부적이 아니다. 안의 것을 가두는 부적이다.',f:()=>lore('geumjul')},
-   {id:'gukhwa',x:1236,low:1,name:'마른 국화',txt:'담 밑에 마른 국화가 한 묶음 놓여 있다. 여러 해 묵은 것 위에 새것이 얹혀 있다. 누군가 해마다 놓고 간다.',say:[['홍련','(여덟 해 전 굿에서 죽은 사람들 몫일까.)']],f:()=>lore('mulgwi')},
+   {id:'geum2',x:842,high:1,top:GY-72,name:'거꾸로 붙은 부적',txt:'우물로 가는 길목의 금줄에 부적이 거꾸로 매달려 있다. 밖을 막는 부적이 아니다. 안의 것을 가두는 부적이다.',f:()=>{ lore('geumjul'); S.flags.geum2=1; }},
+   {id:'gukhwa',x:1236,low:1,name:'마른 국화',txt:'담 밑에 마른 국화가 한 묶음 놓여 있다. 여러 해 묵은 것 위에 새것이 얹혀 있다. 누군가 해마다 놓고 간다.',say:[['홍련','(여덟 해 전 굿에서 죽은 사람들 몫일까.)']],f:()=>{ lore('mulgwi'); S.flags.gukhwa=1; }},
    {id:'yeot',x:768,low:1,name:'버려진 엿판',txt:'버드나무 아래 엿판이 버려져 있다. 엿은 굳은 채 그대로다. 엿가위 손잡이에 말 도장이 찍혀 있다.',say:[['홍련','(엿장수는 엿을 팔러 온 게 아니었어.)'],['태석','…이 도장, 어디서 본 것 같소.']]},
    {id:'well',x:1104,name:'우물',ev:async h=>{ if(!S.items.includes('pailrope')){ await say([['','칠흑같이 어둡다. 깊은 곳에서 아이가 훌쩍인다. 도르래에 걸린 줄은 없다.'],['태석','줄 없이는 못 내려가오. 두레박부터 살펴봅시다.']]); return; }
      GAME.cine=1; await say([['','밧줄 묶은 두레박을 천천히 내렸다. 한참 만에 줄이 팽팽해졌다.'],['','그리고… 아래에서 누군가 줄을 잡아당겼다.']]);
@@ -1821,13 +1821,19 @@ async function storyWell(){ await vnOpen('gwell','우물가 · 깊은 밤'); try
   vnFx('red'); vnBlood(); if(typeof scare==='function') scare('crawl'); await wait(900); sceneMusic(6);
   await say([['','수면 위로 열두어 살 소녀가 천천히 떠올랐다. 젖은 머리가 얼굴을 덮었고, 손에 붉은 댕기를 쥐고 있었다.'],['물귀신','내 이름… 내 이름이 뭐였지…'],['물귀신','애들이 자꾸 내려와. 내가 받아 주지 않으면 바닥까지 가라앉아.'],['물귀신','그러니까 언니도 이리 와. 같이 받아 줘.']]);
   lore('mulgwi');
-  const pick=await choose('물귀신 앞에서',[{t:'“달래야.” 이름을 불러 준다.',v:'name',secret:'거울로 우물 벽의 오래된 이름을 찾음',show:()=>S.flags.dallae},{t:'부적으로 봉인한다.',v:'tali'},{t:'버드나무 위에 숨은 아이부터 구한다.',v:'boy'}]); S.flags['well_'+pick]=1;
+  const pick0=await choose('물귀신 앞에서',[{t:'“달래야.” 이름을 불러 준다.',v:'name',secret:'거울로 우물 벽의 오래된 이름을 찾음',show:()=>S.flags.dallae},{t:'방울을 흔들어 굿판을 벌인다. (시험판)',v:'gut'},{t:'부적으로 봉인한다.',v:'tali'},{t:'버드나무 위에 숨은 아이부터 구한다.',v:'boy'}]);
+  let pick=pick0, gutFail=false;
+  if(pick0==='gut'){ await say([['홍련','(이름을 모르면 방울에게 묻는 수밖에 없어. 대신 틀릴 때마다 저 아래 아이들 이름이 걸려.)'],['태석','무얼 하려는 거요?'],['홍련','굿이오. 물러서 있으시오.']]);
+    const g=await gutGame(gutWellCfg()); S.flags.gutLost=g.lost; S.flags.dallae=S.flags.dallae||(g.res==='name');
+    if(g.lost) await say([['','우물 벽에서 긁힌 이름 '+['','하나가','둘이','셋이'][g.lost]+' 물에 번져 지워졌다.'],['홍련','(내가 틀린 만큼 지워졌어.)']]);
+    pick=g.res==='name'?'name':'tali'; gutFail=g.res==='fail'; mapMark('물귀신 앞에서',pick); }
+  S.flags['well_'+pick]=1;
   if(pick==='name'){ sc('ja',2); piece('달'); await say([['홍련','네 이름은 달래야. 벽에 맨 먼저 새겨진 이름.'],['달래','…달래. 나는 달래였구나.'],['달래','오래전에 나도 여기 빠졌어. 아무도 내 이름을 불러 주지 않아서, 바닥에서 내 이름부터 잊어버렸어.'],
       ['달래','그래서 애들 이름은 벽에 적어 뒀어. 나처럼 되지 말라고.'],['달래','이름이 벽에 적혀 있는 동안은, 그 문이 그 애를 못 먹어. 지워지면 그때 먹혀.'],['홍련','(막례 할멈이 그랬지. 글자로 써 두지 않으면 잊는다고. 같은 이치야.)'],
       ['홍련','누가 아이들을 여기로 데려오는 거니?'],['달래','하얀 옷 입은 언니. 밤마다 한 명씩 손을 잡고 와. 그리고 여기에 내려놓고 가.'],['태석','들었소? 역시 그 여자요.'],['달래','그 언니는 올 때마다 울어. 왜 우는지는 나도 몰라.'],['홍련','(우는 사람이 아이를 우물에 넣어? 왜.)']]);
     vnFx('flash'); snd('ritok',.8,.7); await say([['','달래의 몸이 물안개로 풀리며 올라갔다. 물이 제자리로 가라앉았다.'],['달래','고마워. 내 이름을 불러 줘서.']]); S.ending='달래의 이름'; }
   else if(pick==='tali'){ await say([['홍련','미안해. 네 이름을 몰라.']]);
-    const ok=typeof taliGame==='function'?await taliGame('부적에 「封」을 그어 우물을 닫아라'):true;
+    const ok=gutFail?false:(typeof taliGame==='function'?await taliGame('부적에 「封」을 그어 우물을 닫아라'):true);
     if(ok){ vnFx('flash'); snd('ritok',1,.6); await say([['','부적이 뚜껑에 붙자, 우물 안에서 긴 울음이 울리다 끊겼다.'],['물귀신','…그럼 이제 누가 받아 줘…'],['태석','끝난 거요?'],['홍련','닫았소. 끝난 건 아니오.']]); }
     else { vnFx('shake'); await say([['','획이 어긋났다. 젖은 머리카락이 발목을 감았다. 태석이 홍련을 끌어당겨 겨우 빠져나왔다.'],['태석','괜찮소?!'],['홍련','…닫지 못했소. 저건 아직 저 안에 있소.']]); }
     S.ending='봉인'; }
@@ -1949,6 +1955,86 @@ chapterEnd=function(small,big,next,btn){ sceneMusic(8); return new Promise(res=>
     ['조이스틱을 위로 밀면 뛰어올라요. 오른쪽 위로 밀면 앞으로 뛰어요.','Space 키로 뛰어올라요.'],['오른쪽 위 鏡 버튼을 눌러','Q 키를 눌러'],['鏡 버튼을 다시 눌러','Q 키를 다시 눌러'],['조이스틱을 끝까지 밀면 달려요','Shift를 누르면 달려요'],
     ['귀문을 눌러 부적을 붙이세요.','귀문 앞에서 E 키를 눌러 부적을 붙이세요.'],['화면을 눌러 뛰어넘으세요','Space 키로 뛰어넘으세요'],['화면을 눌러 뛰어요','Space 키로 뛰어요'],['소복 입은 여인에게 다가가 보세요.','소복 입은 여인에게 다가가 E 키를 누르세요.']];
   coach=function(t){ if(PCMODE&&t){ for(const [a,b] of PCT) t=t.split(a).join(b); } return _co(t); }; }
+
+/* ================= 굿판 (방울 판) 시험판 ================= */
+/* cfg:{ghost,need,stakes:[이름…],clues:[{t,on}]} → {res:'name'|'seal'|'fail',lost,spins} */
+function gutGame(cfg){ return new Promise(res=>{ extraCss(); GAME.lock++;
+  if(!document.getElementById('gutcss')){ const st=document.createElement('style'); st.id='gutcss'; st.textContent=`
+#gut{position:absolute;inset:0;z-index:320;background:radial-gradient(ellipse at 50% 45%,#1d1814,#0c0a09 62%,#050404);color:#d8cdbd;font-family:'Noto Serif KR',serif;display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto 1fr auto;gap:calc(var(--u)*2) calc(var(--u)*5);padding:calc(var(--u)*5) calc(var(--u)*7);pointer-events:auto;user-select:none;-webkit-user-select:none;touch-action:none;overflow:hidden}
+#gut .gh{grid-column:1/4;text-align:center}
+#gut .gh b{display:block;font-weight:900;letter-spacing:.35em;color:#efe4cb;font-size:max(14px,calc(var(--u)*6.4))}
+#gut .gh i{display:block;font-style:normal;color:#a99d84;letter-spacing:.1em;margin-top:.25em;font-size:max(10px,calc(var(--u)*3.6));min-height:1.5em;transition:color .3s}
+#gut .gh i.bad{color:#e0463a}#gut .gh i.good{color:#e8c56a}
+#gut .gs{align-self:center;font-size:max(10px,calc(var(--u)*3.7))}
+#gut .gs h5{margin:0 0 .6em;font-weight:700;color:#c9a24a;letter-spacing:.2em;font-size:1.05em;border-bottom:1px solid rgba(201,162,74,.25);padding-bottom:.3em}
+#gut .gs p{margin:.38em 0;letter-spacing:.04em;color:#5f574c;line-height:1.35}
+#gut .gs p.on{color:#d8cdbd}#gut .gs p.on::before{content:"● ";color:#c9a24a}#gut .gs p.off::before{content:"○ "}
+#gut .gl{justify-self:end;text-align:left;max-width:15em}#gut .gr{justify-self:start;max-width:13em}
+#gut .nm{display:inline-block;margin:.25em .5em .25em 0;padding:.2em .7em;border:1px solid #6a5a3a;border-radius:2px;color:#efe4cb;font-weight:700;letter-spacing:.2em;font-size:1.25em;position:relative;transition:all .8s}
+#gut .nm.lost{color:#3a332b;border-color:#2e2822;filter:blur(1.2px);text-decoration:line-through}
+#gut .gw{position:relative;align-self:center;justify-self:center}
+#gut canvas{display:block;width:min(56vh,34vw);height:min(56vh,34vw);min-width:150px;min-height:150px}
+#gut .pin{position:absolute;left:50%;top:-1.5%;width:0;height:0;margin-left:calc(var(--u)*-2.4);border-left:calc(var(--u)*2.4) solid transparent;border-right:calc(var(--u)*2.4) solid transparent;border-top:calc(var(--u)*5) solid #efe4cb;filter:drop-shadow(0 0 6px #000)}
+#gut .pr{display:flex;gap:.6em;justify-content:center;margin-top:.9em}
+#gut .pr span{width:1em;height:1em;border:1px solid #c9a24a;border-radius:50%;transition:all .4s}#gut .pr span.on{background:#e8c56a;box-shadow:0 0 10px rgba(232,197,106,.7)}
+#gut .gb{grid-column:1/4;display:flex;gap:1em;justify-content:center;min-height:calc(var(--u)*13)}
+#gut .gb button{font:inherit;font-weight:700;letter-spacing:.2em;padding:.7em 1.4em;border-radius:3px;cursor:pointer;font-size:max(12px,calc(var(--u)*4.6));color:#f3e6c8;background:rgba(40,10,12,.9);border:1px solid #c9332b}
+#gut .gb button.sub{background:#1a1512;border-color:#6a5a3a;color:#cfc3ad}
+#gut .gb button:disabled{opacity:.25;cursor:default}
+#gut.hit{animation:guthit .5s}@keyframes guthit{0%,100%{box-shadow:inset 0 0 0 rgba(200,30,30,0)}30%{box-shadow:inset 0 0 120px rgba(200,30,30,.75)}}
+@media (max-aspect-ratio:1/1){#gut{grid-template-columns:1fr 1fr;grid-template-rows:auto auto 1fr auto}#gut .gh,#gut .gb{grid-column:1/3}#gut .gw{grid-column:1/3;grid-row:2}#gut canvas{width:min(46vh,70vw);height:min(46vh,70vw)}#gut .gl,#gut .gr{justify-self:center;align-self:start}}`; document.head.appendChild(st); }
+  const N=12, need=cfg.need||3, stakes=cfg.stakes.slice(), clues=cfg.clues||[], nOn=clues.filter(c=>c.on).length;
+  /* 판 구성: 기본 吉3 凶5 空4. 단서 하나마다 凶 하나가 吉로 바뀐다 */
+  let bad=Math.max(1,5-nOn), good=3+(5-bad); const kinds=[]; for(let i=0;i<N;i++) kinds.push('e');
+  const order=[0,6,3,9,1,7,4,10,2,8,5,11]; let oi=0; for(let i=0;i<bad;i++) kinds[order[oi++]]='b'; for(let i=0;i<good;i++) kinds[order[oi++]]='g';
+  const o=document.createElement('div'); o.id='gut';
+  o.innerHTML=`<div class="gh"><b>굿판 · ${cfg.ghost}</b><i class="msg">방울을 흔들어 판을 돌린다. 「名」에 세 번 멈추면 이름을 찾는다.</i></div>
+<div class="gs gl"><h5>알아낸 것</h5>${clues.map(c=>`<p class="${c.on?'on':'off'}">${c.on?c.t:'？？？'}</p>`).join('')}<p style="margin-top:.9em;color:#8f8372">알아낸 것 하나마다 「凶」 한 칸이 「名」으로 바뀐다.</p></div>
+<div class="gw"><div class="pin"></div><canvas width="560" height="560"></canvas><div class="pr">${'<span></span>'.repeat(need)}</div></div>
+<div class="gs gr"><h5>걸린 이름</h5><div>${stakes.map(n=>`<span class="nm">${n}</span>`).join('')}</div><p style="margin-top:.9em;color:#8f8372">「凶」에 멈추면 이름 하나가 먹힌다. 다 먹히면 굿이 깨진다.</p></div>
+<div class="gb"><button class="go" type="button">방울을 흔든다</button><button class="sub stop" type="button" disabled>여기서 봉인한다</button></div>`;
+  (document.getElementById('view')||document.body).appendChild(o);
+  ['pointerdown','pointerup','click'].forEach(k=>o.addEventListener(k,e=>e.stopPropagation()));
+  const cv=o.querySelector('canvas'), c=cv.getContext('2d'), msg=o.querySelector('.msg'), go=o.querySelector('.go'), stop=o.querySelector('.stop'), dots=[...o.querySelectorAll('.pr span')], nms=[...o.querySelectorAll('.nm')];
+  let ang=0, spinning=false, got=0, lost=0, spins=0, done=false, lit=-1, raf=0;
+  const SEG=Math.PI*2/N, COL={g:['#3b3220','#e8c56a','名'],b:['#3a1012','#e0463a','凶'],e:['#17130f','#4a4238','']};
+  function draw(){ const R=280; c.clearRect(0,0,560,560); c.save(); c.translate(R,R); c.rotate(ang);
+    for(let i=0;i<N;i++){ const a0=i*SEG-Math.PI/2-SEG/2, k=COL[kinds[i]]; c.beginPath(); c.moveTo(0,0); c.arc(0,0,R-14,a0,a0+SEG); c.closePath(); c.fillStyle=k[0]; c.fill();
+      if(i===lit){ c.fillStyle=kinds[i]==='b'?'rgba(224,70,58,.45)':kinds[i]==='g'?'rgba(232,197,106,.4)':'rgba(255,255,255,.08)'; c.fill(); }
+      c.strokeStyle='#0b0908'; c.lineWidth=3; c.stroke();
+      if(k[2]){ c.save(); c.rotate(i*SEG); c.fillStyle=k[1]; c.font='900 46px "Noto Serif KR",serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(k[2],0,-R+78); c.restore(); } }
+    c.beginPath(); c.arc(0,0,R-14,0,7); c.strokeStyle='#6a5a3a'; c.lineWidth=5; c.stroke();
+    c.beginPath(); c.arc(0,0,74,0,7); c.fillStyle='#0b0908'; c.fill(); c.strokeStyle='#c9a24a'; c.lineWidth=3; c.stroke(); c.restore();
+    c.fillStyle='#c9a24a'; c.font='900 54px "Noto Serif KR",serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText('鈴',R,R+3); }
+  draw(); try{ document.fonts.ready.then(draw); }catch(e){}
+  const say1=(t,cl)=>{ msg.textContent=t; msg.className='msg '+(cl||''); };
+  const fin=r=>{ if(done) return; done=true; go.disabled=stop.disabled=true; removeEventListener('keydown',key,true); setTimeout(()=>{ o.style.transition='opacity .6s'; o.style.opacity='0'; setTimeout(()=>{ cancelAnimationFrame(raf); o.remove(); GAME.lock=Math.max(0,GAME.lock-1); res({res:r,lost,spins}); },620); },1500); };
+  function spin(){ if(spinning||done) return; spinning=true; spins++; lit=-1; go.disabled=stop.disabled=true; say1('…');
+    const target=Math.floor(Math.random()*N), from=ang, jit=(Math.random()-.5)*SEG*.7;
+    let to=-target*SEG+jit; while(to<from+Math.PI*2*4) to+=Math.PI*2; const T=3400+Math.random()*700, t0=performance.now(); let lastSeg=-1;
+    try{ snd('bell',1,.5); }catch(e){}
+    const step=now=>{ const k=Math.min(1,(now-t0)/T), e=1-Math.pow(1-k,3.2); ang=from+(to-from)*e;
+      const sg=Math.floor(ang/SEG); if(sg!==lastSeg){ lastSeg=sg; try{ snd('pick',1.5+(1-k)*.8,.12); }catch(e){} }
+      draw(); if(k<1){ raf=requestAnimationFrame(step); return; } spinning=false; lit=target; draw(); land(kinds[target]); };
+    raf=requestAnimationFrame(step); }
+  function land(k){ if(k==='g'){ got++; dots[got-1]&&dots[got-1].classList.add('on'); try{ snd('bell',.8,.7); }catch(e){}
+      if(got>=need){ say1('방울이 세 번 같은 이름을 울렸다.','good'); try{ snd('ritok',.9,.6); }catch(e){} return fin('name'); }
+      say1('방울이 맑게 울었다. 이름의 한 조각이 떠올랐다. ('+got+' / '+need+')','good'); }
+    else if(k==='b'){ const n=nms[lost]; lost++; if(n) n.classList.add('lost'); o.classList.remove('hit'); void o.offsetWidth; o.classList.add('hit'); try{ snd('scare',.9,.5); snd('forget',1,.5); GAME.shake=5; }catch(e){}
+      if(lost>=stakes.length){ say1('마지막 이름이 먹혔다. 굿이 깨졌다.','bad'); return fin('fail'); }
+      say1('젖은 손이 판을 짚었다. 「'+stakes[lost-1]+'」의 이름이 번진다.','bad'); }
+    else { try{ snd('drip',.7,.4); }catch(e){} say1('방울이 울지 않았다. 물소리만 들린다.'); }
+    go.disabled=false; stop.disabled=false; go.textContent='한 번 더 흔든다'; }
+  go.addEventListener('click',spin); stop.addEventListener('click',()=>{ if(spinning||done) return; say1('방울을 멈추고 부적을 꺼냈다.'); fin('seal'); });
+  const key=e=>{ if(done) return; if(e.code==='Space'||e.code==='Enter'){ e.preventDefault(); e.stopPropagation(); if(!go.disabled) spin(); } else if(e.code==='KeyS'){ e.stopPropagation(); if(!stop.disabled) stop.click(); } };
+  addEventListener('keydown',key,true); }); }
+function gutWellCfg(force){ const f=S.flags||{}, on=k=>force!=null?force>k:!!f[['dallae','wellHeld','geum2','gukhwa'][k]];
+  return {ghost:'우물의 물귀신',need:3,stakes:['복동','순이','막동'],clues:[{t:'우물 벽 맨 위의 이름을 보았다',on:on(0)},{t:'우물의 부름에 대답하지 않았다',on:on(1)},{t:'거꾸로 붙은 부적의 뜻을 안다',on:on(2)},{t:'해마다 놓이는 국화를 보았다',on:on(3)}]}; }
+function gutTest(){ xOpen(`<h3>굿판 시험판</h3><div class="xs">2화 우물가 물귀신 굿판을 바로 해 봅니다. 이야기 진행에는 영향을 주지 않습니다.</div><div style="display:flex;flex-direction:column;gap:.8em;max-width:22em">${[[0,'아무것도 모르고 덤빈다 (名 3 · 凶 5)'],[2,'절반쯤 알아냈다 (名 5 · 凶 3)'],[4,'전부 알아냈다 (名 7 · 凶 1)']].map(([n,t])=>`<button class="xc gt" data-n="${n}" type="button" style="position:static;float:none;text-align:left">${t}</button>`).join('')}</div>`);
+  const ov=document.getElementById('xov'); ov.querySelectorAll('.gt').forEach(b=>b.addEventListener('click',async()=>{ const n=+b.dataset.n; ov.remove(); GAME.lock=Math.max(0,GAME.lock-1);
+    const r=await gutGame(gutWellCfg(n)); try{ toast({name:'이름을 찾았다',seal:'봉인으로 끝냈다',fail:'굿이 깨졌다'}[r.res]+' · 잃은 이름 '+r.lost+' · '+r.spins+'번 흔듦'); }catch(e){} })); }
+(function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xg')) return; const cl=box.querySelector('[data-k=close]'); const b=document.createElement('button'); b.type='button'; b.className='xb xg'; b.dataset.k='x'; b.innerHTML='<span>굿판 시험판</span><b>해 보기</b>'; b.addEventListener('click',()=>setTimeout(gutTest,0)); box.insertBefore(b,cl); };
+  if(document.readyState!=='loading') add(); else addEventListener('DOMContentLoaded',add); setTimeout(add,1600); })();
 
 
 </script>
