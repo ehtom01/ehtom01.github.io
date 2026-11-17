@@ -991,7 +991,7 @@ function layout(){ const app=$('#app'), cs=getComputedStyle(app), aw=app.clientW
   let vw=Math.min(aw,ah*16/9); if(!matchMedia('(pointer:coarse)').matches){ const sc=Math.floor(vw/W); if(sc>=2) vw=sc*W; } vw=Math.max(200,Math.floor(vw)); const v=$('#view'); v.style.width=vw+'px'; v.style.height=Math.round(vw*9/16)+'px'; document.documentElement.style.setProperty('--u',(vw/320)+'px');
   document.body.classList.toggle('portrait',ah>aw); }
 let last=performance.now(), acc=0;
-function frame(t){ requestAnimationFrame(frame); { const ce=document.getElementById('coach'); if(ce) ce.style.visibility=(DLG||document.getElementById('itemget')||document.querySelector('#scare.show,#scare.blink'))?'hidden':''; } const dt=Math.min(.05,(t-last)/1000); last=t; acc+=dt; let n=0; while(acc>=1/60&&n<5){ update(1/60); acc-=1/60; n++; } try{ if(!GAME.story&&!GAME.cutFull) render(); }catch(e){ console.error(e); } syncPad(); const pr=$('#prompt'); pr.hidden=!(NEAR&&!GAME.lock&&!GAME.busy&&!GAME.story); if(NEAR&&pr.dataset.n!==NEAR.name){ pr.dataset.n=NEAR.name; pr.textContent=NEAR.name+' 살펴보기'; } }
+function frame(t){ requestAnimationFrame(frame); { const ce=document.getElementById('coach'); if(ce) ce.style.visibility=(DLG||document.getElementById('itemget')||document.querySelector('#scare.show,#scare.blink'))?'hidden':''; } const dt=Math.min(.05,(t-last)/1000); last=t; acc+=dt; let n=0; while(acc>=1/60&&n<5){ update(1/60); acc-=1/60; n++; } try{ if(!GAME.story&&!GAME.cutFull) render(); }catch(e){ console.error(e); } syncPad(); const pr=$('#prompt'); pr.hidden=!(NEAR&&!GAME.lock&&!GAME.busy&&!GAME.story); { const lb=NEAR&&NEAR.label?(typeof NEAR.label==='function'?NEAR.label():NEAR.label):NEAR&&NEAR.name; if(NEAR&&pr.dataset.n!==lb){ pr.dataset.n=lb; pr.textContent=NEAR.label?(typeof NEAR.label==='function'?NEAR.label():NEAR.label):NEAR.name+' 살펴보기'; } } }
 
 /* 튜토리얼: 누를 곳 표시 (반짝이는 고리 + 통통 튀는 화살표, 화면 밖이면 가장자리 화살표) */
 function drawPointer(cx,T){ const pt=SCN&&SCN.pointer; const off=!pt||GAME.lock||GAME.busy||GAME.story; document.querySelectorAll('.pointme').forEach(e=>{ if(off||pt.dom!=='#'+e.id) e.classList.remove('pointme'); });
@@ -2103,7 +2103,7 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
   const OX=()=>P.x, OY=()=>GY-26-P.y;
   const lit=(ex,ey)=>{ if(!Z.mir||Z.hid) return false; const dx=ex-OX(), dy=ey-OY(), d=Math.hypot(dx,dy); if(d>165) return false; if(d<18) return true; const a=Math.atan2(dy,dx)-Math.atan2(M.y-OY(),M.x-OX()); return Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.52; };
   const mouse=e=>{ const c=document.getElementById('g'); if(!c) return; const r=c.getBoundingClientRect(); M.x=CAM.x+(e.clientX-r.left)/r.width*W; M.y=(e.clientY-r.top)/r.height*H; };
-  const free=e=>!(typeof DLG!=='undefined'&&DLG)&&!GAME.lock&&!GAME.cine&&!(e.target.closest&&e.target.closest('#tr,#menu,#dialog,#modal,#xov,#coach,#mini,#gut'));
+  const free=e=>!(typeof DLG!=='undefined'&&DLG)&&!GAME.lock&&!GAME.cine&&!(e.target.closest&&e.target.closest('#tr,#menu,#dialog,#modal,#xov,#coach,#mini,#gut,#prompt'));
   const pd=e=>{ if(SCN!==def||e.pointerType!=='mouse') return; mouse(e); if(!free(e)) return; e.stopPropagation(); e.preventDefault(); if(e.button===2) Z.mir=!Z.hid; else if(e.button===0) throwT(); };
   const pu=e=>{ if(SCN!==def||e.pointerType!=='mouse') return; if(e.button===2) Z.mir=false; if(free(e)) e.stopPropagation(); };
   const ck=e=>{ if(SCN===def&&free(e)) e.stopPropagation(); }, cm=e=>{ if(SCN===def) e.preventDefault(); };
@@ -2114,14 +2114,14 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
     c.sort((a,b)=>Math.abs(a.x-P.x)-Math.abs(b.x-P.x)); Z.tal--; Z.thr=.45; hud(); P.face=c[0].x<P.x?-1:1; shots.push({x:P.x+P.face*8,y:GY-26,t:c[0],r:0}); snd('brush',1.5,.4); P.pose='reach'; setTimeout(()=>{ if(P&&P.pose==='reach') P.pose=null; },140); }
   function hurt(msg,respawn){ Z.hp--; GAME.shake=9; GAME.red=.8; GAME.blood=1.3; snd('scare',1,.7); SFXP.thud(); if(msg) toast(msg); Z.inv=1.2; hud();
     if(Z.hp<=0||respawn){ if(Z.hp<=0){ Z.hp=3; Z.cp=START; toast('숨이 끊겼다. 주막 앞에서 다시'); hud(); } Z.hid=null; P.alpha=1; P.noShadow=0; P.x=Z.cp; P.y=0; K.st='patrol'; K.x=clamp(P.x+(P.x<w/2?520:-520),160,w-60); K.dir=K.x<P.x?1:-1; Z.seen=0; } }
-  const hideHot=(id,x,name)=>({id,x,low:1,name,ev:async h=>{ if(Z.hid){ Z.hid=null; P.alpha=1; P.noShadow=0; snd('page',1,.3); return; } Z.hid=h; Z.mir=false; Z.sawHide=K&&K.st==='chase'&&Math.abs(K.x-P.x)<100; P.alpha=.14; P.noShadow=1; snd('page',.7,.3); toast(Z.sawHide?'너무 가까웠다. 들켰다!':'숨었다. E 키로 나온다'); }});
+  const hideHot=(id,x,name)=>({id,x,low:1,name,label:()=>Z&&Z.hid?'E · 나오기':'E · '+name+'에 숨기',ev:async h=>{ if(Z.hid){ Z.hid=null; P.alpha=1; P.noShadow=0; snd('page',1,.3); return; } Z.hid=h; Z.mir=false; Z.sawHide=K&&K.st==='chase'&&Math.abs(K.x-P.x)<100; P.alpha=.14; P.noShadow=1; snd('page',.7,.3); toast(Z.sawHide?'너무 가까웠다. 들켰다!':'숨었다. E 키로 나온다'); }});
   const pick=(id,x,name,n,txt)=>({id,x,low:1,name,ev:async h=>{ if(h.done){ await say([['','비어 있다.']]); return; } h.done=1; Z.tal+=n; hud(); snd('pick',1,.5); await say([['',txt],['','부적 '+n+'장을 얻었다.']]); }});
   const H_=[ {id:'door',x:96,name:'주막 문',hidden:()=>!Z||!Z.shoe,ev:async()=>{ GAME.cine=1; await say([['','문을 닫고 빗장을 걸었다. 밖에서 긁는 소리가 한참 나다가 멎었다.'],['홍련','(꽃신 안쪽에 이름이 수놓여 있어. 순이.)']]); Z.res='win'; cleanup(); SCN.finish(); }},
-    hideHot('h1',410,'장독 뒤 (숨기)'), pick('p1',578,'궤짝',2,'궤짝 바닥에 누렇게 바랜 부적이 깔려 있다.'),
+    hideHot('h1',410,'장독 뒤'), pick('p1',578,'궤짝',2,'궤짝 바닥에 누렇게 바랜 부적이 깔려 있다.'),
     {id:'scr',x:640,name:'담장의 낙서',ev:async h=>{ h.done=1; await say([['','담장에 손톱으로 긁은 글씨. 「서 있는 것에게 등을 보이지 마라. 등을 보면 온다.」'],['홍련','(마주 본 채로 지나가야 해. 거울을 그쪽으로 들고.)']]); try{ lore('jangseung'); }catch(e){} }},
-    hideHot('h2',712,'버드나무 뒤 (숨기)'), pick('p2',968,'두레박',1,'두레박 안에 젖지 않은 부적이 한 장 접혀 있다.'),
+    hideHot('h2',712,'버드나무 뒤'), pick('p2',968,'두레박',1,'두레박 안에 젖지 않은 부적이 한 장 접혀 있다.'),
     {id:'shoe',x:1110,low:1,name:'우물가의 꽃신',hidden:()=>Z&&Z.shoe,ev:async()=>{ Z.shoe=true; Z.cp=1110; hud(); snd('clue',1,.6); GAME.shake=4; await say([['','우물 턱에 작은 꽃신 한 짝이 놓여 있다. 젖지 않았다.'],['','집어 드는 순간, 마을 어귀 쪽에서 기는 소리가 빨라졌다.']]); K.st='chase'; K.rage=1; Z.seen=3; }},
-    hideHot('h3',1230,'담 그늘 (숨기)') ];
+    hideHot('h3',1230,'담 그늘') ];
   const def=Object.assign(base,{start:START,taeseok:0,clueTotal:0,dark:.82,rain:0,hots:H_,yinBlood:[],
     build(){ S.mirrorOK=false; S.mirror=false; syncHUD(); Z={tal:3,hp:3,shoe:false,hid:null,mir:false,thr:0,inv:0,cp:START,seen:0,back:0,litK:0}; shots=[];
       K=newActor(ANIM.crawl2?'crawl2':'crawler',940); K.noShadow=1; K.st='patrol'; K.dir=-1; K.state='walk'; NPCS.push(K);
