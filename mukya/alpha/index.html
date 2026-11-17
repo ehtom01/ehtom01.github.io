@@ -2177,6 +2177,7 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
   load(GSPR.cr,f=>{ NATIVE.crawl2=1; ANIM.crawl2={idle:[f[0]],walk:[f[0],f[1],f[2],f[3]],crawl:[f[0],f[1],f[2],f[3]],look:[f[4]],crouch:[f[5]],lunge:[f[6]],stun:[f[7]]}; });
   if(GSPR.hcr) load(GSPR.hcr,f=>{ const go=()=>{ if(ANIM.hong){ ANIM.hong.crawl=[f[0],f[1],f[2],f[3]]; ANIM.hong.prone=[f[4]]; } else setTimeout(go,200); }; go(); });
   if(GSPR.hhide) load(GSPR.hhide,f=>{ const go=()=>{ if(ANIM.hong) ANIM.hong.hide=f; else setTimeout(go,200); }; go(); });
+  if(GSPR.hclimb) load(GSPR.hclimb,f=>{ const go=()=>{ if(ANIM.hong) ANIM.hong.climb=f; else setTimeout(go,200); }; go(); });
   load(GSPR.kid,f=>{ NATIVE.backkid=1; ANIM.backkid={idle:[f[0],f[0],f[0],f[0],f[0],f[1]],walk:[f[0]],tilt:[f[2]],face:[f[3]],rush:[f[4],f[5],f[6]],grab:[f[7]]}; }); })();
 
 /* 잡혔을 때: 그림 없이 소리와 흔들림만 */
@@ -2305,7 +2306,7 @@ function platGame(){ return new Promise(done=>{
     { const A=ANIM.crawl2||ANIM.crawler, key=ANIM.crawl2?'crawl2':'crawler', kd2=Math.abs(K.x-P.x), f=K.st==='stun'?(A.stun||A.idle)[0]:K.st==='search'?(A.look||A.idle)[0]:K.st==='chase'?(kd2<44&&K.L===lvl(P.y)?A.lunge[0]:A.walk[Math.floor(K.an*11)%A.walk.length]):A.walk[Math.floor(K.an*4)%A.walk.length];
       spr(key,f,K.x-cx,LY[K.L]-cy+(K.tt2>0?10:0),K.dir,K.tt2>0?.5:1); }
     /* 홍련 */
-    { const A=ANIM.hong, mv=Math.abs(P.vx)>1; let f, sy=1; if(P.lad) f=(A.walk||A.idle)[Math.floor(P.an*8)%(A.walk||A.idle).length]; else if(!P.gr) f=(P.vy<0?(A.air||A.idle):(A.fall||A.air||A.idle))[0]; else if(P.cr){ if(A.crawl){ f=mv?A.crawl[Math.floor(P.an*7)%A.crawl.length]:(Z.hid&&A.prone?A.prone[0]:A.crawl[0]); } else { f=(A.crouch||A.squash||A.idle)[0]; sy=Math.min(1,30/f.height); } }
+    { const A=ANIM.hong, mv=Math.abs(P.vx)>1; let f, sy=1; if(P.lad) f=A.climb?A.climb[Math.floor(P.an*6)%A.climb.length]:A.idle[0]; else if(!P.gr) f=(P.vy<0?(A.air||A.idle):(A.fall||A.air||A.idle))[0]; else if(P.cr){ if(A.crawl){ f=mv?A.crawl[Math.floor(P.an*7)%A.crawl.length]:(Z.hid&&A.prone?A.prone[0]:A.crawl[0]); } else { f=(A.crouch||A.squash||A.idle)[0]; sy=Math.min(1,30/f.height); } }
       else if(mv) f=P.run&&A.run?A.run[Math.floor(P.an*10)%A.run.length]:A.walk[Math.floor(P.an*14)%A.walk.length]; else f=A.idle[Math.floor(P.an*6)%A.idle.length];
       let al=1; if(A.hide){ const H=A.hide; if(Z.hid){ const t=Z.t-Z.hidAt, inn=Z.hid.kind==='in'; sy=1;
           if(t<.13) f=H[0]; else if(t<.28) f=H[1]; else if(inn){ f=H[4]; al=Math.max(0,1-(t-.28)/.35); } else { f=t<.45?H[2]:(Math.floor(Z.t*1.3)%5===0?H[2]:H[3]); al=.62; } }
@@ -2330,7 +2331,7 @@ function platGame(){ return new Promise(done=>{
   function loop(t){ if(ended&&!DLG&&!GAME.lock) return; raf=requestAnimationFrame(loop); let dt=Math.min(.05,(t-last)/1000); last=t; if(!DLG&&!GAME.lock&&!ended){ let n=0; while(dt>0&&n<4){ const s=Math.min(dt,1/60); step(s); dt-=s; n++; } } draw(); }
   window.__plat={P,K,G,Z,M,HOT,KD};
   (async()=>{ draw(); await say([['','마을 끝의 버려진 집. 순이가 마지막으로 들어간 곳이다. 금줄이 대문에 걸려 있다.'],['홍련','(안에서 기는 소리가 나. 저건 부적으로도 잠깐 멈출 뿐이야. 위로 올라가거나 숨어야 해.)']]);
-    coach('A D 이동 · Shift 달리기(소리가 난다) · Space 뛰기 · S 몸 낮추기 · W S 사다리 · E 살펴보기/숨기 · 마우스 오른쪽을 누르면 거울 빛 · 왼쪽 클릭으로 부적'); last=performance.now(); raf=requestAnimationFrame(loop); })(); }); }
+    coach('A D 이동 · Shift 달리기(소리가 난다) · Space 뛰기 · S 몸 낮추기 · W S 사다리 · E 살펴보기/숨기 · 마우스 오른쪽을 누르면 거울 빛 · 왼쪽 클릭으로 부적'); setTimeout(()=>{ try{ if(!ended) coach(''); }catch(e){} },15000); last=performance.now(); raf=requestAnimationFrame(loop); })(); }); }
 { const _ep1=ep1; ep1=async function(){ if(location.hash.indexOf('plat')>=0){ S.items=[]; S.mirrorOK=false; S.sc={yeon:0,gi:0,ja:0}; S.pieces=[]; S.flags=S.flags||{}; try{ sceneMusic(6); }catch(e){} await platGame(); try{ toast('시험판 끝 · 처음 화면으로 돌아갑니다'); }catch(e){} await wait(1800); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); return; } return _ep1(); }; }
 (function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xp')) return; const cl=box.querySelector('[data-k=close]'); const bt=document.createElement('button'); bt.type='button'; bt.className='xb xp'; bt.dataset.k='x'; bt.innerHTML='<span>폐가 시험판 (PC)</span><b>해 보기</b>'; bt.addEventListener('click',()=>{ location.hash='plat'; location.reload(); }); box.insertBefore(bt,box.querySelector('.xz')||cl); };
   if(document.readyState!=='loading') add(); else addEventListener('DOMContentLoaded',add); setTimeout(add,1900); })();
