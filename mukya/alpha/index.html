@@ -2253,7 +2253,7 @@ function platGame(){ return new Promise(done=>{
   function respawn(){ if(Z.hp<=0){ Z.hp=3; toast('숨이 끊겼다. 대문 앞에서 다시'); } Z.inv=1.2;
     hud(); Z.hid=null; P.x=Z.cp[0]; P.y=Z.cp[1]; P.vx=P.vy=0; P.cr=false; P.lad=null; K.st='patrol'; K.L=1; K.x=760; K.dir=-1; G.x=G.home; Z.back=0; }
   /* ---- 한 틀 ---- */
-  function step(dt){ Z.t+=dt; if(Z.mir&&!Z._m) Z.mirAt=Z.t; Z._m=Z.mir; if(Z.down>0){ Z.down-=dt; Z.red=Math.max(Z.red,.25); if(P.gr===false){ P.vy=Math.min(420,P.vy+620*dt); const ny=P.y+P.vy*dt; if(hit(P.x-6,ny-28,12,28)){ P.gr=true; P.vy=0; } else P.y=ny; } if(Z.down<=0) respawn(); return; } Z.thr=Math.max(0,Z.thr-dt); Z.inv=Math.max(0,Z.inv-dt); Z.flash=Math.max(0,Z.flash-dt); Z.shake=Math.max(0,Z.shake-dt*14); Z.red=Math.max(0,Z.red-dt*.9);
+  function step(dt){ Z.t+=dt; if(Z.mir&&!Z._m) Z.mirAt=Z.t; Z._m=Z.mir; if(P.cr!==Z._c){ if(P.cr) Z.crAt=Z.t; else Z.upAt=Z.t; Z._c=P.cr; } if(Z.down>0){ Z.down-=dt; Z.red=Math.max(Z.red,.25); if(P.gr===false){ P.vy=Math.min(420,P.vy+620*dt); const ny=P.y+P.vy*dt; if(hit(P.x-6,ny-28,12,28)){ P.gr=true; P.vy=0; } else P.y=ny; } if(Z.down<=0) respawn(); return; } Z.thr=Math.max(0,Z.thr-dt); Z.inv=Math.max(0,Z.inv-dt); Z.flash=Math.max(0,Z.flash-dt); Z.shake=Math.max(0,Z.shake-dt*14); Z.red=Math.max(0,Z.red-dt*.9);
     const cxm=clamp(P.x-VW/2,0,WW-VW), cym=clamp(P.y-VH*.66,0,WH-VH); M.x=cxm+(M.sx??VW/2); M.y=cym+(M.sy??VH/2);
     const L=KD.KeyA||KD.ArrowLeft, Rt=KD.KeyD||KD.ArrowRight, Up=KD.KeyW||KD.ArrowUp, Dn=KD.KeyS||KD.ArrowDown, run=(KD.ShiftLeft||KD.ShiftRight)&&!P.cr;
     if(Z.hid){ P.vx=0; KD.jp=0; }
@@ -2314,6 +2314,7 @@ function platGame(){ return new Promise(done=>{
       if(Z.down>0&&A.fall2){ const t=1.5-Z.down; f=A.fall2[t<.22?0:t<.5?1:2]; sy=1; }
       else if(A.throw&&Z.thrAt!=null&&Z.t-Z.thrAt<.42&&!P.cr&&!P.lad&&P.gr){ const t=Z.t-Z.thrAt; f=A.throw[t<.1?1:t<.24?2:3]; sy=1; }
       else if(A.mirr&&Z.mir&&!Z.hid&&!P.cr&&!P.lad&&P.gr){ const an=Math.atan2(M.y-OY(),Math.abs(M.x-P.x)); f=A.mirr[Z.t-Z.mirAt<.1?0:an<-.38?2:an>.38?3:1]; sy=1; P._mb=mv?(Math.floor(P.an*8)%2):0; }
+      if(A.hide&&Z.down<=0&&!Z.hid&&!P.lad&&P.gr){ if(P.cr&&Z.crAt!=null&&Z.t-Z.crAt<.26){ const t=Z.t-Z.crAt; f=A.hide[t<.09?0:t<.18?1:2]; sy=1; } else if(!P.cr&&Z.upAt!=null&&Z.t-Z.upAt<.16){ f=A.hide[Z.t-Z.upAt<.08?2:1]; sy=1; } }
       let al=1; if(Z.down>0){} else if(A.hide){ const H=A.hide; if(Z.hid){ const t=Z.t-Z.hidAt, inn=Z.hid.kind==='in'; sy=1;
           if(t<.13) f=H[0]; else if(t<.28) f=H[1]; else if(inn){ f=H[4]; al=Math.max(0,1-(t-.28)/.35); } else { f=t<.45?H[2]:(Math.floor(Z.t*1.3)%5===0?H[2]:H[3]); al=.62; } }
         else if(Z.outAt!=null&&Z.t-Z.outAt<.22){ f=H[1]; sy=1; } }
