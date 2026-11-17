@@ -2037,37 +2037,57 @@ function gutTest(){ xOpen(`<h3>굿판 시험판</h3><div class="xs">2화 우물�
   if(document.readyState!=='loading') add(); else addEventListener('DOMContentLoaded',add); setTimeout(add,1600); })();
 
 /* ================= 거울 받아치기 + 부적 시험판 ================= */
-function sceneDuel(){ const w=560, base=sceneFox(true); let g=null, st=null;
-  const hud=()=>goal('봉인 '+st.seal+' / 3 · 남은 숨 '+'●'.repeat(st.hp)+'○'.repeat(3-st.hp));
-  const hide=()=>{ st.ph='hide'; st.t=0; st.dur=1.3+Math.random()*1.5-(st.seal*.25); st.side=Math.random()<.5?-1:1; g.pose=null; g.state='walk'; g.x=clamp(P.x+st.side*(130+Math.random()*40),20,w-20); g.face=-st.side; };
-  const hot={id:'gst',x:0,low:1,name:'쓰러진 것',hidden:()=>!(st&&st.ph==='stun'),ev:async()=>{ if(!st||st.ph!=='stun') return; st.ph='seal'; S.mirror=false; syncHUD();
-      const ok=await taliGame('틈이 났다. 부적 획을 그어 봉하라'); if(ok){ st.seal++; GAME.flash=.5; snd('ritok',1,.6); hud();
-        if(st.seal>=3){ g.alpha=1; for(let i=0;i<20;i++){ g.alpha=Math.max(0,1-i*.06); await wait(40); } NPCS=NPCS.filter(q=>q!==g); GAME.cine=1; await say([['','세 번째 부적이 붙자, 기어 오던 것이 마른 잎처럼 바스러졌다.'],['홍련','(거울로 보고, 받아치고, 부적으로 봉한다. 할 수 있어.)']]); st.res='win'; SCN.finish(); return; }
-        await say([['','부적이 붙었다. 그것이 비명을 지르며 안개 속으로 물러났다. 아직 끝나지 않았다.']]); }
-      else { snd('ritfail',1,.5); await say([['','획이 어긋났다. 그것이 다시 몸을 일으켰다.']]); }
-      hide(); }};
-  return Object.assign(base,{w,start:280,taeseok:0,clueTotal:0,dark:.74,hots:[hot],props:[{k:'cairn',x:90},{k:'bush',x:470}],
-    build(){ S.mirrorOK=true; S.items=[...new Set([...(S.items||[]),'mirror'])]; syncHUD(); st={ph:'intro',t:0,seal:0,hp:3,up:0,cd:0,side:1}; g=newActor('crawler',P.x+150); g.noShadow=1; g.alpha=0; NPCS.push(g); hud();
-      (async()=>{ GAME.cine=1; await say([['','안개 속에서 네 발로 기는 소리가 난다. 맨눈에는 보이지 않는다.'],['홍련','(방울이 울면 달려드는 거야. 그쪽을 보고 거울을 든다. 거울은 오래 들면 흐려져.)']]); GAME.cine=0;
-        coach(PCMODE?'방울이 울면 ← → 로 그쪽을 보고 Q 키로 거울을 드세요. 쓰러지면 다가가 E 키로 부적을 붙여요.':'방울이 울면 그쪽으로 몸을 돌리고 鏡 버튼으로 거울을 드세요. 쓰러지면 다가가 눌러 부적을 붙여요.'); hide(); })(); },
-    dbg(){ return st; },
-    onMirror(on){ if(!st) return; if(on&&st.cd>0){ S.mirror=false; syncHUD(); toast('거울이 아직 흐리다'); return; } if(on) st.up=0; },
-    lights(L,cx){ if(g&&st&&(st.ph==='stun'||S.mirror)) L.push({x:g.x-cx,y:GY-20,r:54,c:'#c8d8e8',g:.6}); },
-    drawFront(cx,T){ if(!st||(st.ph!=='wind'&&st.ph!=='lunge')) return; const c=ctx, k=st.ph==='wind'?Math.min(1,st.t/.5):1, x0=st.side<0?0:W, gr=c.createLinearGradient(x0,0,x0-st.side*90,0);
-      gr.addColorStop(0,'rgba(200,30,30,'+(.55*k).toFixed(2)+')'); gr.addColorStop(1,'rgba(200,30,30,0)'); c.fillStyle=gr; c.fillRect(st.side<0?0:W-90,0,90,H); },
-    async tick(dt){ dt=dt||1/60; if(!st||!g||GAME.lock||GAME.busy||GAME.cine||SCN.done) return; st.t+=dt; st.cd=Math.max(0,st.cd-dt);
-      if(S.mirror){ st.up+=dt; if(st.up>1.5){ S.mirror=false; st.cd=.9; syncHUD(); snd('page',1,.3); toast('거울이 흐려졌다'); } }
-      const m=S.mirror; hot.x=g.x; g.anim+=dt;
-      if(st.ph==='hide'){ g.alpha=m?.8:0; g.x+=Math.sin(st.t*5)*18*dt; if(st.t>st.dur){ st.ph='wind'; st.t=0; st.side=g.x<P.x?-1:1; g.face=-st.side; g.pose='lunge'; snd('bell',1.1,.7); setTimeout(()=>snd('bell',1.25,.6),160); } }
-      else if(st.ph==='wind'){ g.alpha=m?1:0; if(st.t>Math.max(.42,.7-st.seal*.1)){ st.ph='lunge'; st.t=0; snd('scare',1.5,.35); } }
-      else if(st.ph==='lunge'){ g.alpha=m?1:.22; g.x-=st.side*(380+st.seal*50)*dt; const gap=Math.abs(g.x-P.x);
-        if(gap<20){ const facing=P.face===st.side;
-          if(m&&facing){ st.ph='stun'; st.t=0; g.pose=null; g.state='idle'; g.alpha=1; g.x=clamp(P.x+st.side*58,16,w-16); S.mirror=false; st.cd=.4; syncHUD(); GAME.flash=.6; GAME.shake=5; snd('ritok',1.4,.7); snd('bell',.7,.6); toast('받아쳤다! 다가가 부적을 붙여라'); for(let i=0;i<14;i++) part(g.x,GY-18,rnd(-60,60),-rnd(20,80),.5,'#dfe8f0','spark'); }
-          else { st.hp--; hud(); GAME.shake=9; GAME.red=.8; GAME.blood=1.3; snd('scare',1,.7); SFXP.thud(); P.pose='scared'; setTimeout(()=>{ if(P) P.pose=null; },450); toast(m?'등 뒤였다. 그쪽을 보고 들어야 한다':'거울을 들지 못했다');
-            if(st.hp<=0){ GAME.cine=1; scare('crawl'); await wait(900); await say([['','차가운 손이 발목을 움켜쥐었다. 숨이 끊어질 듯 막혔다.'],['홍련','(…다시. 방울 소리를 듣고, 그쪽을 본다.)']]); st.hp=3; st.seal=0; st.res='retry'; hud(); GAME.cine=0; }
-            hide(); } }
-        else if(st.t>1.2) hide(); }
-      else if(st.ph==='stun'){ g.alpha=1; g.y=0; if(st.t>3.2){ toast('그것이 다시 일어났다'); hide(); } } } }); }
+function sceneDuel(){ const w=640, base=sceneFox(true), MAXHP=6; let g=null, st=null, shots=[], wisps=[], btn=null;
+  const hud=()=>goal('귀신 '+'■'.repeat(Math.max(0,st.ghp))+'□'.repeat(MAXHP-Math.max(0,st.ghp))+' · 남은 숨 '+'●'.repeat(st.hp)+'○'.repeat(4-st.hp));
+  const hide=()=>{ st.ph='hide'; st.t=0; st.hc=0; st.dur=1.6+Math.random()*1.4; g.pose=null; g.state='walk'; const sd=Math.random()<.5?-1:1; let x=P.x+sd*(150+Math.random()*40); if(x<24||x>w-24) x=P.x-sd*170; g.x=clamp(x,24,w-24); g.face=g.x<P.x?1:-1; };
+  const hurt=msg=>{ st.hp--; st.inv=1; hud(); GAME.shake=8; GAME.red=.7; GAME.blood=1.1; snd('scare',1,.6); SFXP.thud(); P.pose='scared'; setTimeout(()=>{ if(P&&P.pose==='scared') P.pose=null; },400); if(msg) toast(msg); };
+  const throwT=()=>{ if(!st||st.thr>0||GAME.lock||GAME.busy||GAME.cine||SCN.done||st.ph==='intro'||st.ph==='fin') return; st.thr=.28; shots.push({x:P.x+P.face*10,y:GY-24-P.y,vx:P.face*330,life:.75,r:Math.random()*6}); snd('brush',1.5,.35); P.pose='reach'; setTimeout(()=>{ if(P&&P.pose==='reach') P.pose=null; },130); };
+  const key=e=>{ if(SCN!==def||e.repeat) return; if(e.code==='KeyE'||e.code==='KeyF'||e.code==='KeyJ'){ e.preventDefault(); throwT(); } };
+  const hitGhost=()=>{ st.ghp--; st.rev=Math.max(st.rev,.8); GAME.flash=.18; snd('ritok',1.7,.4); for(let i=0;i<8;i++) part(g.x,GY-18,rnd(-70,70),-rnd(20,90),.45,'#ffd25a','spark'); g.x=clamp(g.x+(g.x<P.x?-10:10),16,w-16); hud(); if(st.ghp<=0) return finisher(); if(st.ph==='hide'&&++st.hc>=2){ st.hc=0; st.ph='wind'; st.t=0; st.side=g.x<P.x?-1:1; g.face=-st.side; g.pose='lunge'; snd('bell',1.1,.7); setTimeout(()=>snd('bell',1.25,.6),170); } };
+  async function finisher(){ st.ph='fin'; GAME.cine=1; S.mirror=false; syncHUD(); g.alpha=1; g.pose=null; shots=[]; wisps=[]; await wait(350); GAME.cine=0;
+    const ok=await taliGame('힘이 빠졌다. 「封」을 그어 봉하라');
+    if(ok){ GAME.cine=1; GAME.flash=.6; snd('ritok',1,.7); for(let i=0;i<22;i++){ g.alpha=Math.max(0,1-i*.05); await wait(40); } NPCS=NPCS.filter(q=>q!==g);
+      await say([['','부적이 붙자, 기어 오던 것이 마른 잎처럼 바스러졌다.'],['홍련','(거울로 드러내고, 부적을 던지고, 마지막에 봉한다.)']]); st.res='win'; cleanup(); SCN.finish(); }
+    else { snd('ritfail',1,.5); st.ghp=2; hud(); await say([['','획이 어긋났다. 그것이 다시 몸을 일으켰다.']]); hide(); } }
+  const cleanup=()=>{ removeEventListener('keydown',key,true); if(btn) btn.remove(); btn=null; };
+  const def=Object.assign(base,{w,start:320,taeseok:0,clueTotal:0,dark:.7,hots:[],props:[{k:'cairn',x:70},{k:'bush',x:560}],
+    build(){ S.mirrorOK=true; S.items=[...new Set([...(S.items||[]),'mirror'])]; syncHUD(); st={ph:'intro',t:0,ghp:MAXHP,hp:4,up:0,cd:0,rev:0,thr:0,inv:0,wt:3,side:1}; shots=[]; wisps=[]; g=newActor('crawler',P.x+170); g.noShadow=1; g.alpha=0; NPCS.push(g); hud();
+      addEventListener('keydown',key,true);
+      const tr=document.getElementById('tr'); if(tr&&!document.getElementById('talbtn')){ btn=document.createElement('button'); btn.id='talbtn'; btn.type='button'; btn.innerHTML='符<small style="font-size:.55em;margin-left:.3em;opacity:.7">부적</small>'; btn.style.cssText='font-family:var(--brush);font-size:max(14px,calc(var(--u)*6));line-height:1;color:#ffd25a'; btn.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); throwT(); }); btn.addEventListener('click',e=>e.stopPropagation()); tr.insertBefore(btn,tr.firstChild); }
+      (async()=>{ GAME.cine=1; await say([['','안개 속에서 네 발로 기는 것이 어른거린다. 맨눈에는 흐릿한 그림자뿐이다.'],['홍련','(거울로 비추면 드러나. 드러난 동안에만 부적이 먹혀.)']]); GAME.cine=0;
+        coach(PCMODE?'Q 거울로 비춰 귀신을 드러내고, E 로 부적을 던지세요. 달려들면 거울로 막거나 Space 로 뛰어넘어요. 도깨비불은 부적 한 장이면 꺼져요.':'鏡 버튼으로 귀신을 드러내고 符 버튼으로 부적을 던지세요. 달려들면 거울로 막거나 뛰어넘어요. 도깨비불은 부적 한 장이면 꺼져요.'); hide(); })(); },
+    dbg(){ return Object.assign({},st,{gx:g&&g.x,nw:wisps.length}); },
+    onMirror(on){ if(!st) return; if(on&&st.cd>0){ S.mirror=false; syncHUD(); toast('거울이 아직 흐리다'); return; } if(on){ st.up=0; if(g) P.face=g.x<P.x?-1:1; } },
+    lights(L,cx){ if(g&&st&&(st.rev>0||st.ph==='stun')) L.push({x:g.x-cx,y:GY-20,r:58,c:'#c8d8e8',g:.6}); for(const q of wisps) L.push({x:q.x-cx,y:q.y,r:30,c:'#5ad0e0',g:.9}); if(S.mirror) L.push({x:P.x+P.face*60-cx,y:GY-24,r:70,c:'#dfe8f0',g:.5}); },
+    drawFront(cx,T){ if(!st) return; const c=ctx;
+      if(S.mirror){ const x0=P.x-cx+P.face*8, gr=c.createLinearGradient(x0,0,x0+P.face*150,0); gr.addColorStop(0,'rgba(220,235,255,.34)'); gr.addColorStop(1,'rgba(220,235,255,0)'); c.fillStyle=gr; c.beginPath(); c.moveTo(x0,GY-26-P.y); c.lineTo(x0+P.face*150,GY-62); c.lineTo(x0+P.face*150,GY+2); c.closePath(); c.fill(); }
+      for(const q of wisps){ const x=q.x-cx, r=5+Math.sin(T*9+q.s)*1.2; c.fillStyle='rgba(90,208,224,.28)'; c.beginPath(); c.arc(x,q.y,r+4,0,7); c.fill(); c.fillStyle='#bff4ff'; c.beginPath(); c.arc(x,q.y,r*.55,0,7); c.fill(); }
+      for(const q of shots){ c.save(); c.translate(Math.round(q.x-cx),Math.round(q.y)); c.rotate(q.r); c.fillStyle='#e8c56a'; c.fillRect(-3,-5,6,10); c.fillStyle='#c9332b'; c.fillRect(-1,-3,2,6); c.restore(); }
+      if(st.ph==='wind'||st.ph==='lunge'){ const k=st.ph==='wind'?Math.min(1,st.t/.5):1, x1=st.side<0?0:W, gr=c.createLinearGradient(x1,0,x1-st.side*90,0); gr.addColorStop(0,'rgba(200,30,30,'+(.5*k).toFixed(2)+')'); gr.addColorStop(1,'rgba(200,30,30,0)'); c.fillStyle=gr; c.fillRect(st.side<0?0:W-90,0,90,H); } },
+    async tick(dt){ dt=dt||1/60; if(!st||!g||GAME.lock||GAME.busy||GAME.cine||SCN.done||st.ph==='intro'||st.ph==='fin') return; st.t+=dt; st.cd=Math.max(0,st.cd-dt); st.thr=Math.max(0,st.thr-dt); st.rev=Math.max(0,st.rev-dt); st.inv=Math.max(0,st.inv-dt);
+      if(S.mirror){ st.up+=dt; if(st.up>2.4){ S.mirror=false; st.cd=.6; syncHUD(); snd('page',1,.3); } }
+      const m=S.mirror, dx=g.x-P.x, inLight=m&&Math.sign(dx)===P.face&&Math.abs(dx)<160; if(inLight) st.rev=Math.max(st.rev,1.4);
+      const spd=1+(MAXHP-st.ghp)*.12; g.anim+=dt;
+      /* 부적 */
+      for(const q of shots){ q.x+=q.vx*dt; q.life-=dt; q.r+=dt*14;
+        for(const z of wisps){ if(!z.dead&&Math.abs(z.x-q.x)<11&&Math.abs(z.y-q.y)<16){ z.dead=1; q.life=0; snd('ritok',2,.3); for(let i=0;i<6;i++) part(z.x,z.y,rnd(-50,50),rnd(-50,50),.35,'#9ae8f4','spark'); } }
+        if(q.life>0&&Math.abs(g.x-q.x)<16&&q.y>GY-40){ if(st.rev>0||st.ph==='stun'){ q.life=0; hitGhost(); if(st.ph==='fin') return; } else if(!q.miss){ q.miss=1; part(q.x,q.y,0,-20,.3,'#8f8372','spark'); } } }
+      shots=shots.filter(q=>q.life>0);
+      /* 도깨비불 */
+      st.wt-=dt; if(st.wt<=0&&wisps.length<3){ st.wt=3.2+Math.random()*2.2; const sd=Math.random()<.5?-1:1; wisps.push({x:clamp(P.x+sd*200,6,w-6),y:GY-26,s:Math.random()*6,dead:0}); snd('whisper',1.3,.2); }
+      for(const z of wisps){ z.x+=Math.sign(P.x-z.x)*48*dt; z.y=GY-25+Math.sin(GAME.t*3+z.s)*7; if(!z.dead&&Math.abs(z.x-P.x)<12&&P.y<26){ z.dead=1; if(st.inv<=0) hurt('도깨비불에 데었다'); } }
+      wisps=wisps.filter(z=>!z.dead);
+      /* 귀신 */
+      if(st.ph==='hide'){ g.alpha=st.rev>0?.95:.2; g.x=clamp(g.x+Math.sign(P.x-g.x)*(Math.abs(dx)>120?26:-14)*spd*(inLight?.4:1)*dt,16,w-16); g.face=dx<0?1:-1;
+        if(st.t>st.dur){ st.ph='wind'; st.t=0; st.side=dx<0?-1:1; g.face=-st.side; g.pose='lunge'; snd('bell',1.1,.7); setTimeout(()=>snd('bell',1.25,.6),170); } }
+      else if(st.ph==='wind'){ g.alpha=st.rev>0?1:.45; if(st.t>Math.max(.6,.95-(MAXHP-st.ghp)*.06)){ st.ph='lunge'; st.t=0; snd('scare',1.5,.35); } }
+      else if(st.ph==='lunge'){ g.alpha=st.rev>0?1:.6; g.x-=st.side*(300*spd)*dt; const gap=Math.abs(g.x-P.x);
+        if(gap<20){ if(m){ st.ph='stun'; st.t=0; g.pose=null; g.state='idle'; g.x=clamp(P.x+st.side*56,16,w-16); P.face=st.side; st.rev=3; GAME.flash=.5; GAME.shake=5; snd('ritok',1.4,.7); snd('bell',.7,.6); toast('막았다! 부적을 던져라'); for(let i=0;i<14;i++) part(g.x,GY-18,rnd(-60,60),-rnd(20,80),.5,'#dfe8f0','spark'); }
+          else if(P.y>12){ if(!st.jmp){ st.jmp=1; toast('뛰어넘었다'); } }
+          else if(st.inv<=0){ hurt('거울로 막거나 뛰어넘어야 한다'); if(st.hp<=0){ GAME.cine=1; scare('crawl'); await wait(900); await say([['','차가운 손이 발목을 움켜쥐었다. 숨이 끊어질 듯 막혔다.'],['홍련','(…다시. 비추고, 던진다.)']]); st.hp=4; st.ghp=MAXHP; st.res='retry'; wisps=[]; shots=[]; hud(); GAME.cine=0; } hide(); } }
+        if(st.ph==='lunge'&&(st.t>1.1||g.x<10||g.x>w-10)){ st.jmp=0; hide(); } }
+      else if(st.ph==='stun'){ g.alpha=1; st.rev=Math.max(st.rev,.2); if(st.t>2.6) hide(); } } });
+  return def; }
 async function duelTest(){ await toScene(sceneDuel()); GAME.story=1; try{ toast('시험판 끝 · 처음 화면으로 돌아갑니다'); }catch(e){} await wait(1800); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); }
 { const _ep1=ep1; ep1=async function(){ if(location.hash.indexOf('duel')>=0){ S.items=['mirror']; S.mirrorOK=true; S.sc={yeon:0,gi:0,ja:0}; S.pieces=[]; S.flags=S.flags||{}; return duelTest(); } return _ep1(); }; }
 (function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xd')) return; const cl=box.querySelector('[data-k=close]'); const b=document.createElement('button'); b.type='button'; b.className='xb xd'; b.dataset.k='x'; b.innerHTML='<span>거울 받아치기 시험판</span><b>해 보기</b>'; b.addEventListener('click',()=>{ location.hash='duel'; location.reload(); }); box.insertBefore(b,cl); };
