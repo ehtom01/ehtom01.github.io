@@ -2182,6 +2182,152 @@ function scareSoft(){ try{ GAME.blood=1.2; GAME.shake=7; GAME.red=.6; snd('scare
 
 { const _af=animFrame; animFrame=function(a){ return a&&a._f?a._f:_af(a); }; }
 
+/* ================= 폐가 시험판 — 발판·사다리·위아래 길 (PC) ================= */
+function platGame(){ return new Promise(done=>{
+  const VW=384, VH=216, WW=960, WH=440, G0=400, F1=352, F2=254;
+  const view=$('#view'), g0=$('#g'), cv=document.createElement('canvas'); cv.id='plat'; cv.width=VW; cv.height=VH; cv.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;background:#000';
+  g0.parentNode.insertBefore(cv,g0.nextSibling); const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+  const lab=document.createElement('div'); lab.style.cssText="position:absolute;left:50%;bottom:9%;transform:translateX(-50%);z-index:2;font-family:'Noto Serif KR',serif;font-weight:700;font-size:max(12px,calc(var(--u)*4.4));letter-spacing:.08em;color:#f3e6c8;background:rgba(14,11,10,.86);border:1px solid #6a5a3a;border-radius:3px;padding:.4em 1em;pointer-events:none;display:none"; view.appendChild(lab);
+  $('#hud').hidden=false; GAME.story=1;
+  /* ---- 지형 ---- */
+  const SOL=[{x:0,y:G0,w:WW,h:40},{x:150,y:376,w:26,h:24},{x:200,y:F1,w:396,h:8},{x:634,y:F1,w:226,h:8},{x:620,y:378,w:14,h:22},
+    {x:200,y:F2,w:100,h:8},{x:330,y:F2,w:410,h:8},{x:770,y:F2,w:90,h:8},{x:186,y:196,w:688,h:8},{x:860,y:196,w:10,h:204},{x:192,y:196,w:8,h:84},{x:-10,y:0,w:10,h:WH},{x:WW,y:0,w:10,h:WH}];
+  const LAD=[{x:315,y0:F2,y1:F1},{x:755,y0:F2,y1:F1}];
+  const hit=(x,y,w,h)=>SOL.some(s=>x<s.x+s.w&&x+w>s.x&&y<s.y+s.h&&y+h>s.y);
+  const lvl=y=>y>375?0:y>300?1:2, LY=[G0,F1,F2];
+  /* ---- 배경 한 장 미리 그리기 ---- */
+  const bg=document.createElement('canvas'); bg.width=WW; bg.height=WH; const b=bg.getContext('2d'); let sd=7; const R=()=>(sd=(sd*16807)%2147483647)/2147483647;
+  const rect=(x,y,w,h,col)=>{ b.fillStyle=col; b.fillRect(x,y,w,h); }, spk=(x,y,w,h,col,n)=>{ b.fillStyle=col; for(let i=0;i<n;i++) b.fillRect(x+Math.floor(R()*w),y+Math.floor(R()*h),1+Math.floor(R()*2),1); };
+  { const sk=b.createLinearGradient(0,0,0,G0); sk.addColorStop(0,'#04050a'); sk.addColorStop(1,'#141a2a'); rect(0,0,WW,G0,sk); b.fillStyle='#c9cfdc'; b.beginPath(); b.arc(120,70,16,0,7); b.fill(); b.fillStyle='#04050a'; b.beginPath(); b.arc(127,65,15,0,7); b.fill();
+    b.fillStyle='#0a0d16'; b.beginPath(); b.moveTo(0,330); for(let x=0;x<=WW;x+=24) b.lineTo(x,300+Math.sin(x*.013)*26+R()*10); b.lineTo(WW,G0); b.lineTo(0,G0); b.fill();
+    rect(0,G0,WW,40,'#15110e'); spk(0,G0,WW,40,'#221b15',900); spk(0,G0,WW,3,'#2c3324',260); for(let i=0;i<40;i++){ const x=R()*190; rect(x,G0-3-R()*5,1,5+R()*4,'#1c2418'); }
+    /* 지붕 */ b.fillStyle='#2a2315'; b.beginPath(); b.moveTo(160,204); b.lineTo(240,150); b.lineTo(820,150); b.lineTo(900,204); b.fill(); spk(170,152,720,50,'#3b3220',900); spk(170,152,720,50,'#191409',500);
+    /* 뒷벽 */ rect(200,204,660,50,'#120e0b'); for(let x=210;x<860;x+=38){ b.strokeStyle='#221a12'; b.lineWidth=3; b.beginPath(); b.moveTo(x,204); b.lineTo(x+22,254); b.stroke(); } spk(200,204,660,50,'#1d1610',300);
+    rect(200,262,660,90,'#1d1712'); for(let x=200;x<860;x+=14) rect(x,262,1,90,'#17120e'); spk(200,262,660,90,'#2a2119',700); spk(200,262,660,90,'#110d0a',500);
+    for(let i=0;i<9;i++){ const x=220+R()*600, y=266+R()*30; b.fillStyle='rgba(60,48,30,.35)'; b.beginPath(); b.ellipse(x,y+10,10+R()*18,14+R()*22,0,0,7); b.fill(); }
+    rect(200,360,660,40,'#0a0807'); spk(200,360,660,40,'#17120e',400); for(let x=230;x<860;x+=90){ rect(x,360,8,30,'#231a12'); rect(x-4,390,16,10,'#2c2a28'); }
+    /* 창호 */ for(const x of [238,560]){ rect(x,286,46,56,'#2c2f38'); for(let i=1;i<4;i++) rect(x+i*11.5,286,1,56,'#15130f'); for(let i=1;i<4;i++) rect(x,286+i*14,46,1,'#15130f'); rect(x+20,300,14,18,'#0c0b0d'); b.strokeStyle='#15130f'; b.lineWidth=2; b.strokeRect(x,286,46,56); }
+    /* 낙서 */ b.strokeStyle='#6a1c16'; b.lineWidth=1; for(let i=0;i<14;i++){ b.beginPath(); const x=340+R()*46, y=292+R()*30; b.moveTo(x,y); b.lineTo(x+R()*8-4,y+3+R()*6); b.stroke(); }
+    /* 기둥·벽 */ for(const x of [196,518,856]) rect(x,204,10,196,'#2b1f15'); rect(518,280,10,72,'#1d1712'); rect(196,280,10,72,'#000'); rect(196,280,4,72,'#0d0b09');
+    /* 바닥판 */ for(const s of SOL.slice(2,4).concat(SOL.slice(5,8))){ rect(s.x,s.y,s.w,s.h,'#3a2a1c'); rect(s.x,s.y,s.w,1,'#5c4830'); rect(s.x,s.y+s.h-1,s.w,1,'#1a120b'); for(let x=s.x+10;x<s.x+s.w;x+=22) rect(x,s.y+1,1,s.h-2,'#22170f'); }
+    rect(186,196,688,8,'#241b12'); rect(150,376,26,24,'#34322f'); rect(150,376,26,2,'#4a4844'); rect(620,378,14,22,'#34322f'); rect(620,378,14,2,'#4a4844');
+    /* 사다리 */ for(const l of LAD){ rect(l.x-7,l.y0-6,2,l.y1-l.y0+6,'#4a3622'); rect(l.x+5,l.y0-6,2,l.y1-l.y0+6,'#4a3622'); for(let y=l.y0+4;y<l.y1;y+=10) rect(l.x-7,y,14,2,'#5a4228'); }
+    /* 장롱 */ rect(424,290,38,62,'#2e1f15'); rect(424,290,38,2,'#4a3423'); rect(442,292,1,58,'#140d08'); rect(437,318,3,4,'#8a7440'); rect(445,318,3,4,'#8a7440'); rect(424,348,38,4,'#1c130c');
+    /* 아궁이·선반 */ rect(788,318,54,34,'#2f2d2b'); rect(788,318,54,3,'#45423e'); b.fillStyle='#050404'; b.beginPath(); b.arc(815,352,13,Math.PI,0); b.fill(); rect(798,306,34,12,'#191817'); rect(646,300,56,3,'#4a3622'); rect(650,303,2,10,'#33251a'); rect(696,303,2,10,'#33251a'); rect(664,292,8,8,'#3a3530'); rect(680,294,10,6,'#2c2824');
+    /* 다락 짚단·항아리 */ for(const x of [372,820]){ b.fillStyle='#3a3020'; b.beginPath(); b.ellipse(x,250,16,9,0,Math.PI,0); b.fill(); spk(x-16,241,32,12,'#55472c',40); } b.fillStyle='#2b2622'; b.beginPath(); b.ellipse(452,244,7,10,0,0,7); b.fill();
+    /* 대문·금줄·장독 */ rect(34,340,5,60,'#2b1f15'); rect(78,340,5,60,'#2b1f15'); rect(30,336,58,5,'#33251a'); b.strokeStyle='#6b5a34'; b.lineWidth=1; b.beginPath(); b.moveTo(36,350); b.quadraticCurveTo(58,362,80,350); b.stroke(); for(const x of [46,58,70]) rect(x,355,2,6,'#d8d0c0');
+    b.fillStyle='#231c18'; b.beginPath(); b.ellipse(112,386,11,14,0,0,7); b.fill(); rect(104,371,16,3,'#2f2620'); }
+  /* ---- 상태 ---- */
+  const P={x:60,y:G0,vx:0,vy:0,face:1,gr:true,cr:false,lad:null,an:0}, M={x:200,y:300}, KD={};
+  const Z={tal:2,hp:3,shoe:false,hid:null,mir:false,thr:0,inv:0,back:0,litK:0,cp:[60,G0],t:0,flash:0,shake:0,red:0,gt:0};
+  const K={x:700,L:1,dir:-1,st:'patrol',tt:0,an:0,rage:0}, G={x:470,home:470,gone:false,hits:0,alpha:.2,fr:0,n:0,stp:0,pose:'idle'}; let shots=[], hb=0, raf=0, ended=false, last=performance.now();
+  const hud=()=>goal((Z.shoe?'꽃신을 들고 대문 밖으로':'폐가 어딘가의 꽃신을 찾아라')+' · 부적 '+Z.tal+' · 숨 '+'●'.repeat(Z.hp)+'○'.repeat(3-Z.hp)); hud();
+  const PH=()=>P.cr?28:58, OY=()=>P.y-(P.cr?14:36);
+  const lit=(ex,ey)=>{ if(!Z.mir||Z.hid||lvl(ey+10)!==lvl(P.y)) return false; const dx=ex-P.x, dy=ey-OY(), d=Math.hypot(dx,dy); if(d>160) return false; if(d<16) return true; const a=Math.atan2(dy,dx)-Math.atan2(M.y-OY(),M.x-P.x); return Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.5; };
+  /* ---- 살펴볼 곳 ---- */
+  const hideSpot=(x,L,name)=>({x,L,label:()=>Z.hid?'E · 나오기':'E · '+name+'에 숨기',act(){ if(Z.hid){ Z.hid=null; snd('page',1,.3); return; } Z.hid=this; Z.mir=false; P.x=x; P.vx=0; Z.sawHide=K.st==='chase'&&K.L===L&&Math.abs(K.x-P.x)<90; snd('page',.7,.3); toast(Z.sawHide?'너무 가까웠다. 들켰다!':'숨을 죽였다'); }});
+  const pick=(x,L,name,txt)=>({x,L,label:()=>'E · '+name+' 살펴보기',got:0,async act(){ if(this.got){ toast('비어 있다'); return; } this.got=1; Z.tal++; hud(); snd('pick',1,.5); await say([['',txt],['','부적 한 장을 얻었다.']]); }});
+  const HOT=[ hideSpot(112,0,'장독 뒤'), hideSpot(443,1,'장롱 안'), hideSpot(815,1,'아궁이 안'), pick(674,1,'선반','선반 위 사발 밑에 누런 부적이 눌려 있다.'), pick(452,2,'깨진 항아리','항아리 안에 접힌 부적이 들어 있다.'),
+    {x:362,L:1,label:()=>'E · 벽의 낙서 읽기',async act(){ await say([['','벽에 손톱으로 긁은 글씨. 「다락의 아이에게 등을 보이지 마라. 등을 보는 동안에만 걷는다.」'],['홍련','(마주 보거나, 거울을 그쪽으로 든 채 지나가야 해.)']]); try{ lore('jangseung'); }catch(e){} }},
+    {x:640,L:2,label:()=>'E · 꽃신 줍기',hide:()=>Z.shoe,async act(){ Z.shoe=true; hud(); snd('clue',1,.6); Z.shake=4; await say([['','서까래 밑에 작은 꽃신 한 짝이 놓여 있다. 안쪽에 「순이」라고 수놓여 있다.'],['','집어 드는 순간, 아래층에서 기는 소리가 빨라졌다.']]); K.rage=1; Z.cp=[60,G0]; }},
+    {x:58,L:0,label:()=>'E · 대문 밖으로 나가기',hide:()=>!Z.shoe,async act(){ ended=true; await say([['','금줄을 넘어 대문 밖으로 나왔다. 안에서 긁는 소리가 문턱에서 멎었다.'],['홍련','(저것들은 저 집을 못 벗어나. 순이의 신발은 찾았어.)']]); finish(); }} ];
+  const near=()=>{ if(Z.hid) return Z.hid; let best=null, bd=20; for(const h of HOT){ if(h.hide&&h.hide()) continue; if(h.L!==lvl(P.y)||!P.gr) continue; const d=Math.abs(h.x-P.x); if(d<bd){ bd=d; best=h; } } return best; };
+  /* ---- 입력 ---- */
+  const free=e=>!DLG&&!GAME.lock&&!(e.target.closest&&e.target.closest('#tr,#menu,#menuBtn,#dialog,#modal,#xov,#coach,#mini'));
+  const mouse=e=>{ const r=cv.getBoundingClientRect(); M.sx=(e.clientX-r.left)/r.width*VW; M.sy=(e.clientY-r.top)/r.height*VH; };
+  const kd=e=>{ if(ended) return; KD[e.code]=1; if(DLG||GAME.lock||e.repeat) return; if(e.code==='KeyE'){ const h=near(); if(h) h.act(); } if(e.code==='KeyQ'&&!Z.hid) Z.mir=!Z.mir; if(e.code==='KeyF') throwT(); if(e.code==='Space'||e.code==='KeyW'||e.code==='ArrowUp') KD.jp=1; };
+  const ku=e=>{ KD[e.code]=0; };
+  const pd=e=>{ if(e.pointerType!=='mouse') return; mouse(e); if(!free(e)) return; e.stopPropagation(); e.preventDefault(); if(e.button===2){ if(!Z.hid) Z.mir=true; } else if(e.button===0) throwT(); };
+  const pu=e=>{ if(e.pointerType!=='mouse') return; if(e.button===2) Z.mir=false; if(free(e)) e.stopPropagation(); };
+  const ck=e=>{ if(free(e)) e.stopPropagation(); }, cm=e=>e.preventDefault();
+  addEventListener('keydown',kd,true); addEventListener('keyup',ku,true); addEventListener('pointerdown',pd,true); addEventListener('pointerup',pu,true); addEventListener('click',ck,true); addEventListener('contextmenu',cm,true); addEventListener('mousemove',mouse,true);
+  function finish(){ ended=true; cancelAnimationFrame(raf); removeEventListener('keydown',kd,true); removeEventListener('keyup',ku,true); removeEventListener('pointerdown',pd,true); removeEventListener('pointerup',pu,true); removeEventListener('click',ck,true); removeEventListener('contextmenu',cm,true); removeEventListener('mousemove',mouse,true); lab.remove(); cv.remove(); done(); }
+  function throwT(){ if(Z.thr>0||Z.hid||ended) return; const cs=[]; if(K.L===lvl(P.y)&&(lit(K.x,LY[K.L]-14)||Math.abs(K.x-P.x)<60)) cs.push(K); if(!G.gone&&lit(G.x,F2-26)) cs.push(G);
+    if(!cs.length){ toast('드러난 것이 없다. 거울로 먼저 비춰라'); return; } if(Z.tal<=0){ toast('부적이 없다'); return; } cs.sort((a,q)=>Math.abs(a.x-P.x)-Math.abs(q.x-P.x)); Z.tal--; Z.thr=.45; hud(); shots.push({x:P.x,y:OY(),t:cs[0],r:0}); snd('brush',1.5,.4); }
+  function hurt(msg){ Z.hp--; Z.shake=9; Z.red=.9; Z.inv=1.2; try{ snd('scare',1,.7); SFXP.sting(); SFXP.thud(); }catch(e){} toast(msg); if(Z.hp<=0){ Z.hp=3; toast('숨이 끊겼다. 대문 앞에서 다시'); }
+    hud(); Z.hid=null; P.x=Z.cp[0]; P.y=Z.cp[1]; P.vx=P.vy=0; P.cr=false; P.lad=null; K.st='patrol'; K.L=1; K.x=760; K.dir=-1; G.x=G.home; Z.back=0; }
+  /* ---- 한 틀 ---- */
+  function step(dt){ Z.t+=dt; Z.thr=Math.max(0,Z.thr-dt); Z.inv=Math.max(0,Z.inv-dt); Z.flash=Math.max(0,Z.flash-dt); Z.shake=Math.max(0,Z.shake-dt*14); Z.red=Math.max(0,Z.red-dt*.9);
+    const cxm=clamp(P.x-VW/2,0,WW-VW), cym=clamp(P.y-VH*.66,0,WH-VH); M.x=cxm+(M.sx??VW/2); M.y=cym+(M.sy??VH/2);
+    const L=KD.KeyA||KD.ArrowLeft, Rt=KD.KeyD||KD.ArrowRight, Up=KD.KeyW||KD.ArrowUp, Dn=KD.KeyS||KD.ArrowDown, run=(KD.ShiftLeft||KD.ShiftRight)&&!P.cr;
+    if(Z.hid){ P.vx=0; KD.jp=0; }
+    else if(P.lad){ const l=P.lad; P.x=l.x; P.vx=0; P.vy=0; P.y+=((Dn?1:0)-(Up?1:0))*56*dt; P.an+=dt*(Up||Dn?1:0);
+      if(P.y<=l.y0){ P.lad=null; P.y=l.y0; P.x=l.x+(P.face>0?24:-24); if(hit(P.x-6,P.y-28,12,28)) P.x=l.x-(P.face>0?24:-24); P.cr=true; P.gr=true; }
+      else if(P.y>=l.y1){ P.lad=null; P.y=l.y1; P.gr=true; } else if(KD.jp){ P.lad=null; P.vy=-90; } KD.jp=0; if(L) P.face=-1; if(Rt) P.face=1; }
+    else { const l=LAD.find(q=>Math.abs(q.x-P.x)<9);
+      if(l&&P.gr&&((Up&&Math.abs(P.y-l.y1)<3)||(Dn&&lvl(P.y)===2&&Math.abs(P.y-l.y0)<3))){ P.lad=l; P.cr=false; P.y+=Up?-3:6; KD.jp=0; return; }
+      if(lvl(P.y)===2&&P.gr){ const l2=LAD.find(q=>Math.abs(q.x-P.x)<26); if(l2&&Dn&&Math.abs(l2.x-P.x)>=9){ P.x=l2.x; P.lad=l2; P.cr=false; P.y=l2.y0+8; return; } }
+      const want=Dn||hit(P.x-6,P.y-58,12,58); if(want) P.cr=true; else if(P.cr&&!hit(P.x-6,P.y-58,12,58)) P.cr=false;
+      const sp=P.cr?46:run?138:78, dir=(Rt?1:0)-(L?1:0); P.vx=dir*sp; if(dir&&!Z.mir) P.face=dir; if(Z.mir) P.face=M.x>=P.x?1:-1; P.run=!!(run&&dir);
+      if(KD.jp&&P.gr&&!P.cr){ P.vy=-200; P.gr=false; try{ SFXP.jump(); }catch(e){} } KD.jp=0;
+      P.vy=Math.min(420,P.vy+620*dt); const h=PH();
+      let nx=P.x+P.vx*dt; if(!hit(nx-6,P.y-h,12,h-1)) P.x=nx; else P.vx=0;
+      let ny=P.y+P.vy*dt; if(P.vy>=0){ if(hit(P.x-6,ny-h,12,h)){ let y=Math.floor(P.y); while(!hit(P.x-6,y+1-h,12,h)&&y<ny+2) y++; P.y=y; if(!P.gr&&P.vy>200){ try{ SFXP.land(); }catch(e){} } P.vy=0; P.gr=true; } else { P.y=ny; P.gr=false; } }
+      else { if(hit(P.x-6,ny-h,12,h)){ P.vy=0; } else P.y=ny; P.gr=false; }
+      P.an+=dt*(dir?1:.4); }
+    const pL=lvl(P.y);
+    /* 부적 */
+    for(const q of shots){ const tx=q.t.x, ty=q.t===K?LY[K.L]-14:F2-26, dx=tx-q.x, dy=ty-q.y, d=Math.hypot(dx,dy)||1; q.x+=dx/d*340*dt; q.y+=dy/d*340*dt; q.r+=dt*14; if(d<12){ q.dead=1; Z.flash=.25; snd('ritok',1.6,.5); if(q.t===K){ K.st='stun'; K.tt=3.6; toast('멈췄다. 오래가지 않는다'); } else { G.hits++; if(G.hits>=2){ G.gone=true; toast('다락의 아이가 흩어졌다'); } else { G.x=G.home; Z.back=0; toast('한 장 더 필요하다'); } } } }
+    shots=shots.filter(q=>!q.dead);
+    /* 기어 오는 것 */
+    K.an+=dt; const same=K.L===pL, dx=K.x-P.x, ad=Math.abs(dx), kl=same&&lit(K.x,LY[K.L]-14), spd=K.L===0?1.15:1;
+    const go=(tx,v)=>{ const d=tx-K.x; if(Math.abs(d)>2){ K.dir=Math.sign(d); K.x+=K.dir*v*dt; return false; } return true; };
+    const swap=to=>{ K.L=to; K.tt2=.5; };
+    if(K.tt2>0){ K.tt2-=dt; }
+    else if(K.st==='stun'){ K.tt-=dt; if(K.tt<=0) K.st=same&&ad<200&&!Z.hid?'chase':'patrol'; }
+    else if(K.st==='patrol'){ if(K.L!==1){ if(go(K.x<400?200:615,40)) swap(1); } else { K.x+=K.dir*(K.rage?52:34)*dt; if(K.x<214){ K.x=214; K.dir=1; } if(K.x>846){ K.x=846; K.dir=-1; } }
+      Z.litK=kl?Z.litK+dt:0; const facing=Math.sign(-dx)===K.dir, noise=P.run&&ad<170&&Math.abs(K.L-pL)<=1&&pL!==2;
+      if(!Z.hid&&((same&&((facing&&ad<115)||ad<30))||Z.litK>.55||noise)){ K.st='chase'; K.lose=3; Z.shake=5; snd('scare',1.4,.5); toast(Z.litK>.55?'빛을 오래 비췄다. 들켰다!':noise&&!same?'발소리를 들켰다!':'들켰다!'); } }
+    else if(K.st==='chase'){ const v=(K.rage?124:108)*spd;
+      if(Z.hid&&!Z.sawHide){ if(go(Z.lastX??K.x,v)||K.L!==Z.lastL){ K.st='search'; K.tt=2.4; } }
+      else if(pL===2){ if(K.L!==1){ if(go(K.x<400?200:615,v)) swap(1); } else { go(P.x,v*.8); K.lose-=dt; if(K.lose<=-4){ K.st='patrol'; } } }
+      else if(same){ go(P.x,v); Z.lastX=P.x; Z.lastL=pL; K.lose=3; if(ad<14&&Math.abs(P.y-LY[K.L])<22&&Z.inv<=0&&(!Z.hid||Z.sawHide)){ hurt('차가운 손이 발목을 움켜쥐었다'); return; } }
+      else { const door=Math.abs(K.x-200)+Math.abs(P.x-200), hole=Math.abs(K.x-615)+Math.abs(P.x-615); if(go(door<hole?200:615,v)) swap(pL); } }
+    else if(K.st==='search'){ K.tt-=dt; if(K.tt<=0){ K.st='patrol'; K.dir=Math.random()<.5?-1:1; } }
+    hb-=dt; if(hb<=0&&K.st!=='stun'){ const d=ad+(same?0:120); if(d<340){ hb=clamp(d/300,.22,.75); try{ SFXP.thud(); }catch(e){} } }
+    /* 다락의 아이 */
+    if(!G.gone){ const gx=G.x-P.x, gd=Math.abs(gx), gl=lit(G.x,F2-26), on=pL===2&&!Z.hid, back=on&&gd<210&&gd>8&&P.face!==Math.sign(gx)&&!gl;
+      if(back){ if(!Z.gt){ Z.gt=1; toast('뒤에서 발소리가 난다'); } if(Z.back===0) snd('whisper',1.2,.35); Z.back+=dt; G.alpha=Math.min(.95,.4+Z.back*.5); G.pose=Z.back<.35?'tilt':Z.back<.7?'face':'rush';
+        if(Z.back>.7){ G.stp-=dt; if(G.stp<=0){ G.stp=Math.max(.24,.5-G.n*.035); G.n++; G.x-=Math.sign(gx)*13; G.fr=(G.fr+1)%3; try{ SFXP.step(); }catch(e){} snd('drip',.5,.25); } }
+        if(gd<15&&Z.inv<=0){ hurt('등을 보였다'); return; } }
+      else { Z.back=Math.min(Z.back,.25); G.n=0; G.pose='idle'; G.alpha=gl?.95:(on&&gd<210?.34:.16); if(!on&&Math.abs(G.x-G.home)>3) G.x=G.home; } } }
+  /* ---- 그리기 ---- */
+  const dk=document.createElement('canvas'); dk.width=VW; dk.height=VH; const d=dk.getContext('2d');
+  function spr(key,img,x,y,face,al,sy){ if(!img) return; const flip=face!==NATIVE[key], ax=PAD+Math.floor((img.width-PAD*2)/2), h=img.height*(sy||1); c.globalAlpha=al; x=Math.round(x); y=Math.round(y);
+    if(flip){ c.save(); c.translate(x,0); c.scale(-1,1); c.drawImage(img,-(img.width-ax),y-h,img.width,h); c.restore(); } else c.drawImage(img,x-ax,y-h,img.width,h); c.globalAlpha=1; }
+  function draw(){ const sx=Z.shake?(Math.random()-.5)*Z.shake:0, cx=Math.round(clamp(P.x-VW/2,0,WW-VW)+sx), cy=Math.round(clamp(P.y-VH*.66,0,WH-VH));
+    c.drawImage(bg,cx,cy,VW,VH,0,0,VW,VH);
+    if(!Z.shoe){ c.fillStyle='#b8323a'; c.fillRect(636-cx,F2-4-cy,8,4); c.fillStyle='#e8c56a'; c.fillRect(638-cx,F2-5-cy,3,1); }
+    /* 귀신 */
+    if(!G.gone&&ANIM.backkid){ const A=ANIM.backkid, f=G.pose==='rush'?A.rush[G.fr]:G.pose==='tilt'?A.tilt[0]:G.pose==='face'?A.face[0]:A.idle[Math.floor(Z.t*1.5)%A.idle.length]; spr('backkid',f,G.x-cx,F2-cy,1,G.alpha); }
+    { const A=ANIM.crawl2||ANIM.crawler, key=ANIM.crawl2?'crawl2':'crawler', kd2=Math.abs(K.x-P.x), f=K.st==='stun'?(A.stun||A.idle)[0]:K.st==='search'?(A.look||A.idle)[0]:K.st==='chase'?(kd2<44&&K.L===lvl(P.y)?A.lunge[0]:A.walk[Math.floor(K.an*11)%A.walk.length]):A.walk[Math.floor(K.an*4)%A.walk.length];
+      spr(key,f,K.x-cx,LY[K.L]-cy+(K.tt2>0?10:0),K.dir,K.tt2>0?.5:1); }
+    /* 홍련 */
+    { const A=ANIM.hong, mv=Math.abs(P.vx)>1; let f, sy=1; if(P.lad) f=(A.walk||A.idle)[Math.floor(P.an*8)%(A.walk||A.idle).length]; else if(!P.gr) f=(P.vy<0?(A.air||A.idle):(A.fall||A.air||A.idle))[0]; else if(P.cr){ f=(A.crouch||A.squash||A.idle)[0]; sy=Math.min(1,30/f.height); }
+      else if(mv) f=P.run&&A.run?A.run[Math.floor(P.an*10)%A.run.length]:A.walk[Math.floor(P.an*14)%A.walk.length]; else f=A.idle[Math.floor(P.an*6)%A.idle.length];
+      spr('hong',f,P.x-cx,P.y+1-cy,P.face,Z.hid?.12:1,sy); }
+    for(const q of shots){ c.save(); c.translate(Math.round(q.x-cx),Math.round(q.y-cy)); c.rotate(q.r); c.fillStyle='#e8c56a'; c.fillRect(-3,-5,6,10); c.fillStyle='#c9332b'; c.fillRect(-1,-3,2,6); c.restore(); }
+    /* 어둠과 빛 */
+    d.globalCompositeOperation='source-over'; d.clearRect(0,0,VW,VH); d.fillStyle='rgba(3,3,9,.9)'; d.fillRect(0,0,VW,VH); d.globalCompositeOperation='destination-out';
+    const light=(x,y,r,a)=>{ const gr=d.createRadialGradient(x,y,1,x,y,r); gr.addColorStop(0,'rgba(0,0,0,'+a+')'); gr.addColorStop(1,'rgba(0,0,0,0)'); d.fillStyle=gr; d.beginPath(); d.arc(x,y,r,0,7); d.fill(); };
+    d.fillStyle='rgba(0,0,0,.34)'; d.fillRect(0-cx,0-cy,190,G0+40); light(P.x-cx,OY()-cy,Z.hid?18:58,Z.hid?.25:.62); light(261-cx,314-cy,44,.4); light(583-cx,314-cy,44,.4); light(120-cx,70-cy,60,.5);
+    for(const x of [430,610,700]) { d.fillStyle='rgba(0,0,0,.16)'; d.beginPath(); d.moveTo(x-cx,204-cy); d.lineTo(x+4-cx,204-cy); d.lineTo(x+26-cx,254-cy); d.lineTo(x+10-cx,254-cy); d.fill(); }
+    if(Z.mir&&!Z.hid){ const a=Math.atan2(M.y-OY(),M.x-P.x), x0=P.x-cx, y0=OY()-cy, gr=d.createRadialGradient(x0,y0,4,x0,y0,165); gr.addColorStop(0,'rgba(0,0,0,.95)'); gr.addColorStop(.7,'rgba(0,0,0,.6)'); gr.addColorStop(1,'rgba(0,0,0,0)'); d.fillStyle=gr; d.beginPath(); d.moveTo(x0,y0); d.arc(x0,y0,165,a-.5,a+.5); d.closePath(); d.fill(); }
+    if(Z.flash>0){ d.fillStyle='rgba(0,0,0,'+Math.min(.8,Z.flash*3)+')'; d.fillRect(0,0,VW,VH); }
+    c.drawImage(dk,0,0);
+    if(Z.mir&&!Z.hid){ const a=Math.atan2(M.y-OY(),M.x-P.x), x0=P.x-cx, y0=OY()-cy, gr=c.createRadialGradient(x0,y0,4,x0,y0,165); gr.addColorStop(0,'rgba(200,220,255,.16)'); gr.addColorStop(1,'rgba(200,220,255,0)'); c.fillStyle=gr; c.beginPath(); c.moveTo(x0,y0); c.arc(x0,y0,165,a-.5,a+.5); c.closePath(); c.fill(); }
+    /* 어둠 속의 눈 */
+    if(K.st!=='stun'&&!(K.L===lvl(P.y)&&lit(K.x,LY[K.L]-14))){ const ex=Math.round(K.x+K.dir*30-cx), ey=Math.round(LY[K.L]-22-cy); c.fillStyle=K.st==='chase'?'#ff6a5a':'#cfd8e4'; c.fillRect(ex,ey,1,1); c.fillRect(ex+3,ey,1,1); }
+    if(Z.red>0){ c.fillStyle='rgba(170,20,20,'+(Z.red*.5).toFixed(2)+')'; c.fillRect(0,0,VW,VH); }
+    const h=ended?null:near(); if(h&&!DLG&&!GAME.lock){ const t=h.label(); if(lab.textContent!==t) lab.textContent=t; lab.style.display='block'; } else lab.style.display='none'; }
+  function loop(t){ if(ended&&!DLG&&!GAME.lock) return; raf=requestAnimationFrame(loop); let dt=Math.min(.05,(t-last)/1000); last=t; if(!DLG&&!GAME.lock&&!ended){ let n=0; while(dt>0&&n<4){ const s=Math.min(dt,1/60); step(s); dt-=s; n++; } } draw(); }
+  window.__plat={P,K,G,Z,M,HOT,KD};
+  (async()=>{ draw(); await say([['','마을 끝의 버려진 집. 순이가 마지막으로 들어간 곳이다. 금줄이 대문에 걸려 있다.'],['홍련','(안에서 기는 소리가 나. 저건 부적으로도 잠깐 멈출 뿐이야. 위로 올라가거나 숨어야 해.)']]);
+    coach('A D 이동 · Shift 달리기(소리가 난다) · Space 뛰기 · S 몸 낮추기 · W S 사다리 · E 살펴보기/숨기 · 마우스 오른쪽을 누르면 거울 빛 · 왼쪽 클릭으로 부적'); last=performance.now(); raf=requestAnimationFrame(loop); })(); }); }
+{ const _ep1=ep1; ep1=async function(){ if(location.hash.indexOf('plat')>=0){ S.items=[]; S.mirrorOK=false; S.sc={yeon:0,gi:0,ja:0}; S.pieces=[]; S.flags=S.flags||{}; try{ sceneMusic(6); }catch(e){} await platGame(); try{ toast('시험판 끝 · 처음 화면으로 돌아갑니다'); }catch(e){} await wait(1800); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); return; } return _ep1(); }; }
+(function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xp')) return; const cl=box.querySelector('[data-k=close]'); const bt=document.createElement('button'); bt.type='button'; bt.className='xb xp'; bt.dataset.k='x'; bt.innerHTML='<span>폐가 시험판 (PC)</span><b>해 보기</b>'; bt.addEventListener('click',()=>{ location.hash='plat'; location.reload(); }); box.insertBefore(bt,box.querySelector('.xz')||cl); };
+  if(document.readyState!=='loading') add(); else addEventListener('DOMContentLoaded',add); setTimeout(add,1900); })();
+
 
 </script>
 </body></html>
