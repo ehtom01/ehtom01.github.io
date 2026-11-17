@@ -1339,7 +1339,7 @@ function sceneFox(night){ const w=920; const Zp={sky:night?['#05040a','#0a0814',
         for(let i=0;i<16;i++){ cr.x-=3; cr.alpha=Math.max(0,1-i*.07); await wait(40); } NPCS=NPCS.filter(q=>q!==cr);
         await say([['태석','일어나시오! 왜 멍하니 앉아 있소!'],['홍련','(이 사람 눈에는 여전히 안 보여.)'],['홍련','(나를 구한 걸까. 아니면 남이 먼저 가져가는 게 싫었던 걸까.)'],['','여인이 천천히 홍련 쪽으로 고개를 돌렸다. 머리카락 사이로 입술이 움직였다. 소리는 나지 않았다.']]);
         for(let i=0;i<16;i++){ sb.alpha=Math.max(0,.92-i*.06); await wait(40); } NPCS=NPCS.filter(q=>q!==sb); } P.pose=null; SCN.finish(); return; }
-    if(gap<14){ GAME.cine=1; SCN.run=0; TARGET=null; scare('crawl'); GAME.blood=1.8; GAME.shake=9; P.pose='scared';
+    if(gap<14){ GAME.cine=1; SCN.run=0; TARGET=null; scareSoft(); GAME.blood=1.8; GAME.shake=9; P.pose='scared';
       await say([['','차가운 손이 발목을 움켜쥐었다. 홍련은 그대로 고꾸라졌다.'],['태석','이놈!'],['','태석의 방망이가 허공을 갈랐다. 그것은 낮게 웃으며 물러났다… 아직, 가지 않았다.']]);
       P.pose=null; P.x=C.cp; P.y=0; P.air=false; if(TS) TS.x=P.x-40; chaser.x=P.x-190; C.hits=0; C.slow=0; for(const o of SCN.obst) if(o.x>P.x) o.passed=0; SCN.run=150; GAME.cine=0; coach('다시! 장애물이 오면 화면을 눌러 뛰어넘으세요.'); } }
   const H_=[{id:'jang',x:210,name:'길가 장승',again:[[['','장승의 붉은 눈이 홍련을 따라 움직이는 것 같았다.']],[['태석','자꾸 보지 마시오. 눈 마주치면 따라온다 했소.']]],clue:1,ev:async h=>{ if(h.done){ await say(againLine(h)); return; } h.done=1; clue('jang'); await say([['','「여우 고개」라 새긴 장승. 누군가 장승 눈에 붉은 칠을 덧발라 놓았다.']]); await emote(TS,'!'); await say([['태석','누가 장승 눈에 피칠을 해 놨소. 사람을 쫓으려는 짓인지, 귀신을 쫓으려는 짓인지…']]); TS.pose=null; }},
@@ -2086,7 +2086,7 @@ function sceneDuel(){ const w=640, base=sceneFox(true), MAXHP=6; let g=null, st=
       else if(st.ph==='lunge'){ g.alpha=st.rev>0?1:.6; g.x-=st.side*(300*spd)*dt; const gap=Math.abs(g.x-P.x);
         if(gap<20){ if(m){ st.ph='stun'; st.t=0; g.pose=null; g.state='idle'; g.x=clamp(P.x+st.side*56,16,w-16); P.face=st.side; st.rev=3; GAME.flash=.5; GAME.shake=5; snd('ritok',1.4,.7); snd('bell',.7,.6); toast('막았다! 부적을 던져라'); for(let i=0;i<14;i++) part(g.x,GY-18,rnd(-60,60),-rnd(20,80),.5,'#dfe8f0','spark'); }
           else if(P.y>12){ if(!st.jmp){ st.jmp=1; toast('뛰어넘었다'); } }
-          else if(st.inv<=0){ hurt('거울로 막거나 뛰어넘어야 한다'); if(st.hp<=0){ GAME.cine=1; scare('crawl'); await wait(900); await say([['','차가운 손이 발목을 움켜쥐었다. 숨이 끊어질 듯 막혔다.'],['홍련','(…다시. 비추고, 던진다.)']]); st.hp=4; st.ghp=MAXHP; st.res='retry'; wisps=[]; shots=[]; hud(); GAME.cine=0; } hide(); } }
+          else if(st.inv<=0){ hurt('거울로 막거나 뛰어넘어야 한다'); if(st.hp<=0){ GAME.cine=1; scareSoft(); await wait(900); await say([['','차가운 손이 발목을 움켜쥐었다. 숨이 끊어질 듯 막혔다.'],['홍련','(…다시. 비추고, 던진다.)']]); st.hp=4; st.ghp=MAXHP; st.res='retry'; wisps=[]; shots=[]; hud(); GAME.cine=0; } hide(); } }
         if(st.ph==='lunge'&&(st.t>1.1||g.x<10||g.x>w-10)){ st.jmp=0; hide(); } }
       else if(st.ph==='stun'){ g.alpha=1; st.rev=Math.max(st.rev,.2); if(st.t>2.6) hide(); } } });
   return def; }
@@ -2151,7 +2151,7 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
         if(!Z.hid&&((facing&&ad<115)||ad<34||Z.litK>.55||(P.running&&ad<170))){ K.st='chase'; Z.seen=2.5; snd('scare',1.4,.5); GAME.shake=5; toast(Z.litK>.55?'빛을 오래 비췄다. 들켰다!':'들켰다!'); } }
       else if(K.st==='chase'){ K.state='walk'; const tx=Z.hid&&!Z.sawHide?Z.lastX:P.x; if(!Z.hid) Z.lastX=P.x; K.dir=Math.sign(tx-K.x)||K.dir; K.face=K.dir; K.x+=K.dir*(K.rage?132:118)*dt; K.y=Math.abs(Math.sin(GAME.t*16))*2;
         if(Z.hid&&!Z.sawHide){ if(Math.abs(K.x-Z.lastX)<10){ K.st='search'; K.tt=2.2; } } else if(!Z.hid&&ad>300){ Z.seen-=dt; if(Z.seen<=0) K.st='patrol'; }
-        if(ad<15&&(Z.hid?Z.sawHide:P.y<18)&&Z.inv<=0){ GAME.cine=1; scare('crawl'); await wait(700); GAME.cine=0; hurt('차가운 손이 발목을 움켜쥐었다',1); return; } }
+        if(ad<15&&(Z.hid?Z.sawHide:P.y<18)&&Z.inv<=0){ GAME.cine=1; scareSoft(); await wait(700); GAME.cine=0; hurt('차가운 손이 발목을 움켜쥐었다',1); return; } }
       else if(K.st==='search'){ K.state='idle'; K.tt-=dt; K.face=Math.sin(GAME.t*4)>0?1:-1; if(K.tt<=0){ K.st='patrol'; K.dir=Math.random()<.5?-1:1; K.rage=Z.shoe?1:0; } }
       if(K.key==='crawl2') K.pose=K.st==='stun'?'stun':K.st==='search'?'look':K.st==='patrol'?'crawl':(ad<46?'lunge':null);
       hb-=dt; if(ad<320&&hb<=0&&K.st!=='stun'){ hb=clamp(ad/300,.22,.7); SFXP.thud(); }
@@ -2169,6 +2169,9 @@ function sceneZone(){ const base=sceneWell(), w=base.w, START=120; let Z=null, K
 (function(){ if(typeof GSPR==='undefined') return; const load=(list,cb)=>{ const out=[]; let n=0; list.forEach((src,i)=>{ const im=new Image(); im.onload=()=>{ const [c,x]=mk(im.width+PAD*2,im.height); x.drawImage(im,PAD,0); out[i]=c; if(++n===list.length) cb(out); }; im.src=src; }); };
   load(GSPR.cr,f=>{ NATIVE.crawl2=1; ANIM.crawl2={idle:[f[0]],walk:[f[0],f[1],f[2],f[3]],crawl:[f[0],f[1],f[2],f[3]],look:[f[4]],crouch:[f[5]],lunge:[f[6]],stun:[f[7]]}; });
   load(GSPR.kid,f=>{ NATIVE.backkid=1; ANIM.backkid={idle:[f[0],f[0],f[0],f[0],f[0],f[1]],walk:[f[0]],tilt:[f[2]],face:[f[3]],rush:[f[4],f[5],f[6]],grab:[f[7]]}; }); })();
+
+/* 잡혔을 때: 그림 없이 소리와 흔들림만 */
+function scareSoft(){ try{ GAME.blood=1.2; GAME.shake=7; GAME.red=.6; snd('scare',1,.8); SFXP.sting(); navigator.vibrate&&navigator.vibrate([60,40,120]); }catch(e){} }
 
 
 </script>
