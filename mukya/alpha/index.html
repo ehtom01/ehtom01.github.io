@@ -2188,7 +2188,7 @@ function scareSoft(){ try{ GAME.blood=1.2; GAME.shake=7; GAME.red=.6; snd('scare
 { const _af=animFrame; animFrame=function(a){ return a&&a._f?a._f:_af(a); }; }
 
 /* ================= 폐가 시험판 — 발판·사다리·위아래 길 (PC) ================= */
-function platGame(){ return new Promise(done=>{
+function platGame(cfg){ cfg=cfg||{}; const EP=!!cfg.ep1; return new Promise(done=>{
   const VW=384, VH=216, WW=960, WH=440, G0=400, F1=352, F2=254;
   const view=$('#view'), g0=$('#g'), cv=document.createElement('canvas'); cv.id='plat'; cv.width=VW; cv.height=VH; cv.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;background:#000';
   g0.parentNode.insertBefore(cv,g0.nextSibling); const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
@@ -2226,16 +2226,21 @@ function platGame(){ return new Promise(done=>{
   const P={x:60,y:G0,vx:0,vy:0,face:1,gr:true,cr:false,lad:null,an:0}, M={x:200,y:300}, KD={};
   const Z={tal:2,hp:3,shoe:false,hid:null,mir:false,thr:0,inv:0,back:0,litK:0,cp:[60,G0],t:0,flash:0,shake:0,red:0,gt:0};
   const K={x:700,L:1,dir:-1,st:'patrol',tt:0,an:0,rage:0}, G={x:470,home:470,gone:false,hits:0,alpha:.2,fr:0,n:0,stp:0,pose:'idle'}; let shots=[], hb=0, raf=0, ended=false, last=performance.now();
-  const hud=()=>goal((Z.shoe?'꽃신을 들고 대문 밖으로':'폐가 어딘가의 꽃신을 찾아라')+' · 부적 '+Z.tal+' · 숨 '+'●'.repeat(Z.hp)+'○'.repeat(3-Z.hp)); hud();
+  const hud=()=>goal((Z.shoe?(EP?'분이의 꽃신을 들고 대문 밖으로':'꽃신을 들고 대문 밖으로'):(EP?'빈집 어딘가에 분이의 흔적이 있다':'폐가 어딘가의 꽃신을 찾아라'))+' · 부적 '+Z.tal+' · 숨 '+'●'.repeat(Z.hp)+'○'.repeat(3-Z.hp)); hud();
   const PH=()=>P.cr?28:58, OY=()=>P.y-(P.cr?14:36);
   const lit=(ex,ey)=>{ if(!Z.mir||Z.hid||lvl(ey+10)!==lvl(P.y)) return false; const dx=ex-P.x, dy=ey-OY(), d=Math.hypot(dx,dy); if(d>160) return false; if(d<16) return true; const a=Math.atan2(dy,dx)-Math.atan2(M.y-OY(),M.x-P.x); return Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.5; };
   /* ---- 살펴볼 곳 ---- */
   const hideSpot=(x,L,name,kind)=>({x,L,kind,label:()=>Z.hid?'E · 나오기':'E · '+name+'에 숨기',act(){ if(Z.hid){ Z.hid=null; Z.outAt=Z.t; snd('page',1,.3); return; } Z.hid=this; Z.hidAt=Z.t; Z.mir=false; P.x=x+(this.kind==='behind'?-7:0); P.vx=0; Z.sawHide=K.st==='chase'&&K.L===L&&Math.abs(K.x-P.x)<90; snd('page',.7,.3); toast(Z.sawHide?'너무 가까웠다. 들켰다!':'숨을 죽였다'); }});
   const pick=(x,L,name,txt)=>({x,L,label:()=>'E · '+name+' 살펴보기',got:0,async act(){ if(this.got){ toast('비어 있다'); return; } this.got=1; Z.tal++; hud(); snd('pick',1,.5); await say([['',txt],['','부적 한 장을 얻었다.']]); }});
   const HOT=[ hideSpot(112,0,'장독 뒤','behind'), hideSpot(443,1,'장롱 안','in'), hideSpot(815,1,'아궁이 안','in'), pick(674,1,'선반','선반 위 사발 밑에 누런 부적이 눌려 있다.'), pick(452,2,'깨진 항아리','항아리 안에 접힌 부적이 들어 있다.'),
-    {x:362,L:1,label:()=>'E · 벽의 낙서 읽기',async act(){ await say([['','벽에 손톱으로 긁은 글씨. 「다락의 아이에게 등을 보이지 마라. 등을 보는 동안에만 걷는다.」'],['홍련','(마주 보거나, 거울을 그쪽으로 든 채 지나가야 해.)']]); try{ lore('jangseung'); }catch(e){} }},
-    {x:640,L:2,label:()=>'E · 꽃신 줍기',hide:()=>Z.shoe,async act(){ Z.shoe=true; hud(); snd('clue',1,.6); Z.shake=4; await say([['','서까래 밑에 작은 꽃신 한 짝이 놓여 있다. 안쪽에 「순이」라고 수놓여 있다.'],['','집어 드는 순간, 아래층에서 기는 소리가 빨라졌다.']]); K.rage=1; Z.cp=[60,G0]; }},
-    {x:58,L:0,label:()=>'E · 대문 밖으로 나가기',hide:()=>!Z.shoe,async act(){ ended=true; await say([['','금줄을 넘어 대문 밖으로 나왔다. 안에서 긁는 소리가 문턱에서 멎었다.'],['홍련','(저것들은 저 집을 못 벗어나. 순이의 신발은 찾았어.)']]); finish(); }} ];
+    {x:362,L:1,label:()=>'E · 벽의 낙서 읽기',async act(){ if(EP){ await say([['','벽에 손톱으로 긁은 글씨. 「다락의 아이는 가져가는 사람만 부른다. 부르면 돌아보지 마라. 거울로도 보지 마라.」'],['홍련','(할멈이 말한 금기야. 뭔가를 집어 든 뒤에는 뒤를 보면 안 돼.)'],['홍련','(그럼 가져갈 것 말고 볼 것은, 집어 들기 전에 다 봐 둬야 해.)']]); try{ lore('t1'); }catch(e){} return; } await say([['','벽에 손톱으로 긁은 글씨. 「다락의 아이에게 등을 보이지 마라. 등을 보는 동안에만 걷는다.」'],['홍련','(마주 보거나, 거울을 그쪽으로 든 채 지나가야 해.)']]); try{ lore('jangseung'); }catch(e){} }},
+    {x:EP?560:640,L:2,label:()=>'E · 꽃신 줍기',hide:()=>Z.shoe,async act(){ Z.shoe=true; hud(); snd('clue',1,.6); Z.shake=4;
+      if(EP){ await say([['','서까래 밑에 작은 꽃신 한 짝이 놓여 있다. 분이 어미가 끌고 다니던 신의 나머지 한 짝이다.'],['','집어 드는 순간, 아래층에서 기는 소리가 빨라졌다. 그리고 바로 뒤에서, 아이 목소리가 났다.'],['아이 목소리','언니. 그거 내 거야.'],['홍련','(돌아보면 안 돼.)']]); G.mode='follow'; G.side=Math.sign(P.x-G.x)||1; Z.sobok=2.6; }
+      else await say([['','서까래 밑에 작은 꽃신 한 짝이 놓여 있다. 안쪽에 「순이」라고 수놓여 있다.'],['','집어 드는 순간, 아래층에서 기는 소리가 빨라졌다.']]); K.rage=1; Z.cp=[60,G0]; }},
+    ...(EP?[ {x:262,L:1,label:()=>'E · 창살 옆의 긁힌 이름 보기',async act(){ Z.wall=1; await say([['','창살 옆 벽에 이름이 줄지어 긁혀 있다. 아이 글씨다. 대부분은 물에 번진 것처럼 뭉개져 읽을 수 없다.'],[ '',S.flags.wrote?'맨 아래 줄, 「분이」 두 글자만 또렷하다. 홍련이 부적에 적어 둔 그 이름이다.':'맨 아래 줄에 두 글자가 남아 있다. 「분□」. 뒤 글자가 지워지는 중이다.'],['홍련',S.flags.wrote?'(적어 둔 이름은 먹히지 않아. 할멈 말이 맞았어.)':'(분… 분이. 분이야. 지금이라도 외워 둬야 해.)']]); try{ lore('jeokda'); }catch(e){} }},
+      {x:726,L:1,label:()=>'E · 엿판 밑의 장부 보기',async act(){ Z.ledger=1; await say([['','부엌 구석에 엿판이 엎어져 있다. 그 밑에 장부 한 권. 날짜마다 아이 이름이 하나씩 적혀 있고, 이름마다 붉은 줄이 그어져 있다.'],['','마지막 장에 말 모양 도장이 찍혀 있다. 관아에서 쓰는 도장이다.'],['홍련','(엿장수 혼자 한 일이 아니야. 누가 시켰어.)']]); try{ lore('daesu'); }catch(e){} }},
+      {x:398,L:2,label:()=>'E · 짚단 속의 끈 보기',async act(){ Z.cord=1; snd('bell',.8,.4); await say([['','짚단 속에 낡은 방울 끈이 끼어 있다. 끝에 이름이 수놓여 있다. 「□련」. 앞 글자는 실이 풀려 읽을 수 없다.'],['홍련','(내 방울 끈과 똑같은 매듭이야. 이 매듭은 어머니한테 배운 건데.)'],['홍련','(…나 말고 이걸 맬 줄 아는 사람이 또 있었나.)']]); }} ]:[]),
+    {x:58,L:0,label:()=>'E · 대문 밖으로 나가기',hide:()=>!Z.shoe,async act(){ ended=true; await say(EP?[['','금줄을 넘어 대문 밖으로 나왔다. 안에서 긁는 소리가 문턱에서 멎었다.']]:[['','금줄을 넘어 대문 밖으로 나왔다. 안에서 긁는 소리가 문턱에서 멎었다.'],['홍련','(저것들은 저 집을 못 벗어나. 순이의 신발은 찾았어.)']]); finish(); }} ];
   const near=()=>{ if(Z.hid) return Z.hid; let best=null, bd=20; for(const h of HOT){ if(h.hide&&h.hide()) continue; if(h.L!==lvl(P.y)||!P.gr) continue; const d=Math.abs(h.x-P.x); if(d<bd){ bd=d; best=h; } } return best; };
   /* ---- 입력 ---- */
   const free=e=>!DLG&&!GAME.lock&&!(e.target.closest&&e.target.closest('#tr,#menu,#menuBtn,#dialog,#modal,#xov,#coach,#mini'));
@@ -2246,10 +2251,10 @@ function platGame(){ return new Promise(done=>{
   const pu=e=>{ if(e.pointerType!=='mouse') return; if(e.button===2) Z.mir=false; if(free(e)) e.stopPropagation(); };
   const ck=e=>{ if(free(e)) e.stopPropagation(); }, cm=e=>e.preventDefault();
   addEventListener('keydown',kd,true); addEventListener('keyup',ku,true); addEventListener('pointerdown',pd,true); addEventListener('pointerup',pu,true); addEventListener('click',ck,true); addEventListener('contextmenu',cm,true); addEventListener('mousemove',mouse,true);
-  function finish(){ ended=true; cancelAnimationFrame(raf); removeEventListener('keydown',kd,true); removeEventListener('keyup',ku,true); removeEventListener('pointerdown',pd,true); removeEventListener('pointerup',pu,true); removeEventListener('click',ck,true); removeEventListener('contextmenu',cm,true); removeEventListener('mousemove',mouse,true); lab.remove(); cv.remove(); done(); }
-  function throwT(){ if(Z.thr>0||Z.hid||ended) return; const cs=[]; if(K.L===lvl(P.y)&&(lit(K.x,LY[K.L]-14)||Math.abs(K.x-P.x)<60)) cs.push(K); if(!G.gone&&lit(G.x,F2-26)) cs.push(G);
+  function finish(){ ended=true; cancelAnimationFrame(raf); removeEventListener('keydown',kd,true); removeEventListener('keyup',ku,true); removeEventListener('pointerdown',pd,true); removeEventListener('pointerup',pu,true); removeEventListener('click',ck,true); removeEventListener('contextmenu',cm,true); removeEventListener('mousemove',mouse,true); lab.remove(); cv.remove(); done({shoe:Z.shoe,wall:!!Z.wall,ledger:!!Z.ledger,cord:!!Z.cord,looked:Z.looked||0,caught:Z.caught||0}); }
+  function throwT(){ if(Z.thr>0||Z.hid||ended) return; const cs=[]; if(K.L===lvl(P.y)&&(lit(K.x,LY[K.L]-14)||Math.abs(K.x-P.x)<60)) cs.push(K); if(!EP&&!G.gone&&lit(G.x,F2-26)) cs.push(G);
     if(!cs.length){ toast('드러난 것이 없다. 거울로 먼저 비춰라'); return; } if(Z.tal<=0){ toast('부적이 없다'); return; } cs.sort((a,q)=>Math.abs(a.x-P.x)-Math.abs(q.x-P.x)); Z.tal--; Z.thr=.45; Z.thrAt=Z.t; P.face=cs[0].x<P.x?-1:1; hud(); setTimeout(()=>shots.push({x:P.x+P.face*14,y:OY(),t:cs[0],r:0}),150); snd('brush',1.5,.4); }
-  function hurt(msg){ if(Z.down>0) return; Z.hp--; Z.shake=9; Z.red=.9; Z.inv=3; try{ snd('scare',1,.7); SFXP.sting(); SFXP.thud(); }catch(e){} toast(msg); hud(); Z.down=1.5; Z.hid=null; Z.mir=false; P.vx=0; P.lad=null; }
+  function hurt(msg){ if(Z.down>0) return; Z.caught=(Z.caught||0)+1; Z.hp--; Z.shake=9; Z.red=.9; Z.inv=3; try{ snd('scare',1,.7); SFXP.sting(); SFXP.thud(); }catch(e){} toast(msg); hud(); Z.down=1.5; Z.hid=null; Z.mir=false; P.vx=0; P.lad=null; }
   function respawn(){ if(Z.hp<=0){ Z.hp=3; toast('숨이 끊겼다. 대문 앞에서 다시'); } Z.inv=1.2;
     hud(); Z.hid=null; P.x=Z.cp[0]; P.y=Z.cp[1]; P.vx=P.vy=0; P.cr=false; P.lad=null; K.st='patrol'; K.L=1; K.x=760; K.dir=-1; G.x=G.home; Z.back=0; }
   /* ---- 한 틀 ---- */
@@ -2291,8 +2296,16 @@ function platGame(){ return new Promise(done=>{
       else { const door=Math.abs(K.x-200)+Math.abs(P.x-200), hole=Math.abs(K.x-615)+Math.abs(P.x-615); if(go(door<hole?200:615,v)) swap(pL); } }
     else if(K.st==='search'){ K.tt-=dt; if(K.tt<=0){ K.st='patrol'; K.dir=Math.random()<.5?-1:1; } }
     hb-=dt; if(hb<=0&&K.st!=='stun'){ const d=ad+(same?0:120); if(d<340){ hb=clamp(d/300,.22,.75); try{ SFXP.thud(); }catch(e){} } }
-    /* 다락의 아이 */
-    if(!G.gone){ const gx=G.x-P.x, gd=Math.abs(gx), gl=lit(G.x,F2-26), on=pL===2&&!Z.hid, back=on&&gd<210&&gd>8&&P.face!==Math.sign(gx)&&!gl;
+    /* 다락의 아이 (1화): 가져가는 사람을 부른다. 돌아보면 온다 */
+    if(Z.sobok>0) Z.sobok-=dt;
+    if(EP){ const gx=G.x-P.x, gd=Math.abs(gx), on=pL===2&&!Z.hid;
+      if(G.mode==='follow'){ if(!on){ G.mode='done'; G.x=G.home; G.pose='idle'; G.alpha=.2; if(!Z.looked) toast('부르는 소리가 멎었다'); }
+        else { G.pose='face'; G.alpha=.85; G.side=Math.sign(P.x-G.x)||G.side; const want=P.x-G.side*44; G.stp-=dt; if(G.stp<=0&&Math.abs(want-G.x)>10){ G.stp=.42; G.x+=Math.sign(want-G.x)*13; G.fr=(G.fr+1)%3; G.pose='rush'; try{ SFXP.step(); }catch(e){} }
+          Z.call=(Z.call||0)-dt; if(Z.call<=0){ Z.call=2.6; snd('whisper',1.3,.4); toast(['“언니.”','“언니, 나 여기 있어.”','“왜 안 봐?”','“분이야. 나 분이야.”'][(Z.cn=(Z.cn||0)+1)%4]); }
+          const look=P.face===Math.sign(gx)&&gd<150; Z.lk=look?(Z.lk||0)+dt:0;
+          if(Z.lk>.22&&Z.inv<=0){ Z.looked=(Z.looked||0)+1; Z.lk=0; G.mode='done'; G.x=G.home; G.pose='idle'; hurt('돌아보았다'); return; } } }
+      else { G.pose='idle'; G.alpha=on&&gd<200?.34:.16; } }
+    else if(!G.gone){ const gx=G.x-P.x, gd=Math.abs(gx), gl=lit(G.x,F2-26), on=pL===2&&!Z.hid, back=on&&gd<210&&gd>8&&P.face!==Math.sign(gx)&&!gl;
       if(back){ if(!Z.gt){ Z.gt=1; toast('뒤에서 발소리가 난다'); } if(Z.back===0) snd('whisper',1.2,.35); Z.back+=dt; G.alpha=Math.min(.95,.4+Z.back*.5); G.pose=Z.back<.35?'tilt':Z.back<.7?'face':'rush';
         if(Z.back>.7){ G.stp-=dt; if(G.stp<=0){ G.stp=Math.max(.24,.5-G.n*.035); G.n++; G.x-=Math.sign(gx)*13; G.fr=(G.fr+1)%3; try{ SFXP.step(); }catch(e){} snd('drip',.5,.25); } }
         if(gd<15&&Z.inv<=0){ hurt('등을 보였다'); return; } }
@@ -2321,6 +2334,7 @@ function platGame(){ return new Promise(done=>{
       else if(Z.hid) al=.12;
       spr('hong',f,P.x-cx,P.y+1-cy-(P.lad?(P._bob||0):0)-((Z.mir&&!P.cr&&!P.lad&&P.gr&&!Z.hid)?(P._mb||0):0),P.lad?1:P.face,al,sy);
       if(Z.hid&&Z.hid.kind==='behind'){ c.save(); c.beginPath(); c.ellipse(112-cx,386-cy,11,14,0,0,7); c.rect(104-cx,371-cy,16,3); c.clip(); c.drawImage(bg,98,368,28,32,98-cx,368-cy,28,32); c.restore(); } }
+    if(Z.sobok>0&&ANIM.shade){ const f=ANIM.shade.idle[0]; spr('shade',f,836-cx,F2-cy+6,-1,Math.min(.75,Z.sobok*.5)); }
     for(const q of shots){ c.save(); c.translate(Math.round(q.x-cx),Math.round(q.y-cy)); c.rotate(q.r); c.fillStyle='#e8c56a'; c.fillRect(-3,-5,6,10); c.fillStyle='#c9332b'; c.fillRect(-1,-3,2,6); c.restore(); }
     /* 어둠과 빛 */
     d.globalCompositeOperation='source-over'; d.clearRect(0,0,VW,VH); d.fillStyle='rgba(3,3,9,.9)'; d.fillRect(0,0,VW,VH); d.globalCompositeOperation='destination-out';
@@ -2337,11 +2351,45 @@ function platGame(){ return new Promise(done=>{
     const h=ended?null:near(); if(h&&!DLG&&!GAME.lock){ const t=h.label(); if(lab.textContent!==t) lab.textContent=t; lab.style.display='block'; } else lab.style.display='none'; }
   function loop(t){ if(ended&&!DLG&&!GAME.lock) return; raf=requestAnimationFrame(loop); let dt=Math.min(.05,(t-last)/1000); last=t; if(!DLG&&!GAME.lock&&!ended){ let n=0; while(dt>0&&n<4){ const s=Math.min(dt,1/60); step(s); dt-=s; n++; } } draw(); }
   window.__plat={P,K,G,Z,M,HOT,KD};
-  (async()=>{ draw(); await say([['','마을 끝의 버려진 집. 순이가 마지막으로 들어간 곳이다. 금줄이 대문에 걸려 있다.'],['홍련','(안에서 기는 소리가 나. 저건 부적으로도 잠깐 멈출 뿐이야. 위로 올라가거나 숨어야 해.)']]);
+  (async()=>{ draw(); try{ fade(false,700); }catch(e){} await say(EP?[['','여우 고개 중턱의 빈집. 엿장수가 아이를 데리고 들어가는 것을 본 사람이 있다. 대문에 금줄이 걸려 있다.'],['홍련','(안에서 기는 소리가 나. 저건 부적으로도 잠깐 멈출 뿐이야. 들키면 숨거나 위로 올라가야 해.)']]:[['','마을 끝의 버려진 집. 순이가 마지막으로 들어간 곳이다. 금줄이 대문에 걸려 있다.'],['홍련','(안에서 기는 소리가 나. 저건 부적으로도 잠깐 멈출 뿐이야. 위로 올라가거나 숨어야 해.)']]);
     coach('A D 이동 · Shift 달리기(소리가 난다) · Space 뛰기 · S 몸 낮추기 · W S 사다리 · E 살펴보기/숨기 · 마우스 오른쪽을 누르면 거울 빛 · 왼쪽 클릭으로 부적'); setTimeout(()=>{ try{ if(!ended) coach(''); }catch(e){} },15000); last=performance.now(); raf=requestAnimationFrame(loop); })(); }); }
 { const _ep1=ep1; ep1=async function(){ if(location.hash.indexOf('plat')>=0){ S.items=[]; S.mirrorOK=false; S.sc={yeon:0,gi:0,ja:0}; S.pieces=[]; S.flags=S.flags||{}; try{ sceneMusic(6); }catch(e){} await platGame(); try{ toast('시험판 끝 · 처음 화면으로 돌아갑니다'); }catch(e){} await wait(1800); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); return; } return _ep1(); }; }
 (function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xp')) return; const cl=box.querySelector('[data-k=close]'); const bt=document.createElement('button'); bt.type='button'; bt.className='xb xp'; bt.dataset.k='x'; bt.innerHTML='<span>폐가 시험판 (PC)</span><b>해 보기</b>'; bt.addEventListener('click',()=>{ location.hash='plat'; location.reload(); }); box.insertBefore(bt,box.querySelector('.xz')||cl); };
   if(document.readyState!=='loading') add(); else addEventListener('DOMContentLoaded',add); setTimeout(add,1900); })();
+
+/* ================= 1화 체험판 (새 구성: 짧은 이야기 + 잠입 구역) ================= */
+async function demoEp1(){ S.items=[]; S.mirrorOK=false; S.sc={yeon:0,gi:0,ja:0}; S.pieces=[]; S.flags={}; S.ending=null; try{ syncHUD(); }catch(e){}
+  await vnOpen('market','도성 남문 밖 장터 · 파장 무렵'); try{ await vnCard('第一章','1장 · 방울 소리',2400); }catch(e){}
+  await say([['','이름을 먹는 문이 있다. 이름을 먹힌 사람은 모두의 기억에서 사라진다.'],['','홍련은 장터 귀퉁이에서 부적을 판다. 굿은 하지 않는다.'],
+    ['분이 어미','우리 딸 못 보셨소? 일곱 살이오. 노란 저고리를 입었소.'],['생선 장수','아침에 엿장수 뒤를 따라가던데. 그 애 이름이… 그…']]);
+  vnFx('shake'); snd('bell',.7,.35);
+  await say([['생선 장수','…내가 무슨 얘기를 하고 있었소? 이 장터에 그런 애는 없었소.'],['홍련','(방금 전까지 알고 있었어. 눈앞에서 잊어버렸어.)'],['분이 어미','무당님. 당신은 기억하지요? 우리 분이. 어제 당신한테 부적을 사 갔잖소.']]);
+  const a=await choose('분이 어미가 소매를 붙잡는다',[{t:'“기억하오. 내가 이름을 적어 두겠소.”',v:'wrote'},{t:'“엿장수가 간 쪽을 알려 주시오.”',v:'chase'},{t:'“…나는 굿을 못 하오.”',v:'refuse'}]); S.flags[a]=1;
+  if(a==='wrote'){ try{ piece('분'); }catch(e){} await say([['','홍련은 빈 부적에 두 글자를 적었다. 「분이」. 먹이 한 번 떨렸지만 번지지 않았다.']]); }
+  else if(a==='chase') await say([['분이 어미','여우 고개 쪽이오. 고개 중턱에 빈집이 하나 있소.']]);
+  else await say([['','여인은 한참 홍련을 보다가, 한 짝뿐인 신을 끌며 돌아섰다. 홍련은 그 뒷모습에서 눈을 떼지 못했다.']]);
+  await vnSwap('arm','장터 · 막례 할멈의 좌판');
+  await say([['','막례 할멈이 소매를 걷었다. 팔뚝 가득 이름이 적혀 있었다. 절반은 번져서 읽을 수 없었다.'],['막례 할멈','써 두지 않으면 너도 잊는다. 이번 달에만 셋이야.'],['막례 할멈','고개 중턱 빈집에 갈 거면 하나만 지켜라. 그 집에서 뭘 집어 들면 뒤에서 아이가 부른다. 돌아보지 마라.'],['막례 할멈','부적은 두 장 주마. 기어 다니는 것한테는 잠깐밖에 안 듣는다.']]);
+  try{ lore('t1'); lore('jeokda'); }catch(e){}
+  await vnSwap('road','저녁 · 여우 고개 오르는 길');
+  await say([['태석','무당이라 했소? 나도 그 집에 볼일이 있소. 동생이 그 고개에서 없어졌소.'],['태석','나는 귀신을 못 보오. 대문 밖에서 지키고 있겠소. 무슨 일이 나면 소리치시오.'],['홍련','(혼자 들어가는 수밖에 없어.)']]);
+  await fade(true,600); vn().hidden=true;
+  const r=await platGame({ep1:1});
+  const kept=!!(S.flags.wrote||r.wall); mapMark('taboo1',r.looked?'broke':'kept'); mapMark('end1',kept?'kept':'lost');
+  await vnOpen('road','밤 · 빈집 대문 밖'); try{ sceneMusic(8); }catch(e){}
+  await say([['태석','나왔소! 안에서 무슨 소리가 그리 났소. 나는 아무것도 못 봤소.'],['홍련','이것을 찾았소. 아이 신발이오.']]);
+  if(kept) await say([['','꽃신 안쪽에 이름이 수놓여 있다. 「분이」. 홍련은 그 이름을 소리 내어 읽을 수 있었다.'],['홍련','분이. 분이의 신이오. 어미에게 돌려줘야 하오.']]);
+  else await say([['','꽃신 안쪽에 이름이 수놓여 있었던 자리가 있다. 실이 다 풀려 있었다.'],['홍련','…누구 신이었더라. 방금까지 알았는데.'],['태석','무당 양반? 누구를 찾으러 들어간 거요?'],['홍련','(잊었어. 내가 방금 잊었어.)']]);
+  if(r.ledger) await say([['홍련','그리고 장부를 봤소. 아이들 이름에 줄이 그어져 있고, 관아의 말 도장이 찍혀 있었소.'],['태석','관아라니. …내 동생 이름도 거기 있었소?'],['홍련','줄이 그어진 이름은 읽을 수 없었소.']]);
+  else await say([['태석','엿장수는 못 봤소?'],['홍련','없었소. 누가 시킨 일인지도 알아내지 못했소.']]);
+  if(r.cord) await say([['','홍련은 소매 속의 방울 끈을 만졌다. 「□련」. 제 것과 같은 매듭.'],['홍련','(다락 끝에 흰 옷이 서 있었어. 돌아보지 않았는데도 보였어.)'],['홍련','(나는 저 사람을 알아. 알았던 것 같아.)']]);
+  else await say([['홍련','(다락 끝에 흰 옷이 서 있었어. 돌아보지 않았는데도 보였어.)']]);
+  if(r.looked) await say([['홍련','(그리고 나는 한 번 돌아봤어. 그 아이 얼굴이 아직 눈에 남아 있어.)']]);
+  try{ await vnCard('잊은 것은, 잊었다는 것조차 잊는다.','',3000); }catch(e){}
+  await chapterEnd('1화 체험판',kept?'지킨 이름 · 분이':'잃은 이름 · □□','찾은 것 '+[r.wall,r.ledger,r.cord].filter(Boolean).length+' / 3 · 돌아본 횟수 '+r.looked+' · 잡힌 횟수 '+Math.max(0,r.caught-r.looked),''); }
+{ const _ep1=ep1; ep1=async function(){ if(location.hash.indexOf('demo')>=0){ await demoEp1(); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} location.reload(); return; } return _ep1(); }; }
+(function(){ const add=()=>{ const box=document.querySelector('#menu .mbox'); if(!box||box.querySelector('.xdm')) return; const cl=box.querySelector('[data-k=close]'); const bt=document.createElement('button'); bt.type='button'; bt.className='xb xdm'; bt.dataset.k='x'; bt.innerHTML='<span>1화 체험판 (새 구성)</span><b>해 보기</b>'; bt.addEventListener('click',()=>{ location.hash='demo'; location.reload(); }); box.insertBefore(bt,box.querySelector('.xb')||cl); };
+  if(document.readyState!=='loading') add(); else addEventListener('DOMContentLoaded',add); setTimeout(add,2000); })();
 
 
 </script>
